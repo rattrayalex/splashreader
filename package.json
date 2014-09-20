@@ -1,0 +1,19 @@
+{
+  "name": "splashreader",
+  "version": "1.0.0",
+  "description": "An RSVP Reader for Humans",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rattrayalex/splashreader.git"
+  },
+  "author": "rattray.alex@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rattrayalex/splashreader/issues"
+  },
+  "homepage": "https://github.com/rattrayalex/splashreader"
+}
