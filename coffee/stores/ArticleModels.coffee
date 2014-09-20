@@ -1,6 +1,7 @@
 Backbone = require 'backbone'
 
 dispatcher = require '../dispatcher'
+{getDisplayMultiplier} = require '../rsvp_utils'
 
 
 
@@ -9,6 +10,10 @@ class ElementModel extends Backbone.Model
 
 class WordModel extends ElementModel
   initialize: ->
+    @once 'change', =>
+      @set
+        display: getDisplayMultiplier @get('word')
+
     @dispatchToken = dispatcher.register @dispatcherCallback
 
   dispatcherCallback: (payload) =>

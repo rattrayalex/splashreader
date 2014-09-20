@@ -24,11 +24,6 @@ MainComponent = React.createClass
 
     if @props.article.get('elem') and @props.words.length
 
-      # if @props.current.isEmpty()
-      #   dispatcher.dispatch
-      #     actionType: 'change-word'
-      #     word: @props.words.at(0)
-
       React.DOM.div {},
         RsvpDisplay {
           word: @props.current
@@ -56,14 +51,6 @@ main = ->
     }
     document.querySelector('.main')
   )
-
-  setInterval ->
-    dispatcher.dispatch
-      actionType: 'change-word'
-      word: WordStore.at(WordStore.indexOf(CurrentWordStore.at(0)) + 1)
-  , 1000
-
-
 
 main()
 
