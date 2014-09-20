@@ -14,7 +14,6 @@ class ArticleModel extends Backbone.Model
         elem = htmlToArticle(payload.raw_html)
         @set {elem}
 
-
 ArticleStore = new ArticleModel()
 
 module.exports = ArticleStore

@@ -1,5 +1,7 @@
 module.exports =
 
+  READABILITY_TOKEN: '33cd31b9cce9187a74eb3f2c5ac114b6c0082c74'
+
   ALLOWED_REACT_NODES: [
     # from docs: ref-04-tags-and-attributes
     # html

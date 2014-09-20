@@ -2,8 +2,15 @@
 sanitize = require('sanitize-html')
 _ = require('underscore')
 
+dispatcher = require('./dispatcher')
 constants = require('./constants')
-{ChildrenCollection, ElementModel} = require('./stores/ArticleModels')
+WordStore = require './stores/WordStore'
+{
+  ChildrenCollection,
+  WordModel,
+  ElementModel
+} = require('./stores/ArticleModels')
+
 
 
 textToSpans = (textNode) ->
@@ -16,9 +23,12 @@ textToSpans = (textNode) ->
     # add trailing space to all words but the last one
     if i < (words.length - 1)
       word += ' '
-    elem = new ElementModel()
-    elem.set {word}
-    spans.push elem
+    word_model = new WordModel()
+    word_model.set {word}
+    spans.push word_model
+
+    # also add it to list of words
+    WordStore.add(word_model)
 
   return spans
 

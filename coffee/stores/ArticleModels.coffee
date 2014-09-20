@@ -3,7 +3,11 @@ Backbone = require 'backbone'
 dispatcher = require '../dispatcher'
 
 
+
 class ElementModel extends Backbone.Model
+
+
+class WordModel extends ElementModel
   initialize: ->
     @dispatchToken = dispatcher.register @dispatcherCallback
 
@@ -19,4 +23,16 @@ class ChildrenCollection extends Backbone.Collection
   model: ElementModel
 
 
-module.exports = {ElementModel, ChildrenCollection}
+class WordCollection extends Backbone.Collection
+  model: WordModel
+
+  initialize: ->
+    @dispatchToken = dispatcher.register @dispatcherCallback
+
+  dispatcherCallback: (payload) =>
+    switch payload.actionType
+      when 'process-article'
+        console.log @
+
+
+module.exports = {ElementModel, ChildrenCollection, WordModel, WordCollection}
