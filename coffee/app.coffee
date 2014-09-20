@@ -1,4 +1,5 @@
 React = require('react')
+key = require('keymaster')
 
 ArticleStore = require('./stores/ArticleStore')
 WordStore = require('./stores/WordStore')
@@ -13,9 +14,7 @@ example_data = require("./example_data")
 MainComponent = React.createClass
   componentDidMount: ->
     @props.article.on 'change', ( => @forceUpdate() ), @
-    @props.words.once 'add', =>
-      @forceUpdate()
-    , @
+    @props.words.once 'add', ( => @forceUpdate() ), @
 
   componentWillUnmount: ->
     @props.article.off null, null, @
@@ -51,6 +50,12 @@ main = ->
     }
     document.querySelector('.main')
   )
+
+  key 'space', ->
+    dispatcher.dispatch
+      actionType: 'play-pause'
+      source: 'space'
+    false
 
 main()
 

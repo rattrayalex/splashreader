@@ -13,7 +13,10 @@ RsvpDisplay = React.createClass
     div {
       className: 'well lead text-center'
     },
-      @props.word.at(0).get('word')
+      if @props.word.at(0)
+        @props.word.at(0).get('word') or ' '
+      else
+        ' '
 
 
 module.exports = RsvpDisplay

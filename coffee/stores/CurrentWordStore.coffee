@@ -2,6 +2,7 @@ Backbone = require 'backbone'
 {WordModel} = require './ArticleModels'
 ArticleStore = require './ArticleStore'
 WordStore = require './WordStore'
+RsvpStatusStore = require './RsvpStatusStore'
 
 dispatcher = require '../dispatcher'
 
@@ -11,14 +12,16 @@ class CurrentWordCollection extends Backbone.Collection
   updateWord: (word) ->
     @reset word
 
-    next_word = WordStore.at(WordStore.indexOf(@at(0)) + 1)
-    time_to_display = 200 * @at(0).get('display')
+    if RsvpStatusStore.get('playing') is true
 
-    setTimeout ->
-      dispatcher.dispatch
-        actionType: 'change-word'
-        word: next_word
-    , time_to_display
+      next_word = WordStore.at(WordStore.indexOf(@at(0)) + 1)
+      time_to_display = 200 * @at(0).get('display')
+
+      @timeout = setTimeout ->
+        dispatcher.dispatch
+          actionType: 'change-word'
+          word: next_word
+      , time_to_display
 
   initialize: ->
     @dispatchToken = dispatcher.register @dispatchCallback
@@ -31,5 +34,15 @@ class CurrentWordCollection extends Backbone.Collection
       when 'process-article'
         dispatcher.waitFor [ArticleStore.dispatchToken]
         @updateWord WordStore.at(0)
+
+      when 'play-pause'
+        dispatcher.waitFor [RsvpStatusStore.dispatchToken]
+
+        if RsvpStatusStore.get('playing')
+          @updateWord @at(0) or WordStore.at(0)
+        else
+          clearTimeout @timeout if @timeout?
+
+
 
 module.exports = new CurrentWordCollection()
