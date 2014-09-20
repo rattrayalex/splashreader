@@ -1,3 +1,6 @@
+# ignore compiled js.
+js
+
 # Logs
 logs
 *.log
