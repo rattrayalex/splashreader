@@ -12,6 +12,7 @@ example_data = require("./example_data")
 
 
 MainComponent = React.createClass
+
   componentDidMount: ->
     @props.article.on 'change', ( => @forceUpdate() ), @
     @props.words.once 'add', ( => @forceUpdate() ), @
@@ -56,6 +57,11 @@ main = ->
       actionType: 'play-pause'
       source: 'space'
     false
+
+  window.onblur = ->
+    dispatcher.dispatch
+      actionType: 'pause'
+      source: 'window-blur'
 
 main()
 

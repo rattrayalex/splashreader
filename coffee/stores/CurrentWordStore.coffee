@@ -43,6 +43,11 @@ class CurrentWordCollection extends Backbone.Collection
         else
           clearTimeout @timeout if @timeout?
 
+      when 'pause'
+        dispatcher.waitFor [RsvpStatusStore.dispatchToken]
+
+        clearTimeout @timeout if @timeout?
+
 
 
 module.exports = new CurrentWordCollection()

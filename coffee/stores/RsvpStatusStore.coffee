@@ -15,7 +15,9 @@ class RsvpStatusModel extends Backbone.Model
         @set
           playing: !@get('playing')
 
-        console.log @
+      when 'pause'
+        @set
+          playing: false
 
 RsvpStatusStore = new RsvpStatusModel()
 module.exports = RsvpStatusStore
