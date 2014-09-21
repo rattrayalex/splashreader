@@ -15,5 +15,4 @@ class ArticleModel extends Backbone.Model
         @set {elem}
 
 ArticleStore = new ArticleModel()
-
 module.exports = ArticleStore

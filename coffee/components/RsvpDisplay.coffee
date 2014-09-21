@@ -5,15 +5,16 @@ React = require 'react'
 {div, span} = React.DOM
 eleven_dots = Array(11).join('.')
 
+
 RsvpDisplay = React.createClass
 
   componentDidMount: ->
-    @props.word.on 'reset', ( => @forceUpdate() ), @
+    @props.current.on 'change:word', ( => @forceUpdate() ), @
   componentWillUnmount: ->
-    @props.word.off null, null, @
+    @props.current.off null, null, @
 
   render: ->
-    word = if @props.word.at(0) then @props.word.at(0).get('word') or " "
+    word = @props.current.get('word').get('word') or " "
     word = word.trim()
     word = word or " "
 
@@ -42,8 +43,6 @@ RsvpDisplay = React.createClass
         word_p3
       span {className: 'rsvp-after-word'},
         eleven_dots[0 .. (11 - 1 - (word.length - middle))]
-
-
 
 
 module.exports = RsvpDisplay

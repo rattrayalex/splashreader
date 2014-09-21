@@ -4,7 +4,7 @@ key = require('keymaster')
 ArticleStore = require('./stores/ArticleStore')
 WordStore = require('./stores/WordStore')
 CurrentWordStore = require('./stores/CurrentWordStore')
-{Elem} = require('./components/ArticleView')
+{Elem, ArticleViewDisplay} = require('./components/ArticleView')
 RsvpDisplay = require('./components/RsvpDisplay')
 dispatcher = require('./dispatcher')
 
@@ -26,11 +26,12 @@ MainComponent = React.createClass
 
       React.DOM.div {},
         RsvpDisplay {
-          word: @props.current
+          current: @props.current
           key: 'current-word'
         }
-        Elem {
+        ArticleViewDisplay {
           elem: @props.article.get('elem')
+          current: @props.current
         }
     else
       React.DOM.div {},

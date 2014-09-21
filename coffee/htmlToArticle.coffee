@@ -12,28 +12,34 @@ WordStore = require './stores/WordStore'
 } = require('./stores/ArticleModels')
 
 
+isBlock = (node_name) ->
+  if node_name in constants.INLINE_ELEMENTS
+    false
+  else
+    true
 
-textToSpans = (textNode) ->
+
+textToWords = (textNode, parent) ->
   text = textNode.nodeValue
   words = text.split /\s+/
 
   # turns the words into an array of Elements
-  spans = []
+  word_models = []
   for word, i in words
     # add trailing space to all words but the last one
     if i < (words.length - 1)
       word += ' '
     word_model = new WordModel()
-    word_model.set {word}
-    spans.push word_model
+    word_model.set {word, parent}
+    word_models.push word_model
 
     # also add it to list of words
     WordStore.add(word_model)
 
-  return spans
+  return word_models
 
 
-domAttrsToArticle = (attributes) ->
+domAttrsToDict = (attributes) ->
   # TODO: this... at all correctly (camelCase etc)
   if not attributes?
     return {}
@@ -55,23 +61,30 @@ domAttrsToArticle = (attributes) ->
   return react_attrs
 
 
-cleanedHtmlToArticle = (elem) ->
-  # recursively turn elems to React objs.
+cleanedHtmlToElem = (node, parent) ->
+  # recursively turn nodes to React objs.
 
-  # if its text, return the text.
-  if typeof elem is String then return textToSpans(elem)
-  if elem.nodeName is "#text" then return textToSpans(elem)
+  # if its text, return the text as list of WordModels.
+  if node.nodeName is "#text" or typeof node is String
+    return textToWords(node, parent)
 
-  node_name = elem.nodeName.toLowerCase()
-  attrs = domAttrsToArticle(elem.attributes)
+  node_name = node.nodeName.toLowerCase()
+  attrs = domAttrsToDict(node.attributes)
 
-  children_list = [cleanedHtmlToArticle(child) for child in elem.childNodes]
-  children_list = _.flatten(children_list)  # unpacks text words
+  elem = new ElementModel()
+  elem.set {node_name, attrs}
+
+  # `parent` is stored on Words, representing their nearest Block parent.
+  if isBlock(node_name)
+    parent = elem
+
+  children_list = _.flatten [  # unpacks text words
+    cleanedHtmlToElem(child, parent) for child in node.childNodes
+  ]
   children = new ChildrenCollection()
   children.add(children_list)
 
-  elem = new ElementModel()
-  elem.set {node_name, attrs, children}
+  elem.set {children}
   return elem
 
 
@@ -83,7 +96,8 @@ rawHtmlToArticle = (raw_html) ->
   wrapper_elem = document.createElement('div')
   wrapper_elem.innerHTML = sanitized
 
-  cleanedHtmlToArticle(wrapper_elem)
+  elem = cleanedHtmlToElem(wrapper_elem)
+  return elem
 
 
 module.exports = rawHtmlToArticle
