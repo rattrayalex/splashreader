@@ -43,4 +43,23 @@ getDisplayMultiplier = (word) ->
 
   return display
 
-module.exports = {getDisplayMultiplier}
+
+getWordMiddle = (length) ->
+  # gets the "middle" of the word, where the red letter goes
+  # from https://github.com/Miserlou/Glance/blob/master/spritz.js#L190
+  #
+  # ... this may need refining, returns different results from eg; squirt.io
+
+  if length is 1
+    1
+  else if length in [2..5]
+    2
+  else if length in [6..9]
+    3
+  else if length in [10..13]
+    4
+  else
+    5
+
+
+module.exports = {getDisplayMultiplier, getWordMiddle}

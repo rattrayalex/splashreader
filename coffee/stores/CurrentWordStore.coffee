@@ -15,7 +15,7 @@ class CurrentWordCollection extends Backbone.Collection
     if RsvpStatusStore.get('playing') is true
 
       next_word = WordStore.at(WordStore.indexOf(@at(0)) + 1)
-      time_to_display = 200 * @at(0).get('display')
+      time_to_display = 100 * @at(0).get('display')
 
       @timeout = setTimeout ->
         dispatcher.dispatch
