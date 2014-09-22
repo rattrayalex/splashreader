@@ -10,6 +10,41 @@
     <link href="/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
+      body {
+        padding-top: 60px;
+      }
+      .navbar-center {
+          position: absolute;
+          width: 100%;
+          left: 0;
+          text-align: center;
+          margin: auto;
+      }
+      .article-main {
+        font-family: Georgia;
+        font-size: 18px;
+      }
+      .current-para {
+        /*border-left: 3px solid rgba(122, 0, 255, .5);*/
+        /*padding-left: 6px;*/
+        /*background: rgba(122, 0, 255, .05);*/
+      }
+      .current-word {
+        background: rgba(255, 165, 0, 0.19);
+      }
+      .current-para::before {
+        content: '▶';
+        position: relative;
+        left: -50px;
+        color: orange;
+        margin-right: -1em;
+      }
+      .rsvp-outer-wrapper {
+        position: fixed;
+        width: 100%;
+        top: 40%;
+        left: 0;
+      }
       .rsvp-wrapper {
         font-family: Monaco, monospace;
         font-size: 26pt;
@@ -43,12 +78,21 @@
     <![endif]-->
   </head>
   <body>
-    <div class="container">
-      <h1>SplashReader</h1>
-      <hr>
-      <div class="plain">
+    <div class="topbar">Loading...</div>
+
+    <div class="rsvp-outer-wrapper">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+          <div class="rsvp-main">Loading...</div>
+        </div>
       </div>
-      <div class="main">
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+          <div class="article-main">Loading...</div>
+        </div>
       </div>
     </div>
 

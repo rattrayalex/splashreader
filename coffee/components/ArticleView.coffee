@@ -20,6 +20,9 @@ Word = React.createClass
       actionType: 'change-word'
       word: @props.elem
 
+  isCurrentWord: ->
+    @props.current.get('word') is @props.elem
+
   componentDidMount: ->
     @props.elem.on 'change', ( => @forceUpdate() ), @
     @props.elem.set
@@ -31,8 +34,7 @@ Word = React.createClass
   render: ->
     span {
       onClick: @handleClick
-      style:
-        textDecoration: if @props.current.get('word') is @props.elem then 'underline'
+      className: 'current-word' if @isCurrentWord()
     },
       @props.elem.get('word')
 
@@ -41,6 +43,10 @@ Elem = React.createClass
   isCurrentPara: ->
     @props.current.get('parent') is @props.elem
 
+  scrollToMe: ->
+    offset = (window.innerHeight * .4) - 40
+    document.body.scrollTop = @getDOMNode().offsetTop - offset
+
   componentDidMount: ->
     # bind react elem to model
     @props.elem.set
@@ -48,6 +54,7 @@ Elem = React.createClass
 
     @props.elem.on 'change', =>
       @forceUpdate()
+      @scrollToMe() if @isCurrentPara()
     , @
 
   componentWillUnmount: ->
@@ -57,8 +64,7 @@ Elem = React.createClass
     ReactElem = React.DOM[@props.elem.get('node_name')]
 
     attrs = _.extend @props.elem.get('attrs'),
-      style:
-        color: if @isCurrentPara() then 'orange'
+      className: if @isCurrentPara() then 'current-para'
 
     children = [
       getElemOrWord(elem, @props.current) \
@@ -71,21 +77,19 @@ Elem = React.createClass
 ArticleViewDisplay = React.createClass
 
   componentDidMount: ->
-    @props.current.on 'change:parent', =>
-      elem = @props.current.get('parent').get('react_elem').getDOMNode()
-      @scrollToElem elem
+    @props.status.on 'change', ( => @forceUpdate() ), @
 
-  scrollToElem: (elem) ->
-    node = @getDOMNode()
-    node.scrollTop = elem.offsetTop - node.offsetTop - 75
+  componentWillUnmount: ->
+    @props.status.off null, null, @
 
   render: ->
     div {
-      className: ' scroll-box'
+      className: 'scroll-box'
       style:
-        paddingTop: 40
-        overflowY: 'scroll'
-        height: 400
+        paddingTop: window.innerHeight * .4
+        paddingBottom: window.innerHeight * .4
+        # visibility instead of display b/c it retains the scroll position
+        visibility: if @props.status.get('playing') then 'hidden' else 'visible'
     },
       Elem {
         elem: @props.elem

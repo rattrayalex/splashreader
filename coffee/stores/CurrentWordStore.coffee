@@ -18,20 +18,34 @@ class CurrentWordModel extends Backbone.Model
       next_word = WordStore.at(WordStore.indexOf(word) + 1)
       time_to_display = 100 * word.get('display')
 
-      @timeout = setTimeout ->
-        dispatcher.dispatch
-          'actionType': 'change-word'
-          'word': next_word
-      , time_to_display
+      if next_word
+        @timeout = setTimeout ->
+          dispatcher.dispatch
+            'actionType': 'change-word'
+            'word': next_word
+        , time_to_display
+
+      # end of article, just pause.
+      else
+        setTimeout ->
+          dispatcher.dispatch
+            actionType: 'pause'
+        , time_to_display
 
   initialize: ->
-    # when there's a new parent, tell old/new they've changed
+    # when there's a new parent,
     @on 'change:parent', (model, parent) =>
+      # tell old/new they've changed
       @previous('parent')?.trigger('change')
       parent.trigger 'change'
 
-    # when there's a new word, tell old/new they've changed
+      # pause on para change
+      RsvpStatusStore.set
+        playing: false
+
+    # when there's a new word,
     @on 'change:word', (model, word) =>
+      # tell old/new they've changed
       @previous('word')?.trigger('change')
       word.trigger 'change'
 

@@ -9,9 +9,15 @@ eleven_dots = Array(11).join('.')
 RsvpDisplay = React.createClass
 
   componentDidMount: ->
-    @props.current.on 'change:word', ( => @forceUpdate() ), @
+    @props.current.on 'change:word', =>
+      @forceUpdate()
+    , @
+    @props.status.on 'change', =>
+      @forceUpdate()
+    , @
   componentWillUnmount: ->
     @props.current.off null, null, @
+    @props.status.off null, null, @
 
   render: ->
     word = @props.current.get('word').get('word') or " "
@@ -29,7 +35,9 @@ RsvpDisplay = React.createClass
     word_p3 = word[middle..] or ' '
 
     div {
-      className: 'well lead text-center rsvp-wrapper'
+      className: 'rsvp-wrapper'
+      style:
+        display: if @props.status.get('playing') then 'block' else 'none'
     },
       span {className: 'rsvp-before-word'},
         # why 11, you ask? I have no idea!

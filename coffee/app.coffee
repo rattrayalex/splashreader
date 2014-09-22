@@ -4,38 +4,16 @@ key = require('keymaster')
 ArticleStore = require('./stores/ArticleStore')
 WordStore = require('./stores/WordStore')
 CurrentWordStore = require('./stores/CurrentWordStore')
-{Elem, ArticleViewDisplay} = require('./components/ArticleView')
+RsvpStatusStore = require('./stores/RsvpStatusStore')
+
+{ArticleViewDisplay} = require('./components/ArticleView')
 RsvpDisplay = require('./components/RsvpDisplay')
+Topbar = require('./components/Topbar')
+
 dispatcher = require('./dispatcher')
 
 example_data = require("./example_data")
 
-
-MainComponent = React.createClass
-
-  componentDidMount: ->
-    @props.article.on 'change', ( => @forceUpdate() ), @
-    @props.words.once 'add', ( => @forceUpdate() ), @
-
-  componentWillUnmount: ->
-    @props.article.off null, null, @
-
-  render: ->
-
-    if @props.article.get('elem') and @props.words.length
-
-      React.DOM.div {},
-        RsvpDisplay {
-          current: @props.current
-          key: 'current-word'
-        }
-        ArticleViewDisplay {
-          elem: @props.article.get('elem')
-          current: @props.current
-        }
-    else
-      React.DOM.div {},
-        'No info yet...'
 
 main = ->
   url = "https://medium.com/@rattrayalex/daily-ten-965db68ef86f"
@@ -45,12 +23,26 @@ main = ->
     raw_html: example_data
 
   React.renderComponent(
-    MainComponent {
-      article: ArticleStore
-      words: WordStore
-      current: CurrentWordStore
+    Topbar {
+      status: RsvpStatusStore
     }
-    document.querySelector('.main')
+    document.querySelector('.topbar')
+  )
+  React.renderComponent(
+    ArticleViewDisplay {
+      elem: ArticleStore.get('elem')
+      current: CurrentWordStore
+      status: RsvpStatusStore
+    }
+    document.querySelector('.article-main')
+  )
+  React.renderComponent(
+    RsvpDisplay {
+      current: CurrentWordStore
+      key: 'current-word'
+      status: RsvpStatusStore
+    }
+    document.querySelector('.rsvp-main')
   )
 
   key 'space', ->
@@ -64,8 +56,5 @@ main = ->
       actionType: 'pause'
       source: 'window-blur'
 
+
 main()
-
-
-
-
