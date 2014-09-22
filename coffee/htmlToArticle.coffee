@@ -89,7 +89,9 @@ cleanedHtmlToElem = (node, parent) ->
 
 
 rawHtmlToArticle = (raw_html) ->
-  sanitized = sanitize(raw_html)
+  sanitized = sanitize raw_html,
+    # remove empty elements.
+    exclusiveFilter: (frame) -> !frame.text.trim()
 
   # string -> html by creating fake wrapper
   # stackoverflow.com/a/494348
