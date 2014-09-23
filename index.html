@@ -7,7 +7,9 @@
     <title>SplashReader: Spreed Reading for Humans</title>
 
     <!-- Bootstrap -->
-    <link href="/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
+      rel="stylesheet">
+    <link href="/css/animate.min.css" rel="stylesheet">
 
     <style>
       body {
@@ -24,6 +26,7 @@
       .article-main {
         font-family: Georgia;
         font-size: 18px;
+        color: #444;
       }
       .current-para {
         /*border-left: 3px solid rgba(122, 0, 255, .5);*/
@@ -31,7 +34,9 @@
         /*background: rgba(122, 0, 255, .05);*/
       }
       .current-word {
-        background: rgba(255, 165, 0, 0.19);
+        background: rgba(255, 165, 0, 0.2);
+        color: black;
+        -webkit-animation: bounceIn 1s;
       }
       .current-para::before {
         content: '▶';
@@ -52,8 +57,8 @@
         font-family: Georgia;
         font-size: 32pt;
         /*border-top: 1px solid #ccc;
-        border-bottom: 1px solid #ccc;
-        margin: 60px 0;*/
+        border-bottom: 1px solid #ccc;*/
+        /*margin: 60px 0;*/
         padding: 20px;
       }
       .rsvp-before-word {
@@ -101,6 +106,7 @@
       </div>
     </div>
 
+    <script src="/js/jquery.min.js"></script>
     <script src="/js/app.js"></script>
   </body>
 </html>

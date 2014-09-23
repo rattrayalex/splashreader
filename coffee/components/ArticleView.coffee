@@ -45,7 +45,10 @@ Elem = React.createClass
 
   scrollToMe: ->
     offset = (window.innerHeight * .4) - 40
-    document.body.scrollTop = @getDOMNode().offsetTop - offset
+    # document.body.scrollTop = @getDOMNode().offsetTop - offset
+    $('body').animate
+      scrollTop: @getDOMNode().offsetTop - offset
+    , 500
 
   componentDidMount: ->
     # bind react elem to model
