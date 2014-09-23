@@ -1,6 +1,5 @@
 React = require 'react'
 _ = require 'underscore'
-OrpWord = require './OrpWord'
 
 dispatcher = require('../dispatcher')
 
@@ -37,12 +36,7 @@ Word = React.createClass
       onClick: @handleClick
       className: 'current-word' if @isCurrentWord()
     },
-      if @isCurrentWord()
-        OrpWord {
-          word: @props.elem.get('word')
-        }
-      else
-        @props.elem.get('word')
+      @props.elem.get('word')
 
 Elem = React.createClass
 
