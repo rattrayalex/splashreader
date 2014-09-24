@@ -3,7 +3,7 @@ React = require('react')
 
 dispatcher = require('../dispatcher')
 
-{h1, div, li, p, a, span} = React.DOM
+{h1, div, li, p, a, span, button} = React.DOM
 
 
 Topbar = React.createClass
@@ -41,8 +41,11 @@ Topbar = React.createClass
       Nav {
         className: 'navbar-left'
       },
-        li {},
-          a {
+        div {
+          className: 'navbar-form'
+        },
+          button {
+            className: 'btn btn-default'
             onClick: @handlePlayPauseClick
           },
             if @props.status.get('playing')
@@ -53,25 +56,32 @@ Topbar = React.createClass
       Nav {
         className: 'navbar-right'
       },
-        li {},
-          a {
-            onClick: @handleDecreaseWpmClick
-          },
-            span {
-              className: 'glyphicon glyphicon-chevron-down'
-            }
-        p {
-          className: 'navbar-text'
+        div {
+          className: 'navbar-form'
         },
-          @props.status.get('wpm')
-        li {},
-          a {
-            onClick: @handleIncreaseWpmClick
+          div {
+            className: 'btn-group'
           },
+            button {
+              type: 'button'
+              className: 'btn btn-default'
+              onClick: @handleDecreaseWpmClick
+            },
+              span {
+                className: 'glyphicon glyphicon-chevron-down'
+              }
             span {
-              className: 'glyphicon glyphicon-chevron-up'
-            }
-
+              className: 'btn btn-default disabled'
+            },
+              "#{ @props.status.get('wpm') } wpm"
+            button {
+              type: 'button'
+              className: 'btn btn-default'
+              onClick: @handleIncreaseWpmClick
+            },
+              span {
+                className: 'glyphicon glyphicon-chevron-up'
+              }
 
 
 module.exports = Topbar
