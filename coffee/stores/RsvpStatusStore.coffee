@@ -5,6 +5,10 @@ dispatcher = require('../dispatcher')
 class RsvpStatusModel extends Backbone.Model
   defaults:
     playing: false
+    wpm: 400
+
+  msPerWord: ->
+    60000 / @get('wpm')
 
   initialize: ->
     @dispatchToken = dispatcher.register @dispatchCallback
@@ -18,6 +22,18 @@ class RsvpStatusModel extends Backbone.Model
       when 'pause'
         @set
           playing: false
+
+      when 'set-wpm'
+        @set
+          wpm: payload.wpm
+
+      when 'increase-wpm'
+        @set
+          wpm: @get('wpm') + payload.amount
+
+      when 'decrease-wpm'
+        @set
+          wpm: @get('wpm') - payload.amount
 
 RsvpStatusStore = new RsvpStatusModel()
 module.exports = RsvpStatusStore

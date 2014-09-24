@@ -16,7 +16,7 @@ class CurrentWordModel extends Backbone.Model
     # trigger the next word to update.
     if RsvpStatusStore.get('playing') is true
       next_word = WordStore.at(WordStore.indexOf(word) + 1)
-      time_to_display = 100 * word.get('display')
+      time_to_display = RsvpStatusStore.msPerWord() * word.get('display')
 
       if next_word
         @timeout = setTimeout ->

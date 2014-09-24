@@ -8,6 +8,16 @@ dispatcher = require('../dispatcher')
 
 Topbar = React.createClass
 
+  handleIncreaseWpmClick: ->
+    dispatcher.dispatch
+      actionType: 'increase-wpm'
+      amount: 50
+
+  handleDecreaseWpmClick: ->
+    dispatcher.dispatch
+      actionType: 'decrease-wpm'
+      amount: 50
+
   handlePlayPauseClick: ->
     dispatcher.dispatch
       actionType: 'play-pause'
@@ -44,16 +54,20 @@ Topbar = React.createClass
         className: 'navbar-right'
       },
         li {},
-          a {},
+          a {
+            onClick: @handleDecreaseWpmClick
+          },
             span {
               className: 'glyphicon glyphicon-chevron-down'
             }
         p {
           className: 'navbar-text'
         },
-          "600 WPM"
+          @props.status.get('wpm')
         li {},
-          a {},
+          a {
+            onClick: @handleIncreaseWpmClick
+          },
             span {
               className: 'glyphicon glyphicon-chevron-up'
             }
