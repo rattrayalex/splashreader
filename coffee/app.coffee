@@ -48,11 +48,18 @@ main = ->
     document.querySelector('.rsvp-main')
   )
 
-  key 'space', ->
-    dispatcher.dispatch
-      actionType: 'play-pause'
-      source: 'space'
-    false
+  $(window).keydown (e) ->
+    if e.which is 32  # space
+      dispatcher.dispatch
+        actionType: 'play'
+        source: 'space'
+      false
+  $(window).keyup (e) ->
+    if e.which is 32  # space
+      dispatcher.dispatch
+        actionType: 'pause'
+        source: 'space'
+      false
 
   window.onblur = ->
     dispatcher.dispatch

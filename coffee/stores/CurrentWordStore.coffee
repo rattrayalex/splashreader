@@ -61,18 +61,14 @@ class CurrentWordModel extends Backbone.Model
         dispatcher.waitFor [ArticleStore.dispatchToken]
         @updateWord WordStore.at(0)
 
-      when 'play-pause'
+      when 'play-pause', 'play', 'pause'
         dispatcher.waitFor [RsvpStatusStore.dispatchToken]
 
         if RsvpStatusStore.get('playing')
-          @updateWord @get('word') or WordStore.at(0)
+          if payload.changed
+            @updateWord @get('word') or WordStore.at(0)
         else
           clearTimeout @timeout if @timeout?
-
-      when 'pause'
-        dispatcher.waitFor [RsvpStatusStore.dispatchToken]
-
-        clearTimeout @timeout if @timeout?
 
 
 CurrentWordStore = new CurrentWordModel()

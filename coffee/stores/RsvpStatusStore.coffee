@@ -18,10 +18,17 @@ class RsvpStatusModel extends Backbone.Model
       when 'play-pause'
         @set
           playing: !@get('playing')
+        payload.changed = @changedAttributes()
 
       when 'pause'
         @set
           playing: false
+        payload.changed = @changedAttributes()
+
+      when 'play'
+        @set
+          playing: true
+        payload.changed = @changedAttributes()
 
       when 'set-wpm'
         @set
