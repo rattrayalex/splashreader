@@ -23,6 +23,10 @@ textToWords = (textNode, parent) ->
   text = textNode.nodeValue
   words = text.split /\s+/
 
+  # remove blanks
+  if not text.trim()
+    return null
+
   # turns the words into an array of Elements
   word_models = []
   for word, i in words
@@ -68,6 +72,10 @@ cleanedHtmlToElem = (node, parent) ->
   if node.nodeName is "#text" or typeof node is String
     return textToWords(node, parent)
 
+  if not node.innerText.trim()
+    console.log 'got an empty guy', node
+    return null
+
   node_name = node.nodeName.toLowerCase()
   attrs = domAttrsToDict(node.attributes)
 
@@ -78,7 +86,7 @@ cleanedHtmlToElem = (node, parent) ->
   if isBlock(node_name)
     parent = elem
 
-  children_list = _.flatten [  # unpacks text words
+  children_list = _.compact _.flatten [  # unpacks text words, removes nulls
     cleanedHtmlToElem(child, parent) for child in node.childNodes
   ]
   children = new ChildrenCollection()
@@ -92,6 +100,15 @@ rawHtmlToArticle = (raw_html) ->
   sanitized = sanitize raw_html,
     # remove empty elements.
     exclusiveFilter: (frame) -> !frame.text.trim()
+    allowedTags: [
+      'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a',
+      'ul', 'ol', 'nl', 'li',
+      'b', 'i', 'strong', 'em', 'strike', 'code', 'pre'
+      'hr', 'br',
+      'div',
+      'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td',
+    ]
+
 
   # string -> html by creating fake wrapper
   # stackoverflow.com/a/494348
