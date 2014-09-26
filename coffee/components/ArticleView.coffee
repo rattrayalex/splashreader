@@ -1,4 +1,5 @@
 React = require 'react'
+$ = require 'jQuery'
 _ = require 'underscore'
 
 dispatcher = require('../dispatcher')

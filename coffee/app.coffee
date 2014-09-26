@@ -1,9 +1,13 @@
 React = require('react')
+Backbone = require('backbone')
+$ = require('jquery')  # so Backbone.Router doesnt die
+Backbone.$ = $
 key = require('keymaster')
 
 ArticleStore = require('./stores/ArticleStore')
 WordStore = require('./stores/WordStore')
 CurrentWordStore = require('./stores/CurrentWordStore')
+CurrentPageStore = require('./stores/CurrentPageStore')
 RsvpStatusStore = require('./stores/RsvpStatusStore')
 
 {ArticleViewDisplay} = require('./components/ArticleView')
@@ -13,7 +17,6 @@ Topbar = require('./components/Topbar')
 dispatcher = require('./dispatcher')
 
 example_data = require("./example_data")
-
 
 main = ->
   url = "https://medium.com/@rattrayalex/daily-ten-965db68ef86f"
@@ -55,6 +58,9 @@ main = ->
     dispatcher.dispatch
       actionType: 'pause'
       source: 'window-blur'
+
+  Backbone.history.start
+    pushState: false
 
 
 main()
