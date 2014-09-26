@@ -33,7 +33,7 @@ main = ->
   )
   React.renderComponent(
     ArticleViewDisplay {
-      elem: ArticleStore.get('elem')
+      article: ArticleStore
       current: CurrentWordStore
       status: RsvpStatusStore
     }

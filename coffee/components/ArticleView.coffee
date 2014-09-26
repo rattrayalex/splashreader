@@ -82,9 +82,11 @@ ArticleViewDisplay = React.createClass
 
   componentDidMount: ->
     @props.status.on 'change', ( => @forceUpdate() ), @
+    @props.article.on 'change', ( => @forceUpdate() ), @
 
   componentWillUnmount: ->
     @props.status.off null, null, @
+    @props.article.off null, null, @
 
   render: ->
     div {
@@ -96,7 +98,7 @@ ArticleViewDisplay = React.createClass
         visibility: if @props.status.get('playing') then 'hidden' else 'visible'
     },
       Elem {
-        elem: @props.elem
+        elem: @props.article.get('elem')
         current: @props.current
       }
 
