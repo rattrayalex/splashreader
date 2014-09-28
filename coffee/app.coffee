@@ -16,14 +16,7 @@ Topbar = require('./components/Topbar')
 
 dispatcher = require('./dispatcher')
 
-example_data = require("./example_data")
-
 main = ->
-  url = "https://medium.com/@rattrayalex/daily-ten-965db68ef86f"
-
-  dispatcher.dispatch
-    actionType: 'process-article'
-    raw_html: example_data
 
   React.renderComponent(
     Topbar {

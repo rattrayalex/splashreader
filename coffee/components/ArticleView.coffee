@@ -1,10 +1,12 @@
 React = require 'react'
+validator = require 'validator'
 $ = require 'jQuery'
 _ = require 'underscore'
 
+router = require('../router')
 dispatcher = require('../dispatcher')
 
-{div, span} = React.DOM
+{h1, div, span, form, input, button, p} = React.DOM
 
 
 getElemOrWord = (elem, current) ->
@@ -78,6 +80,65 @@ Elem = React.createClass
     ReactElem(attrs, children)
 
 
+CollectURL = React.createClass
+
+  handleSubmit: (e) ->
+    e.preventDefault()
+    url = @refs.url.getDOMNode().value
+    if not _.contains ['http://', 'https://'], url[0..6]
+      url = 'http:// ' + url
+
+    if not validator.isURL(url)
+      console.log 'isnt url'
+      @setState
+        error: 'not-url'
+    else
+      url = '/' + url
+      router.navigate url,
+        trigger: true
+    false
+
+  render: ->
+    div {},
+      div {
+        className: 'text-center'
+      },
+        h1 {}, "SplashReader"
+        p {}, "A speed reader you'll actually want to use."
+        form {
+          className: 'form'
+          style:
+            marginTop: 30
+          onSubmit: @handleSubmit
+        },
+          div {
+            className: 'form-group'
+          },
+            div {
+              className: 'input-group'
+            },
+              div {
+                className: 'input-group-addon'
+              }, "http://"
+              input {
+                className: 'form-control'
+                type: 'text'
+                placeholder: 'Enter an article URL'
+                ref: 'url'
+              }
+              span {
+                className: 'input-group-btn'
+              },
+                button {
+                  type: 'submit'
+                  className: 'btn btn-warning'
+                },
+                  "Speed Read "
+                  span {
+                    className: 'glyphicon glyphicon-forward'
+                  }
+
+
 ArticleViewDisplay = React.createClass
 
   componentDidMount: ->
@@ -97,10 +158,12 @@ ArticleViewDisplay = React.createClass
         # visibility instead of display b/c it retains the scroll position
         visibility: if @props.status.get('playing') then 'hidden' else 'visible'
     },
-      Elem {
-        elem: @props.article.get('elem')
-        current: @props.current
-      }
-
+      if @props.article.get('elem')
+        Elem {
+          elem: @props.article.get('elem')
+          current: @props.current
+        }
+      else
+        CollectURL {}
 
 module.exports = {Elem, ArticleViewDisplay}

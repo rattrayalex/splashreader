@@ -5,7 +5,7 @@ dispatcher = require('../dispatcher')
 class RsvpStatusModel extends Backbone.Model
   defaults:
     playing: false
-    wpm: 400
+    wpm: 500
 
   msPerWord: ->
     60000 / @get('wpm')

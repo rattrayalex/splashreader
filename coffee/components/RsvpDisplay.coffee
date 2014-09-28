@@ -20,6 +20,9 @@ RsvpDisplay = React.createClass
     @props.status.off null, null, @
 
   render: ->
+    if not @props.current.get('word')?.get('word')?
+      return div {}
+
     word = @props.current.get('word').get('word') or " "
     word = word.trim()
     word = word or " "
