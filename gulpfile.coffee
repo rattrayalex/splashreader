@@ -5,6 +5,7 @@ source = require("vinyl-source-stream")
 watchify = require("watchify")
 browserify = require("browserify")
 coffeeify = require("coffeeify")
+minifyify = require("minifyify")
 
 ecstatic = require "ecstatic"
 http = require "http"
@@ -20,8 +21,12 @@ gulp.task "serve", ->
 gulp.task "watchify", ->
   args = watchify.args
   args.extensions = ['.coffee']
+  args.debug = true
   bundler = watchify(browserify("./coffee/app.coffee", args), args)
   bundler.transform(coffeeify)
+  bundler.plugin minifyify,
+    map: '/js/bundle.map.json'
+    output: 'js/bundle.map.json'
 
   rebundle = ->
     gutil.log gutil.colors.green 'rebundling...'
