@@ -16,7 +16,6 @@ Topbar = require('./components/Topbar')
 
 dispatcher = require('./dispatcher')
 
-
 main = ->
 
   React.renderComponent(
