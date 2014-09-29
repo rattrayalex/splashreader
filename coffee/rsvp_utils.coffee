@@ -22,7 +22,6 @@ shortenLongWord = (word) ->
   return words
 
 
-
 getDisplayMultiplier = (word) ->
   word = word.trim()
   display = 1
