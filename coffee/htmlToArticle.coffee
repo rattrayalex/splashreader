@@ -19,9 +19,25 @@ isBlock = (node_name) ->
     true
 
 
+handlePre = (text, parent) ->
+  # handle `pre` elements, aka blocks of code.
+  # put multiple words, no trimming, into "word"
+  word = text
+  word_model = new WordModel()
+  word_model.set {word, parent}
+
+  # don't add it to WordStore,
+  # dont want to speedread this shit
+  return word_model
+
+
 textToWords = (textNode, parent) ->
   text = textNode.nodeValue
   words = text.split /\s+/
+
+  # code blocks get special treatment
+  if parent.get('node_name') is 'pre'
+    return handlePre(text, parent)
 
   # remove blanks
   if not text.trim()
