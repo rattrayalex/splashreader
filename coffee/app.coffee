@@ -1,7 +1,7 @@
 React = require('react')
 Backbone = require('backbone')
-$ = require('jquery')  # so Backbone.Router doesnt die
-Backbone.$ = $
+$ = require('jquery')
+Backbone.$ = $  # so Backbone.Router doesnt die
 key = require('keymaster')
 
 ArticleStore = require('./stores/ArticleStore')
@@ -40,24 +40,6 @@ main = ->
     }
     document.querySelector('.rsvp-main')
   )
-
-  $(window).keydown (e) ->
-    if e.which is 32  # space
-      dispatcher.dispatch
-        actionType: 'play'
-        source: 'space'
-      false
-  $(window).keyup (e) ->
-    if e.which is 32  # space
-      dispatcher.dispatch
-        actionType: 'pause'
-        source: 'space'
-      false
-
-  window.onblur = ->
-    dispatcher.dispatch
-      actionType: 'pause'
-      source: 'window-blur'
 
   Backbone.history.start
     pushState: false

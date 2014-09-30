@@ -42,6 +42,12 @@ class CurrentWordModel extends Backbone.Model
       # pause on para change
       RsvpStatusStore.set
         playing: false
+      # start playing after para change
+      setTimeout ->
+        dispatcher.dispatch
+          actionType: 'play'
+          source: 'para-change'
+      , 1000
 
     # when there's a new word,
     @on 'change:word', (model, word) =>

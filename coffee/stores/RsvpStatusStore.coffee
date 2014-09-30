@@ -1,4 +1,5 @@
 Backbone = require 'backbone'
+$ = require('jquery')
 
 dispatcher = require('../dispatcher')
 
@@ -13,6 +14,29 @@ class RsvpStatusModel extends Backbone.Model
   initialize: ->
     @dispatchToken = dispatcher.register @dispatchCallback
 
+    @space_is_down = false
+    $(window).keydown (e) =>
+      if e.which is 32  # space
+        if not @space_is_down
+          @space_is_down = true
+          dispatcher.dispatch
+            actionType: 'play'
+            source: 'space'
+        false
+
+    $(window).keyup (e) =>
+      if e.which is 32  # space
+        @space_is_down = false
+        dispatcher.dispatch
+          actionType: 'pause'
+          source: 'space'
+        false
+
+    $(window).blur = ->
+      dispatcher.dispatch
+        actionType: 'pause'
+        source: 'window-blur'
+
   dispatchCallback: (payload) =>
     switch payload.actionType
       when 'play-pause'
@@ -26,8 +50,9 @@ class RsvpStatusModel extends Backbone.Model
         payload.changed = @changedAttributes()
 
       when 'play'
-        @set
-          playing: true
+        if not ( payload.source is 'para-change' and not @space_is_down )
+          @set
+            playing: true
         payload.changed = @changedAttributes()
 
       when 'set-wpm'
