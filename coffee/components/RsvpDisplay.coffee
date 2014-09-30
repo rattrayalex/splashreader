@@ -1,17 +1,22 @@
 React = require 'react'
 
-{getWordMiddle} = require '../rsvp_utils'
+{getWordMiddle, getTextWidth} = require '../rsvp_utils'
 
 {div, span} = React.DOM
 eleven_dots = Array(11).join('.')
+fifteen_ems = Array(11).join('m')
+
 
 
 RsvpDisplay = React.createClass
-
   componentDidMount: ->
+    @font = '32pt Libre Baskerville'
+    @ORP_center = getTextWidth(fifteen_ems, @font) / 3
+
     @props.current.on 'change:word', =>
       @forceUpdate()
     , @
+
     @props.status.on 'change', =>
       @forceUpdate()
     , @
@@ -37,23 +42,25 @@ RsvpDisplay = React.createClass
     word_p2 = word[middle - 1]
     word_p3 = word[middle..] or ' '
 
+    width_p1 = getTextWidth(word_p1, @font)
+    width_p2 = getTextWidth(word_p2, @font)
+    center_point = width_p1 + (width_p2 / 2)
+    offset = @ORP_center - center_point
+
     div {
       className: 'rsvp-wrapper'
       style:
+        font: @font
+        position: 'absolute'
         display: if @props.status.get('playing') then 'block' else 'none'
+        left: offset or 0
     },
-      span {className: 'rsvp-before-word'},
-        # why 11, you ask? I have no idea!
-        # https://github.com/Miserlou/Glance/blob/master/spritz.js#L221
-        eleven_dots[0 .. (11 - 1 - middle)]
       span {className: 'rsvp-before-middle'},
         word_p1
       span {className: 'rsvp-middle'},
         word_p2
       span {className: 'rsvp-after-middle'},
         word_p3
-      span {className: 'rsvp-after-word'},
-        eleven_dots[0 .. (11 - 1 - (word.length - middle))]
 
 
 module.exports = RsvpDisplay

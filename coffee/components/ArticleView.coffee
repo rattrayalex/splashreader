@@ -6,7 +6,7 @@ _ = require 'underscore'
 router = require('../router')
 dispatcher = require('../dispatcher')
 
-{h1, div, span, form, input, button, p} = React.DOM
+{h1, div, span, form, input, button, p, a, hr} = React.DOM
 
 
 getElemOrWord = (elem, current) ->
@@ -47,7 +47,7 @@ Elem = React.createClass
     @props.current.get('parent') is @props.elem
 
   scrollToMe: ->
-    offset = (window.innerHeight * .4) - 40
+    offset = (window.innerHeight * .32) + 40
     # document.body.scrollTop = @getDOMNode().offsetTop - offset
     $('body').animate
       scrollTop: @getDOMNode().offsetTop - offset
@@ -138,6 +138,42 @@ CollectURL = React.createClass
                     className: 'glyphicon glyphicon-forward'
                   }
 
+Masthead = React.createClass
+  render: ->
+    if @props.article.get('title')
+      date = new Date @props.article.get('date')
+
+      div {
+        className: 'masthead'
+      },
+        h1 {}, @props.article.get('title')
+        hr {}
+        div {className: 'row'},
+          div {className: 'col-sm-6'},
+            span {className: 'text-muted'},
+              "By " if @props.article.get('author')
+            span {},
+              @props.article.get('author')
+            span {className: 'text-muted'},
+              ", " if @props.article.get('author') and date
+              "on " if date
+            span {},
+              date.toDateString()
+
+          div {className: 'col-sm-6'},
+            a {
+              className: 'pull-right text-muted'
+              href: @props.article.get('url')
+              target: '_blank'
+            },
+              "from #{ @props.article.get('domain') } "
+              span {
+                className: 'glyphicon glyphicon-share-alt'
+              }
+    else
+      div {}
+
+
 
 ArticleViewDisplay = React.createClass
 
@@ -158,6 +194,9 @@ ArticleViewDisplay = React.createClass
         # visibility instead of display b/c it retains the scroll position
         visibility: if @props.status.get('playing') then 'hidden' else 'visible'
     },
+      Masthead {
+        article: @props.article
+      }
       if @props.article.get('elem')
         Elem {
           elem: @props.article.get('elem')

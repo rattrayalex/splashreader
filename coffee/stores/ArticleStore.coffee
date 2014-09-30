@@ -18,6 +18,10 @@ class ArticleModel extends Backbone.Model
     switch payload.actionType
       when 'process-article'
         WordStore.reset()
+
+        {title, author, url, date, domain} = payload
+        @set {title, author, url, date, domain}
+
         elem = htmlToArticle(payload.raw_html)
         @set {elem}
 
@@ -38,6 +42,11 @@ class ArticleModel extends Backbone.Model
             dispatcher.dispatch
               actionType: 'process-article'
               raw_html: data.content
+              title: data.title
+              author: data.author
+              url: data.url
+              domain: data.domain
+              date: data.date_published
 
           .fail (err) ->
             throw err
