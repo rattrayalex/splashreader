@@ -19,13 +19,8 @@ class WordModel extends ElementModel
         display: getDisplayMultiplier @get('word')
 
 
-class WordCollection extends Backbone.Collection
-  model: WordModel
-
-
 module.exports = {
   ElementModel,
   ChildrenCollection,
   WordModel,
-  WordCollection,
 }

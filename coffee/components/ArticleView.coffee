@@ -139,47 +139,89 @@ CollectURL = React.createClass
                   }
 
 Masthead = React.createClass
+
+  getMarginBottom: ->
+    target = (@props.padding - @getDOMNode().clientHeight * 2)
+    min = 20
+    Math.max target, min
+
   render: ->
     if @props.article.get('title')
       date = new Date @props.article.get('date')
 
       div {
         className: 'masthead'
+        style:
+          paddingBottom: 60
       },
         h1 {}, @props.article.get('title')
         hr {}
         div {className: 'row'},
           div {className: 'col-sm-6'},
-            span {className: 'text-muted'},
+            small {className: 'text-muted'},
               "By " if @props.article.get('author')
-            span {},
+            small {},
               @props.article.get('author')
-            span {className: 'text-muted'},
-              ", " if @props.article.get('author') and date
-              "on " if date
-            span {},
-              date.toDateString()
+            div {},
+              small {className: 'text-muted'},
+                "on " if date
+              small {},
+                date.toDateString()
 
           div {className: 'col-sm-6'},
-            a {
-              className: 'pull-right text-muted'
-              href: @props.article.get('url')
-              target: '_blank'
-            },
-              "from #{ @props.article.get('domain') } "
-              span {
-                className: 'glyphicon glyphicon-share-alt'
-              }
+            small {},
+              a {
+                className: 'pull-right text-muted'
+                href: @props.article.get('url')
+                target: '_blank'
+              },
+                "from #{ @props.article.get('domain') } "
+                span {
+                  className: 'glyphicon glyphicon-share-alt'
+                }
     else
       div {}
 
 
+ArticleFooter = React.createClass
+  componentDidMount: ->
+    @props.words.on 'add remove reset', ( => @forceUpdate() ), @
+
+  componentWillUnmount: ->
+    @props.words.off null, null, @
+
+  render: ->
+    if @props.words.length < 2
+      div {}
+    else
+      total_time = @props.words.getTotalTime().toFixed(1)
+      pluralize = unless total_time is 1 then "s" else ""
+
+      div {},
+        hr {}
+        small {
+          className: 'text-muted pull-right'
+        },
+          em {},
+            "You just read #{ @props.words.length } words
+             in #{ total_time } minute#{ pluralize }."
+
 
 ArticleViewDisplay = React.createClass
+
+  getPadding: ->
+    window.innerHeight * .4
+
+  getPaddingTop: ->
+    if @refs.masthead
+      @getPadding() - @refs.masthead.getDOMNode().clientHeight
+    else
+      @getPadding()
 
   componentDidMount: ->
     @props.status.on 'change', ( => @forceUpdate() ), @
     @props.article.on 'change', ( => @forceUpdate() ), @
+    $(window).on 'resize', ( => @forceUpdate() )
 
   componentWillUnmount: ->
     @props.status.off null, null, @
@@ -189,13 +231,15 @@ ArticleViewDisplay = React.createClass
     div {
       className: 'scroll-box'
       style:
-        paddingTop: window.innerHeight * .4
-        paddingBottom: window.innerHeight * .4
+        paddingTop: @getPaddingTop()
+        paddingBottom: @getPadding()
         # visibility instead of display b/c it retains the scroll position
         visibility: if @props.status.get('playing') then 'hidden' else 'visible'
     },
       Masthead {
         article: @props.article
+        padding: @getPadding()
+        ref: 'masthead'
       }
       if @props.article.get('elem')
         Elem {
@@ -204,5 +248,8 @@ ArticleViewDisplay = React.createClass
         }
       else
         CollectURL {}
+      ArticleFooter {
+        words: @props.words
+      }
 
 module.exports = {Elem, ArticleViewDisplay}

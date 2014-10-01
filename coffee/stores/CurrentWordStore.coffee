@@ -32,6 +32,12 @@ class CurrentWordModel extends Backbone.Model
             actionType: 'pause'
         , time_to_display
 
+  getPercentDone: ->
+    WordStore.indexOf(@get('word')) / WordStore.length
+
+  getTimeLeft: ->
+    WordStore.getTimeSince @get('word')
+
   initialize: ->
     # when there's a new parent,
     @on 'change:parent', (model, parent) =>

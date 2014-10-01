@@ -51,9 +51,8 @@ RsvpDisplay = React.createClass
       className: 'rsvp-wrapper'
       style:
         font: @font
-        position: 'absolute'
         display: if @props.status.get('playing') then 'block' else 'none'
-        left: offset or 0
+        marginLeft: offset or 0
     },
       span {className: 'rsvp-before-middle'},
         word_p1

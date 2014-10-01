@@ -21,6 +21,8 @@ main = ->
   React.renderComponent(
     Topbar {
       status: RsvpStatusStore
+      words: WordStore
+      current: CurrentWordStore
     }
     document.querySelector('.topbar')
   )
@@ -29,6 +31,7 @@ main = ->
       article: ArticleStore
       current: CurrentWordStore
       status: RsvpStatusStore
+      words: WordStore
     }
     document.querySelector('.article-main')
   )

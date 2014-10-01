@@ -1,9 +1,9 @@
-React = require('react')
+React = require('react/addons')
 {Navbar, Nav, NavItem} = require('react-bootstrap')
 
 dispatcher = require('../dispatcher')
 
-{h1, div, li, p, a, span, button} = React.DOM
+{h1, div, li, p, a, span, button, form} = React.DOM
 
 
 Topbar = React.createClass
@@ -26,12 +26,31 @@ Topbar = React.createClass
     @props.status.on 'change', =>
       @forceUpdate()
     , @
+    @props.words.on 'add remove reset', =>
+      @forceUpdate()
+    , @
+    @props.current.on 'change', =>
+      @forceUpdate()
+    , @
   componentWillUnmount: ->
     @props.status.off null, null, @
+    @props.words.off null, null, @
+    @props.current.off null, null, @
 
   render: ->
+    percent_done = @props.current.getPercentDone() * 100
+    time_left = Math.round @props.current.getTimeLeft()
+    play_pause_button_class = React.addons.classSet
+      'btn': true
+      'btn-default': true
+      'glyphicon': true
+      'glyphicon-play': not @props.status.get('playing')
+      'glyphicon-pause': @props.status.get('playing')
+      'active': @props.status.get('playing')
+      'disabled': not @props.words.length
+
     Navbar {
-      className: 'navbar-fixed-top'
+      className: 'navbar-fixed-bottom'
     },
       p {
         className: "navbar-center navbar-text navbar-brand"
@@ -41,17 +60,24 @@ Topbar = React.createClass
       Nav {
         className: 'navbar-left'
       },
-        div {
+        form {
           className: 'navbar-form'
         },
           button {
-            className: 'btn btn-default'
+            type: 'submit'
+            className: play_pause_button_class
             onClick: @handlePlayPauseClick
-          },
-            if @props.status.get('playing')
-              span {className: 'glyphicon glyphicon-pause'}
-            else
-              span {className: 'glyphicon glyphicon-play'}
+            style:
+              outline: 'none'
+          }
+      p {
+        className: 'navbar-text'
+      },
+        if @props.words?.length
+          pluralize = unless time_left is 1 then "s" else ""
+          "#{ time_left } minute#{ pluralize } left"
+        else
+          ""
 
       Nav {
         className: 'navbar-right'
@@ -82,6 +108,24 @@ Topbar = React.createClass
               span {
                 className: 'glyphicon glyphicon-chevron-up'
               }
+      div {
+        className: 'progress'
+        style:
+          position: 'absolute'
+          top: 0  # 51 if on top
+          left: 0
+          width: "100%"
+          height: 3
+          borderRadius: 0
+          boxShadow: 'none'
+          background: 'transparent'
+      },
+        div {
+          className: 'progress-bar progress-bar-warning'
+          role: 'progressbar'
+          style:
+            width: "#{percent_done}%"
+        }
 
 
 module.exports = Topbar
