@@ -42,18 +42,17 @@ class RsvpStatusModel extends Backbone.Model
       when 'play-pause'
         @set
           playing: !@get('playing')
-        payload.changed = @changedAttributes()
 
       when 'pause'
         @set
           playing: false
-        payload.changed = @changedAttributes()
 
       when 'play'
-        if not ( payload.source is 'para-change' and not @space_is_down )
+        # don't play if the trigger was a paragraph change
+        # but the user has lifted the spacebar in the interim.
+        unless payload.source is 'para-change' and not @space_is_down
           @set
             playing: true
-        payload.changed = @changedAttributes()
 
       when 'set-wpm'
         @set

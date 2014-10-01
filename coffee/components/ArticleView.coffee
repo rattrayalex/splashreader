@@ -6,7 +6,7 @@ _ = require 'underscore'
 router = require('../router')
 dispatcher = require('../dispatcher')
 
-{h1, div, span, form, input, button, p, a, hr} = React.DOM
+{h1, div, span, form, input, button, p, a, em, small, hr} = React.DOM
 
 
 getElemOrWord = (elem, current) ->
@@ -16,20 +16,36 @@ getElemOrWord = (elem, current) ->
     Elem({elem, current})
 
 
+scrollToNode = (node) ->
+  offset = (window.innerHeight * .32) + 40
+  # document.body.scrollTop = @getDOMNode().offsetTop - offset
+  $('html,body').animate
+    scrollTop: node.offsetTop - offset
+  , 500
+
+
 Word = React.createClass
 
   handleClick: ->
+
     dispatcher.dispatch
       actionType: 'change-word'
       word: @props.elem
+      source: 'click'
+
+  scrollToMe: ->
+    scrollToNode @getDOMNode()
 
   isCurrentWord: ->
     @props.current.get('word') is @props.elem
 
   componentDidMount: ->
     @props.elem.on 'change', ( => @forceUpdate() ), @
-    @props.elem.set
-      react_elem: @
+    # @props.elem.set
+    #   react_elem: @
+    @props.elem.on 'scrollTo', =>
+      @scrollToMe()
+    , @
 
   componentWillUnmount: ->
     @props.elem.off null, null, @
@@ -47,16 +63,12 @@ Elem = React.createClass
     @props.current.get('parent') is @props.elem
 
   scrollToMe: ->
-    offset = (window.innerHeight * .32) + 40
-    # document.body.scrollTop = @getDOMNode().offsetTop - offset
-    $('body').animate
-      scrollTop: @getDOMNode().offsetTop - offset
-    , 500
+    scrollToNode @getDOMNode()
 
   componentDidMount: ->
-    # bind react elem to model
-    @props.elem.set
-      react_elem: @
+    # # bind react elem to model
+    # @props.elem.set
+    #   react_elem: @
 
     @props.elem.on 'change', =>
       @forceUpdate()

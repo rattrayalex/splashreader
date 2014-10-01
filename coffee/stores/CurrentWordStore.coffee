@@ -1,4 +1,6 @@
 Backbone = require 'backbone'
+_ = require('underscore')
+
 {WordModel} = require './ArticleModels'
 ArticleStore = require './ArticleStore'
 WordStore = require './WordStore'
@@ -10,6 +12,12 @@ dispatcher = require '../dispatcher'
 class CurrentWordModel extends Backbone.Model
 
   updateWord: (word) ->
+
+    # code blocks (in `pre`) aren't in WordStore, don't go to them.
+    if WordStore.indexOf(word) < 0
+      console.log 'word not in WordStore, ignore'
+      return
+
     parent = word.get('parent')
     @set {word, parent}
 
@@ -23,6 +31,7 @@ class CurrentWordModel extends Backbone.Model
           dispatcher.dispatch
             'actionType': 'change-word'
             'word': next_word
+            'source': 'updateWord'
         , time_to_display
 
       # end of article, just pause.
@@ -68,6 +77,8 @@ class CurrentWordModel extends Backbone.Model
 
       when 'change-word'
         @updateWord(payload.word)
+        if payload.source is 'click'
+          payload.word.trigger 'scrollTo'
 
       when 'process-article'
         dispatcher.waitFor [ArticleStore.dispatchToken]
@@ -77,10 +88,12 @@ class CurrentWordModel extends Backbone.Model
         dispatcher.waitFor [RsvpStatusStore.dispatchToken]
 
         if RsvpStatusStore.get('playing')
-          if payload.changed
-            @updateWord @get('word') or WordStore.at(0)
+          @updateWord @get('word') or WordStore.at(0)
         else
           clearTimeout @timeout if @timeout?
+
+        if payload.actionType is 'pause'
+          @get('word').trigger 'scrollTo'
 
 
 CurrentWordStore = new CurrentWordModel()
