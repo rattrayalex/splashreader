@@ -21,12 +21,12 @@ gulp.task "serve", ->
 gulp.task "watchify", ->
   args = watchify.args
   args.extensions = ['.coffee']
-  args.debug = true
+  # args.debug = true
   bundler = watchify(browserify("./coffee/app.coffee", args), args)
   bundler.transform(coffeeify)
-  bundler.plugin minifyify,
-    map: '/js/bundle.map.json'
-    output: 'js/bundle.map.json'
+  # bundler.plugin minifyify,
+  #   map: '/js/bundle.map.json'
+  #   output: 'js/bundle.map.json'
 
   rebundle = ->
     gutil.log gutil.colors.green 'rebundling...'
