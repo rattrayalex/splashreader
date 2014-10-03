@@ -48,21 +48,28 @@ class CurrentWordModel extends Backbone.Model
     WordStore.getTimeSince @get('word')
 
   initialize: ->
-    # when there's a new parent,
+    # when there's a new parent (paragrah),
     @on 'change:parent', (model, parent) =>
       # tell old/new they've changed
       @previous('parent')?.trigger('change')
       parent.trigger 'change'
 
-      # pause on para change
-      RsvpStatusStore.set
-        playing: false
-      # start playing after para change
-      setTimeout ->
-        dispatcher.dispatch
-          actionType: 'play'
-          source: 'para-change'
-      , 1000
+
+      if RsvpStatusStore.get('playing')
+
+        # pause on para change
+        RsvpStatusStore.set
+          playing: false
+
+        # start playing after para change
+        setTimeout ->
+          dispatcher.dispatch
+            actionType: 'play'
+            source: 'para-change'
+        , 1000
+
+      # scroll to first word
+      @get('word').trigger 'scroll'
 
     # when there's a new word,
     @on 'change:word', (model, word) =>
@@ -78,7 +85,7 @@ class CurrentWordModel extends Backbone.Model
       when 'change-word'
         @updateWord(payload.word)
         if payload.source is 'click'
-          payload.word.trigger 'scrollTo'
+          payload.word.trigger 'scroll'
 
       when 'process-article'
         dispatcher.waitFor [ArticleStore.dispatchToken]
@@ -93,7 +100,7 @@ class CurrentWordModel extends Backbone.Model
           clearTimeout @timeout if @timeout?
 
         if payload.actionType is 'pause'
-          @get('word').trigger 'scrollTo'
+          @get('word').trigger 'scroll'
 
 
 CurrentWordStore = new CurrentWordModel()
