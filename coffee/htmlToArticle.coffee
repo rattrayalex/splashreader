@@ -87,50 +87,57 @@ cleanedHtmlToElem = (node, parent) ->
   if node.nodeName is "#text" or typeof node is String
     return textToWords(node, parent)
 
-  if not node.innerText.trim()
-    console.log 'got an empty guy', node
-    return null
-
   node_name = node.nodeName.toLowerCase()
   attrs = domAttrsToDict(node.attributes)
 
-  elem = new ElementModel()
-  elem.set {node_name, attrs}
+  elem = new ElementModel {node_name, attrs}
 
   # `parent` is stored on Words, representing their nearest Block parent.
   if isBlock(node_name)
-    parent = elem
+    # `pre` elems should always be the parent, they're special.
+    unless parent?.get('node_name') is 'pre'
+      parent = elem
 
   children_list = _.compact _.flatten [  # unpacks text words, removes nulls
     cleanedHtmlToElem(child, parent) for child in node.childNodes
   ]
-  children = new ChildrenCollection()
-  children.add(children_list)
+  children = new ChildrenCollection children_list
 
-  elem.set {children}
+  elem.set {children}, {silent: true}
   return elem
 
 
+saveWordListToWordStore = () ->
+  WordStore.reset(WordList)
+  # I know, I know... evil globals...
+  WordList = []
+
+
 rawHtmlToArticle = (raw_html) ->
+  start = new Date()
+
   sanitized = sanitize raw_html,
     # remove empty elements.
-    exclusiveFilter: (frame) -> !frame.text.trim()
-    allowedTags: [
-      'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a',
-      'ul', 'ol', 'nl', 'li',
-      'b', 'i', 'strong', 'em', 'strike', 'code', 'pre'
-      'hr', 'br',
-      'div',
-      'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td',
-    ]
-
+    # exclusiveFilter: (frame) -> !frame.text.trim()
+    allowedTags: constants.ALLOWED_REACT_NODES
+  post_sanitize = new Date()
+  console.log 'sanitize took', post_sanitize - start
 
   # string -> html by creating fake wrapper
   # stackoverflow.com/a/494348
   wrapper_elem = document.createElement('div')
   wrapper_elem.innerHTML = sanitized
+  post_wrapper_elem = new Date()
+  console.log 'setting wrapper_elem took', post_wrapper_elem - post_sanitize
 
   elem = cleanedHtmlToElem(wrapper_elem)
+  post_elem = new Date()
+  console.log 'cleanedHtmlToElem took', post_elem - post_wrapper_elem
+
+  saveWordListToWordStore()
+  post_wordlist = new Date()
+  console.log 'saveWordListToWordStore took', post_wordlist - post_elem
+
   return elem
 
 
