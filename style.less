@@ -1,0 +1,72 @@
+@import "node_modules/bootstrap/less/bootstrap.less";
+@import "non-responsive-topbar.less";
+
+body {
+  background: rgba(252, 244, 220, 0.11);
+}
+.navbar-default {
+  // background-color: #FFBD31;
+  box-shadow: 0 -1px 6px 0 rgba(0,0,0,.1);
+}
+.navbar-center {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  text-align: center;
+  margin: auto;
+}
+.navbar-brand {
+  font-family: 'Libre Baskerville';
+}
+.article-main {
+  font-family: Georgia;
+  font-size: 18px;
+  color: #444;
+  img {
+    .img-responsive;
+  }
+  figure {
+    .thumbnail;
+  }
+  figcaption {
+    .thumbnail .caption;
+    font-style: italic;
+  }
+}
+
+.current-word {
+  background: rgba(255, 165, 0, 0.2);
+  color: black;
+  -webkit-animation: bounceIn 1s;
+  animation: bounceIn 1s;
+}
+.current-para {
+}
+.current-para::before {
+  content: '▶';
+  position: relative;
+  left: -50px;
+  color: orange;
+  margin-right: -1em;
+}
+.rsvp-outer-wrapper {
+  position: fixed;
+  width: 100%;
+  top: 32%;
+  left: 0;
+}
+.rsvp-wrapper {
+  padding: 20px;
+}
+.rsvp-before-middle {
+}
+.rsvp-middle {
+  /*color: orange;*/
+}
+.rsvp-after-middle {
+}
+.masthead {
+}
+
+
+
