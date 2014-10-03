@@ -45,34 +45,13 @@ Topbar = React.createClass
       className: 'navbar-fixed-bottom'
     },
       p {
-        className: "navbar-center navbar-text navbar-brand"
+        className: "navbar-center navbar-text navbar-brand hidden-xs"
       },
         "SplashReader"
 
-      Nav {
-        className: 'navbar-left'
-      },
-        form {
-          className: 'navbar-form'
-        },
-          button {
-            type: 'submit'
-            className: play_pause_button_class
-            onClick: @handlePlayPauseClick
-            style:
-              outline: 'none'
-          }
-      p {
-        className: 'navbar-text'
-      },
-        if @props.words?.length
-          pluralize = unless time_left is 1 then "s" else ""
-          "#{ time_left } minute#{ pluralize } left"
-        else
-          ""
 
       Nav {
-        className: 'navbar-right'
+        className: 'navbar-left'
       },
         div {
           className: 'navbar-form'
@@ -100,6 +79,28 @@ Topbar = React.createClass
               span {
                 className: 'glyphicon glyphicon-chevron-up'
               }
+      Nav {
+        className: 'navbar-right'
+      },
+
+        form {
+          className: 'navbar-form'
+        },
+          button {
+            type: 'submit'
+            className: play_pause_button_class
+            onClick: @handlePlayPauseClick
+            style:
+              outline: 'none'
+          }
+      p {
+        className: 'navbar-text navbar-right'
+      },
+        if @props.words.length and time_left
+          pluralize = unless time_left is 1 then "s" else ""
+          "#{ time_left } minute#{ pluralize } left"
+        else
+          ""
       div {
         className: 'progress'
         style:
