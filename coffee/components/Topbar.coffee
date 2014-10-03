@@ -2,11 +2,18 @@ React = require('react/addons')
 {Navbar, Nav, NavItem} = require('react-bootstrap')
 
 dispatcher = require('../dispatcher')
+FluxBone = require('./FluxBone')
 
 {h1, div, li, p, a, span, button, form} = React.DOM
 
 
 Topbar = React.createClass
+
+  mixins: [
+    FluxBone.ModelMixin('status', 'change')
+    FluxBone.ModelMixin('current', 'change')
+    FluxBone.CollectionMixin('words', 'add remove reset')
+  ]
 
   handleIncreaseWpmClick: ->
     dispatcher.dispatch
@@ -21,21 +28,6 @@ Topbar = React.createClass
   handlePlayPauseClick: ->
     dispatcher.dispatch
       actionType: 'play-pause'
-
-  componentDidMount: ->
-    @props.status.on 'change', =>
-      @forceUpdate()
-    , @
-    @props.words.on 'add remove reset', =>
-      @forceUpdate()
-    , @
-    @props.current.on 'change', =>
-      @forceUpdate()
-    , @
-  componentWillUnmount: ->
-    @props.status.off null, null, @
-    @props.words.off null, null, @
-    @props.current.off null, null, @
 
   render: ->
     percent_done = @props.current.getPercentDone() * 100

@@ -1,11 +1,11 @@
-React = require 'react'
+React = require 'react/addons'
 validator = require 'validator'
 $ = require 'jQuery'
 _ = require 'underscore'
 
 router = require('../router')
 dispatcher = require('../dispatcher')
-deferUpdateMixin = require('./deferUpdateMixin')
+FluxBone = require('./FluxBone')
 
 {h1, div, span, form, input, button, p, a, em, small, hr} = React.DOM
 
@@ -27,8 +27,12 @@ scrollToNode = (node) ->
 
 Word = React.createClass
 
-  handleClick: ->
+  mixins: [
+    FluxBone.ModelMixin('elem', 'change')
+    React.addons.PureRenderMixin
+  ]
 
+  handleClick: ->
     dispatcher.dispatch
       actionType: 'change-word'
       word: @props.elem
@@ -41,15 +45,12 @@ Word = React.createClass
     @props.current.get('word') is @props.elem
 
   componentDidMount: ->
-    @props.elem.on 'change', ( => @forceUpdate() ), @
-    # @props.elem.set
-    #   react_elem: @
     @props.elem.on 'scroll', =>
       @scrollToMe()
     , @
 
   componentWillUnmount: ->
-    @props.elem.off null, null, @
+    @props.elem.off 'scroll', null, @
 
   render: ->
     span {
@@ -60,29 +61,21 @@ Word = React.createClass
 
 Elem = React.createClass
 
+  mixins: [
+    FluxBone.ModelMixin('elem', 'change')
+    React.addons.PureRenderMixin
+  ]
+
   isCurrentPara: ->
     @props.current.get('parent') is @props.elem
-
-  scrollToMe: ->
-    scrollToNode @getDOMNode()
-
-  componentDidMount: ->
-    # # bind react elem to model
-    # @props.elem.set
-    #   react_elem: @
-
-    @props.elem.on 'change', =>
-      @forceUpdate()
-      # @scrollToMe() if @isCurrentPara()
-    , @
-
-  componentWillUnmount: ->
-    @props.elem.off null, null, @
 
   render: ->
     ReactElem = React.DOM[@props.elem.get('node_name')]
 
     attrs = _.extend @props.elem.get('attrs'),
+      # NOTE: this will override any existing className.
+      # (which currently doesn't matter since `sanitize` cleans them out)
+      # TODO: fix that.
       className: if @isCurrentPara() then 'current-para'
 
     children = [
@@ -198,19 +191,15 @@ Masthead = React.createClass
 
 ArticleFooter = React.createClass
 
-  mixins: [deferUpdateMixin]
-
-  componentDidMount: ->
-    @props.words.on 'add remove reset', ( => @deferUpdate() ), @
-
-  componentWillUnmount: ->
-    @props.words.off null, null, @
+  mixins: [
+    FluxBone.CollectionMixin('words', 'add remove reset')
+  ]
 
   render: ->
-    if @props.words.length < 2
+    total_time = @props.words.getTotalTime().toFixed(1)
+    if @props.words.length < 2 or isNaN(total_time)
       div {}
     else
-      total_time = @props.words.getTotalTime().toFixed(1)
       pluralize = unless total_time is 1 then "s" else ""
 
       div {},
@@ -225,7 +214,10 @@ ArticleFooter = React.createClass
 
 ArticleViewDisplay = React.createClass
 
-  mixin: [deferUpdateMixin]
+  mixins: [
+    FluxBone.ModelMixin('status', 'change:playing')
+    FluxBone.ModelMixin('article', 'change:elem')
+  ]
 
   getPadding: ->
     window.innerHeight * .4
@@ -237,13 +229,7 @@ ArticleViewDisplay = React.createClass
       @getPadding()
 
   componentDidMount: ->
-    @props.status.on 'change', ( => @deferUpdate() ), @
-    @props.article.on 'change', ( => @deferUpdate() ), @
     $(window).on 'resize', ( => @deferUpdate() )
-
-  componentWillUnmount: ->
-    @props.status.off null, null, @
-    @props.article.off null, null, @
 
   render: ->
     div {

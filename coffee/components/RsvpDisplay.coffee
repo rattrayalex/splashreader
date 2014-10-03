@@ -1,28 +1,25 @@
-React = require 'react'
+React = require 'react/addons'
 
+FluxBone = require('./FluxBone')
 {getWordMiddle, getTextWidth} = require '../rsvp_utils'
 
 {div, span} = React.DOM
 eleven_dots = Array(11).join('.')
-fifteen_ems = Array(11).join('m')
+eleven_ems = Array(11).join('m')
 
 
 
 RsvpDisplay = React.createClass
+
+  mixins: [
+    FluxBone.ModelMixin('current', 'change:word')
+    FluxBone.ModelMixin('status', 'change')
+    React.addons.PureRenderMixin
+  ]
+
   componentDidMount: ->
     @font = '32pt Libre Baskerville'
-    @ORP_center = getTextWidth(fifteen_ems, @font) / 3
-
-    @props.current.on 'change:word', =>
-      @forceUpdate()
-    , @
-
-    @props.status.on 'change', =>
-      @forceUpdate()
-    , @
-  componentWillUnmount: ->
-    @props.current.off null, null, @
-    @props.status.off null, null, @
+    @ORP_center = getTextWidth(eleven_ems, @font) / 3
 
   render: ->
     if not @props.current.get('word')?.get('word')?
