@@ -13,10 +13,10 @@ class ChildrenCollection extends Backbone.Collection
 
 class WordModel extends ElementModel
   initialize: ->
-    # when the word is added, calculate its display time
-    @once 'change', =>
+    setTimeout =>
       @set
         display: getDisplayMultiplier @get('word')
+    , 0
 
 
 module.exports = {

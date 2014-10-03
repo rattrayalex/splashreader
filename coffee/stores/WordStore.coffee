@@ -9,8 +9,8 @@ class WordCollection extends Backbone.Collection
     remaining_words = @rest @indexOf(word)
 
     time_left = 0
-    for word in remaining_words
-      time_left += word.get('display')
+    for w in remaining_words
+      time_left += w.get('display')
 
     seconds_left = time_left * RsvpStatusStore.msPerWord() / 1000
     minutes_left = seconds_left / 60
