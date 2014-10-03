@@ -5,6 +5,7 @@ _ = require 'underscore'
 
 router = require('../router')
 dispatcher = require('../dispatcher')
+deferUpdateMixin = require('./deferUpdateMixin')
 
 {h1, div, span, form, input, button, p, a, em, small, hr} = React.DOM
 
@@ -43,7 +44,7 @@ Word = React.createClass
     @props.elem.on 'change', ( => @forceUpdate() ), @
     # @props.elem.set
     #   react_elem: @
-    @props.elem.on 'scrollTo', =>
+    @props.elem.on 'scroll', =>
       @scrollToMe()
     , @
 
@@ -72,7 +73,7 @@ Elem = React.createClass
 
     @props.elem.on 'change', =>
       @forceUpdate()
-      @scrollToMe() if @isCurrentPara()
+      # @scrollToMe() if @isCurrentPara()
     , @
 
   componentWillUnmount: ->
@@ -196,8 +197,11 @@ Masthead = React.createClass
 
 
 ArticleFooter = React.createClass
+
+  mixins: [deferUpdateMixin]
+
   componentDidMount: ->
-    @props.words.on 'add remove reset', ( => @forceUpdate() ), @
+    @props.words.on 'add remove reset', ( => @deferUpdate() ), @
 
   componentWillUnmount: ->
     @props.words.off null, null, @
@@ -221,6 +225,8 @@ ArticleFooter = React.createClass
 
 ArticleViewDisplay = React.createClass
 
+  mixin: [deferUpdateMixin]
+
   getPadding: ->
     window.innerHeight * .4
 
@@ -231,9 +237,9 @@ ArticleViewDisplay = React.createClass
       @getPadding()
 
   componentDidMount: ->
-    @props.status.on 'change', ( => @forceUpdate() ), @
-    @props.article.on 'change', ( => @forceUpdate() ), @
-    $(window).on 'resize', ( => @forceUpdate() )
+    @props.status.on 'change', ( => @deferUpdate() ), @
+    @props.article.on 'change', ( => @deferUpdate() ), @
+    $(window).on 'resize', ( => @deferUpdate() )
 
   componentWillUnmount: ->
     @props.status.off null, null, @

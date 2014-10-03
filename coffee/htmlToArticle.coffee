@@ -12,19 +12,19 @@ WordStore = require './stores/WordStore'
 } = require('./stores/ArticleModels')
 
 
+# evil global.
+# TODO: rethink this
+WordList = []
+
 isBlock = (node_name) ->
-  if node_name in constants.INLINE_ELEMENTS
-    false
-  else
-    true
+  node_name not in constants.INLINE_ELEMENTS
 
 
 handlePre = (text, parent) ->
   # handle `pre` elements, aka blocks of code.
   # put multiple words, no trimming, into "word"
   word = text
-  word_model = new WordModel()
-  word_model.set {word, parent}
+  word_model = new WordModel {word, parent}
 
   # don't add it to WordStore,
   # dont want to speedread this shit
@@ -49,12 +49,11 @@ textToWords = (textNode, parent) ->
     # add trailing space to all words but the last one
     if i < (words.length - 1)
       word += ' '
-    word_model = new WordModel()
-    word_model.set {word, parent}
+    word_model = new WordModel {word, parent}
     word_models.push word_model
 
     # also add it to list of words
-    WordStore.add(word_model)
+    WordList.push(word_model)
 
   return word_models
 
