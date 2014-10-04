@@ -27,11 +27,15 @@ class CurrentWordModel extends Backbone.Model
       time_to_display = RsvpStatusStore.msPerWord() * word.get('display')
 
       if next_word
+        # janky prevention of rare double-display bug.
+        # TODO: prevent that from happening in the first place.
+        clearTimeout @timeout if @timeout?
+
         @timeout = setTimeout ->
           dispatcher.dispatch
-            'actionType': 'change-word'
-            'word': next_word
-            'source': 'updateWord'
+            actionType: 'change-word'
+            word: next_word
+            source: 'updateWord'
         , time_to_display
 
       # end of article, just pause.
@@ -39,6 +43,7 @@ class CurrentWordModel extends Backbone.Model
         setTimeout ->
           dispatcher.dispatch
             actionType: 'pause'
+            source: 'article-end'
         , time_to_display
 
   getPercentDone: ->
@@ -53,7 +58,6 @@ class CurrentWordModel extends Backbone.Model
       # tell old/new they've changed
       @previous('parent')?.trigger('change')
       parent.trigger 'change'
-
 
       if RsvpStatusStore.get('playing')
 

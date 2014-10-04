@@ -49,21 +49,21 @@ class ArticleModel extends Backbone.Model
               date: data.date_published
 
           .fail (err) ->
-            throw err
+            # throw err
 
-        # data = require('../example_data')
+            data = require('../example_data')
 
-        # console.log 'got response', data
-        # setTimeout ->
-        #   dispatcher.dispatch
-        #     actionType: 'process-article'
-        #     raw_html: data.content
-        #     title: data.title
-        #     author: data.author
-        #     url: data.url
-        #     domain: data.domain
-        #     date: data.date_published
-        # , 0
+            console.log 'REQ FAILED USING TEST DATA', data
+            setTimeout ->
+              dispatcher.dispatch
+                actionType: 'process-article'
+                raw_html: data.content
+                title: data.title
+                author: data.author
+                url: data.url
+                domain: data.domain
+                date: data.date_published
+            , 0
 
 ArticleStore = new ArticleModel()
 module.exports = ArticleStore

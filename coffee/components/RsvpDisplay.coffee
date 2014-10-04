@@ -8,7 +8,6 @@ eleven_dots = Array(11).join('.')
 eleven_ems = Array(11).join('m')
 
 
-
 RsvpDisplay = React.createClass
 
   mixins: [
