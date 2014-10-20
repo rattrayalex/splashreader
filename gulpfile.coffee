@@ -71,6 +71,7 @@ gulp.task "watchify", ->
   args.extensions = ['.coffee']
   bundler = watchify(browserify("./coffee/app.coffee", args), args)
   bundler.transform(coffeeify)
+  bundler.ignore('iconv')
 
 
   rebundle = ->

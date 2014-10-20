@@ -153,7 +153,7 @@ Masthead = React.createClass
 
   render: ->
     if @props.article.get('title')
-      date = new Date @props.article.get('date')
+      date = @props.article.get('date')
 
       div {
         className: 'masthead'
@@ -172,7 +172,7 @@ Masthead = React.createClass
               small {className: 'text-muted'},
                 "on " if date
               small {},
-                date.toDateString()
+                new Date(date).toDateString() if date
 
           div {className: 'col-sm-6'},
             small {},
@@ -229,7 +229,7 @@ ArticleViewDisplay = React.createClass
       @getPadding()
 
   componentDidMount: ->
-    $(window).on 'resize', ( => @deferUpdate() )
+    $(window).on 'resize', ( => @forceUpdate() )
 
   render: ->
     div {
