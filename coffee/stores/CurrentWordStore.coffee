@@ -1,7 +1,11 @@
 Backbone = require 'backbone'
+# Backbone.LocalStorage = require("backbone.localstorage")
 _ = require('underscore')
 
-{WordModel} = require './ArticleModels'
+NestedBackbone = require './NestedBackbone'
+OfflineBackbone = require './OfflineBackbone'
+
+{WordModel, ElementModel} = require './ArticleModels'
 ArticleStore = require './ArticleStore'
 WordStore = require './WordStore'
 RsvpStatusStore = require './RsvpStatusStore'
@@ -9,7 +13,13 @@ RsvpStatusStore = require './RsvpStatusStore'
 dispatcher = require '../dispatcher'
 
 
-class CurrentWordModel extends Backbone.Model
+class CurrentWordModel extends NestedBackbone.Model
+  nested:
+    word: WordModel
+    parent: ElementModel
+    _exclude: [
+      'parent'
+    ]
 
   updateWord: (word) ->
 
@@ -53,6 +63,13 @@ class CurrentWordModel extends Backbone.Model
     WordStore.getTimeSince @get('word')
 
   initialize: ->
+    # offline stuff... not working rn.
+    # _.extend @, OfflineBackbone.Model
+    # @localLoad()
+    # @on 'change', (model, options) =>
+    #   console.log 'options, model', options, model
+    #   @localSave(model)
+
     # when there's a new parent (paragrah),
     @on 'change:parent', (model, parent) =>
       # tell old/new they've changed
@@ -81,6 +98,10 @@ class CurrentWordModel extends Backbone.Model
       @previous('word')?.trigger('change')
       word.trigger 'change'
 
+    # get data from localStorage
+    # @fetch
+    #   success: =>
+    #     console.log 'success', @get 'word'
     @dispatchToken = dispatcher.register @dispatchCallback
 
   dispatchCallback: (payload) =>
@@ -93,7 +114,9 @@ class CurrentWordModel extends Backbone.Model
 
       when 'process-article'
         dispatcher.waitFor [ArticleStore.dispatchToken]
-        @updateWord WordStore.at(0)
+        if not @get 'word'
+          console.log 'no word, starting at tthe top'
+          @updateWord WordStore.at(0)
 
       when 'play-pause', 'play', 'pause'
         dispatcher.waitFor [RsvpStatusStore.dispatchToken]
