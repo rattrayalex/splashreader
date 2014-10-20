@@ -17,7 +17,7 @@ RsvpDisplay = React.createClass
   ]
 
   componentDidMount: ->
-    @font = '32pt Libre Baskerville'
+    @font = '32pt libre_baskervilleregular, Georgia'
     @ORP_center = getTextWidth(eleven_ems, @font) / 3
 
   render: ->
