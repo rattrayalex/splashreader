@@ -65,14 +65,12 @@ gulp.task "sourcemap", ['serve'], ->
     .pipe gulp.dest("js")
 
 
-
 gulp.task "watchify", ->
   args = watchify.args
   args.extensions = ['.coffee']
   bundler = watchify(browserify("./coffee/app.coffee", args), args)
   bundler.transform(coffeeify)
   bundler.ignore('iconv')
-
 
   rebundle = ->
     gutil.log gutil.colors.green 'rebundling...'
