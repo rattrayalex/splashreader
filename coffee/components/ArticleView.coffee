@@ -139,7 +139,10 @@ CollectURL = React.createClass
                   type: 'submit'
                   className: 'btn btn-warning'
                 },
-                  "Speed Read "
+                  span {
+                    className: "hidden-xs"
+                  },
+                    "Speed Read "
                   span {
                     className: 'glyphicon glyphicon-forward'
                   }
