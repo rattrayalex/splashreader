@@ -223,7 +223,7 @@ ArticleViewDisplay = React.createClass
   ]
 
   getPadding: ->
-    window.innerHeight * .4
+    window.innerHeight * .4 - 60
 
   getPaddingTop: ->
     if @refs.masthead
@@ -233,6 +233,7 @@ ArticleViewDisplay = React.createClass
 
   componentDidMount: ->
     $(window).on 'resize', ( => @forceUpdate() )
+
 
   render: ->
     div {
