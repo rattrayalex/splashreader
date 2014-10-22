@@ -24,6 +24,17 @@ checkClean = ->
     console.log out
     throw new Error "You are dirty!"
 
+runGulpOnce = (next) ->
+  lines = []
+  proc = sh.exec 'gulp', (code, out) ->
+    console.log 'process has exited'
+    next()
+
+  proc.stdout.on 'data', (data) ->
+    if data.match 'app.js was reloaded.'
+      console.log 'exiting process...'
+      proc.kill()
+
 
 main = ->
   checkClean()
@@ -33,17 +44,16 @@ main = ->
 
   cmd 'git checkout gh-pages'
   cmd 'git merge master'
-  # cmd 'gulp clean'
-  # cmd 'gulp build'
-  cmd 'gulp'
 
-  cmd 'git add .'
-  cmd "git commit -m 'build/deploy on #{ new Date() }'"
-  checkClean()
-  cmd "git push"
-  cmd "git checkout master"
+  runGulpOnce ->
 
-  console.log "all done!"
+    cmd 'git add .'
+    cmd "git commit -m 'build/deploy on #{ new Date() }'"
+    checkClean()
+    cmd "git push"
+    cmd "git checkout master"
+
+    console.log "all done!"
 
 main()
 
