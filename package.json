@@ -29,6 +29,7 @@
     "gulp-watch": "^1.0.7",
     "minifyify": "^4.2.0",
     "reactify": "^0.14.0",
+    "shelljs": "^0.3.0",
     "vinyl-source-stream": "^1.0.0",
     "watchify": "^1.0.6"
   },
