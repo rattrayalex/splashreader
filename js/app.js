@@ -202,7 +202,9 @@ CollectURL = React.createClass({
     }, button({
       type: 'submit',
       className: 'btn btn-warning'
-    }, "Speed Read ", span({
+    }, span({
+      className: "hidden-xs"
+    }, "Speed Read "), span({
       className: 'glyphicon glyphicon-forward'
     }))))))));
   }
@@ -266,7 +268,7 @@ ArticleFooter = React.createClass({
 ArticleViewDisplay = React.createClass({
   mixins: [FluxBone.ModelMixin('status', 'change:playing'), FluxBone.ModelMixin('article', 'change:elem')],
   getPadding: function() {
-    return window.innerHeight * .4;
+    return window.innerHeight * .4 - 60;
   },
   getPaddingTop: function() {
     if (this.refs.masthead) {
@@ -451,10 +453,13 @@ Topbar = React.createClass({
       amount: 50
     });
   },
-  handlePlayPauseClick: function() {
-    return dispatcher.dispatch({
+  handlePlayPauseClick: function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    dispatcher.dispatch({
       actionType: 'play-pause'
     });
+    return false;
   },
   render: function() {
     var percent_done, play_pause_button_class, pluralize, time_left;
@@ -469,8 +474,10 @@ Topbar = React.createClass({
       'active': this.props.status.get('playing'),
       'disabled': !this.props.words.length
     });
-    return Navbar({
-      className: 'navbar-fixed-bottom'
+    return div({
+      className: 'navbar-fluid navbar-default navbar-fixed-bottom'
+    }, div({
+      className: 'container-fluid'
     }, p({
       className: "navbar-center navbar-text navbar-brand hidden-xs"
     }, "SplashReader"), Nav({
@@ -524,7 +531,7 @@ Topbar = React.createClass({
       style: {
         width: "" + percent_done + "%"
       }
-    })));
+    }))));
   }
 });
 
@@ -611,10 +618,10 @@ handlePre = function(text, parent) {
 };
 
 textToWords = function(textNode, parent) {
-  var i, text, word, word_model, word_models, words, _i, _len;
+  var i, text, word, word_model, word_models, words, _i, _len, _ref1;
   text = textNode.nodeValue;
   words = text.split(/\s+/);
-  if (parent.get('node_name') === 'pre') {
+  if ((_ref1 = parent.get('node_name')) === 'pre' || _ref1 === 'td' || _ref1 === 'th') {
     return handlePre(text, parent);
   }
   if (!text.trim()) {
