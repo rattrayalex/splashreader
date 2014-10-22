@@ -32,8 +32,11 @@ main = ->
     return
 
   cmd 'git checkout gh-pages'
+  cmd 'git merge master'
   # cmd 'gulp clean'
   # cmd 'gulp build'
+  cmd 'gulp'
+
   cmd 'git add .'
   cmd "git commit -m 'build/deploy on #{ new Date() }'"
   checkClean()
