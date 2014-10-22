@@ -91,7 +91,7 @@ CollectURL = React.createClass
   handleSubmit: (e) ->
     e.preventDefault()
     url = @refs.url.getDOMNode().value
-    if not _.contains ['http://', 'https://'], url[0..6]
+    if not _.contains ['http://', 'https:/'], url[0..6]
       url = 'http:// ' + url
 
     if not validator.isURL(url)
