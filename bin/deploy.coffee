@@ -20,7 +20,7 @@ getCurrentBranch = ->
 checkClean = ->
   out = cmd 'git status'
     .output
-  if not "nothing to commit, working directory clean".match out
+  if not out.match "nothing to commit, working directory clean"
     console.log out
     throw new Error "You are dirty!"
 
