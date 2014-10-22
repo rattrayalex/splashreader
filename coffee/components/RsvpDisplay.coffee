@@ -18,7 +18,8 @@ RsvpDisplay = React.createClass
 
   componentDidMount: ->
     @font = '32pt libre_baskervilleregular, Georgia'
-    @ORP_center = getTextWidth(eleven_ems, @font) / 3
+    full_width = Math.min window.innerWidth, getTextWidth(eleven_ems, @font)
+    @ORP_center = full_width / 3
 
   render: ->
     if not @props.current.get('word')?.get('word')?
