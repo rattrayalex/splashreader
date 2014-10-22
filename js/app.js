@@ -382,8 +382,10 @@ eleven_ems = Array(11).join('m');
 RsvpDisplay = React.createClass({
   mixins: [FluxBone.ModelMixin('current', 'change:word'), FluxBone.ModelMixin('status', 'change'), React.addons.PureRenderMixin],
   componentDidMount: function() {
+    var full_width;
     this.font = '32pt libre_baskervilleregular, Georgia';
-    return this.ORP_center = getTextWidth(eleven_ems, this.font) / 3;
+    full_width = Math.min(window.innerWidth, getTextWidth(eleven_ems, this.font));
+    return this.ORP_center = full_width / 3;
   },
   render: function() {
     var center_point, length, middle, offset, width_p1, width_p2, word, word_p1, word_p2, word_p3, _ref2;
