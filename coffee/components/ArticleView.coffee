@@ -234,7 +234,6 @@ ArticleViewDisplay = React.createClass
   componentDidMount: ->
     $(window).on 'resize', ( => @forceUpdate() )
 
-
   render: ->
     div {
       className: 'scroll-box'

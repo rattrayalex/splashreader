@@ -24,7 +24,7 @@ checkClean = ->
     console.log out
     throw new Error "You are dirty!"
 
-runGulpOnce = (next) ->
+runGulpOnceThen = (next) ->
   lines = []
   proc = sh.exec 'gulp', (code, out) ->
     console.log 'process has exited'
@@ -45,7 +45,7 @@ main = ->
   cmd 'git checkout gh-pages'
   cmd 'git merge master'
 
-  runGulpOnce ->
+  runGulpOnceThen ->
 
     cmd 'git add .'
     cmd "git commit -m 'build/deploy on #{ new Date() }'"
