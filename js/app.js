@@ -161,7 +161,7 @@ CollectURL = React.createClass({
     var url;
     e.preventDefault();
     url = this.refs.url.getDOMNode().value;
-    if (!_.contains(['http://', 'https://'], url.slice(0, 7))) {
+    if (!_.contains(['http://', 'https:/'], url.slice(0, 7))) {
       url = 'http:// ' + url;
     }
     if (!validator.isURL(url)) {
