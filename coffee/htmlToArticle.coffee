@@ -36,7 +36,7 @@ textToWords = (textNode, parent) ->
   words = text.split /\s+/
 
   # code blocks get special treatment
-  if parent.get('node_name') is 'pre'
+  if parent.get('node_name') in ['pre', 'td', 'th']
     return handlePre(text, parent)
 
   # remove blanks

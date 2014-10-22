@@ -26,9 +26,14 @@ Topbar = React.createClass
       actionType: 'decrease-wpm'
       amount: 50
 
-  handlePlayPauseClick: ->
+  handlePlayPauseClick: (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+
     dispatcher.dispatch
       actionType: 'play-pause'
+
+    false
 
   render: ->
     percent_done = @props.current.getPercentDone() * 100
@@ -42,84 +47,87 @@ Topbar = React.createClass
       'active': @props.status.get('playing')
       'disabled': not @props.words.length
 
-    Navbar {
-      className: 'navbar-fixed-bottom'
+    div {
+      className: 'navbar-fluid navbar-default navbar-fixed-bottom'
     },
-      p {
-        className: "navbar-center navbar-text navbar-brand hidden-xs"
+      div {
+        className: 'container-fluid'
       },
-        "SplashReader"
+        p {
+          className: "navbar-center navbar-text navbar-brand hidden-xs"
+        },
+          "SplashReader"
 
 
-      Nav {
-        className: 'navbar-left'
-      },
-        div {
-          className: 'navbar-form'
+        Nav {
+          className: 'navbar-left'
         },
           div {
-            className: 'btn-group'
+            className: 'navbar-form'
+          },
+            div {
+              className: 'btn-group'
+            },
+              button {
+                type: 'button'
+                className: 'btn btn-default'
+                onClick: @handleDecreaseWpmClick
+              },
+                span {
+                  className: 'glyphicon glyphicon-chevron-down'
+                }
+              span {
+                className: 'btn btn-default disabled'
+              },
+                "#{ @props.status.get('wpm') } wpm"
+              button {
+                type: 'button'
+                className: 'btn btn-default'
+                onClick: @handleIncreaseWpmClick
+              },
+                span {
+                  className: 'glyphicon glyphicon-chevron-up'
+                }
+        Nav {
+          className: 'navbar-right'
+        },
+
+          form {
+            className: 'navbar-form'
           },
             button {
-              type: 'button'
-              className: 'btn btn-default'
-              onClick: @handleDecreaseWpmClick
-            },
-              span {
-                className: 'glyphicon glyphicon-chevron-down'
-              }
-            span {
-              className: 'btn btn-default disabled'
-            },
-              "#{ @props.status.get('wpm') } wpm"
-            button {
-              type: 'button'
-              className: 'btn btn-default'
-              onClick: @handleIncreaseWpmClick
-            },
-              span {
-                className: 'glyphicon glyphicon-chevron-up'
-              }
-      Nav {
-        className: 'navbar-right'
-      },
-
-        form {
-          className: 'navbar-form'
+              type: 'submit'
+              className: play_pause_button_class
+              onClick: @handlePlayPauseClick
+              style:
+                outline: 'none'
+            }
+        p {
+          className: 'navbar-text navbar-right'
         },
-          button {
-            type: 'submit'
-            className: play_pause_button_class
-            onClick: @handlePlayPauseClick
-            style:
-              outline: 'none'
-          }
-      p {
-        className: 'navbar-text navbar-right'
-      },
-        if @props.words.length and time_left
-          pluralize = unless time_left is 1 then "s" else ""
-          "#{ time_left } minute#{ pluralize } left"
-        else
-          ""
-      div {
-        className: 'progress'
-        style:
-          position: 'absolute'
-          top: 0  # 51 if on top
-          left: 0
-          width: "100%"
-          height: 3
-          borderRadius: 0
-          boxShadow: 'none'
-          background: 'transparent'
-      },
+          if @props.words.length and time_left
+            pluralize = unless time_left is 1 then "s" else ""
+            "#{ time_left } minute#{ pluralize } left"
+          else
+            ""
         div {
-          className: 'progress-bar progress-bar-warning'
-          role: 'progressbar'
+          className: 'progress'
           style:
-            width: "#{percent_done}%"
-        }
+            position: 'absolute'
+            top: 0  # 51 if on top
+            left: 0
+            width: "100%"
+            height: 3
+            borderRadius: 0
+            boxShadow: 'none'
+            background: 'transparent'
+        },
+          div {
+            className: 'progress-bar progress-bar-warning'
+            role: 'progressbar'
+            style:
+              width: "#{percent_done}%"
+          }
 
 
 module.exports = Topbar
