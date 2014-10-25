@@ -11,6 +11,15 @@ dispatcher = require '../dispatcher'
 
 class CurrentWordModel extends Backbone.Model
 
+  getWord: (idx=null) ->
+    if idx is null
+      idx = @get('idx')
+    WordStore.at(idx)
+
+  getParent: (idx=null) ->
+    word = @getWord(idx)
+    word.get('parent')
+
   updateWord: (word) ->
 
     # code blocks (in `pre`) aren't in WordStore, don't go to them.
@@ -18,12 +27,12 @@ class CurrentWordModel extends Backbone.Model
       console.log 'word not in WordStore, ignore'
       return
 
-    parent = word.get('parent')
-    @set {word, parent}
+    idx = WordStore.indexOf(word)
+    @set {idx}
 
     # trigger the next word to update.
     if RsvpStatusStore.get('playing') is true
-      next_word = WordStore.at(WordStore.indexOf(word) + 1)
+      next_word = WordStore.at(idx + 1)
       time_to_display = RsvpStatusStore.msPerWord() * word.get('display')
 
       if next_word
@@ -47,39 +56,42 @@ class CurrentWordModel extends Backbone.Model
         , time_to_display
 
   getPercentDone: ->
-    WordStore.indexOf(@get('word')) / WordStore.length
+    @get('idx') / WordStore.length
 
   getTimeLeft: ->
-    WordStore.getTimeSince @get('word')
+    WordStore.getTimeSince @get('idx')
 
   initialize: ->
-    # when there's a new parent (paragrah),
-    @on 'change:parent', (model, parent) =>
-      # tell old/new they've changed
-      @previous('parent')?.trigger('change')
-      parent.trigger 'change'
-
-      if RsvpStatusStore.get('playing')
-
-        # pause on para change
-        RsvpStatusStore.set
-          playing: false
-
-        # start playing after para change
-        setTimeout ->
-          dispatcher.dispatch
-            actionType: 'play'
-            source: 'para-change'
-        , 1000
-
-      # scroll to first word
-      @get('word').trigger 'scroll'
-
     # when there's a new word,
-    @on 'change:word', (model, word) =>
+    @on 'change:idx', (model, idx) =>
       # tell old/new they've changed
-      @previous('word')?.trigger('change')
+      prev = @getWord @previous('idx')
+      word = @getWord(idx)
+      prev?.trigger('change')
       word.trigger 'change'
+
+      # paragraph change!
+      if prev.get('parent') isnt word.get('parent')
+        # tell old/new they've changed
+        prev.get('parent').trigger('change')
+        word.get('parent').trigger('change')
+
+        if RsvpStatusStore.get('playing')
+
+          # pause on para change
+          RsvpStatusStore.set
+            playing: false
+
+          # start playing after para change
+          setTimeout ->
+            dispatcher.dispatch
+              actionType: 'play'
+              source: 'para-change'
+          , 1000
+
+        # scroll to first word
+        @getWord().trigger 'scroll'
+
 
     @dispatchToken = dispatcher.register @dispatchCallback
 
@@ -99,12 +111,12 @@ class CurrentWordModel extends Backbone.Model
         dispatcher.waitFor [RsvpStatusStore.dispatchToken]
 
         if RsvpStatusStore.get('playing')
-          @updateWord @get('word') or WordStore.at(0)
+          @updateWord @getWord() or WordStore.at(0)
         else
           clearTimeout @timeout if @timeout?
 
         if payload.actionType is 'pause'
-          @get('word').trigger 'scroll'
+          @getWord().trigger 'scroll'
 
 
 CurrentWordStore = new CurrentWordModel()

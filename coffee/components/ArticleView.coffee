@@ -42,7 +42,7 @@ Word = React.createClass
     scrollToNode @getDOMNode()
 
   isCurrentWord: ->
-    @props.current.get('word') is @props.elem
+    @props.current.getWord() is @props.elem
 
   componentDidMount: ->
     @props.elem.on 'scroll', =>
@@ -67,7 +67,7 @@ Elem = React.createClass
   ]
 
   isCurrentPara: ->
-    @props.current.get('parent') is @props.elem
+    @props.current.getWord().get('parent') is @props.elem
 
   render: ->
     ReactElem = React.DOM[@props.elem.get('node_name')]

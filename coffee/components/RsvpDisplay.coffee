@@ -11,7 +11,7 @@ eleven_ems = Array(11).join('m')
 RsvpDisplay = React.createClass
 
   mixins: [
-    FluxBone.ModelMixin('current', 'change:word')
+    FluxBone.ModelMixin('current', 'change:idx')
     FluxBone.ModelMixin('status', 'change')
     React.addons.PureRenderMixin
   ]
@@ -22,10 +22,10 @@ RsvpDisplay = React.createClass
     @ORP_center = full_width / 3
 
   render: ->
-    if not @props.current.get('word')?.get('word')?
+    if not @props.current.getWord()?.get('word')?
       return div {}
 
-    word = @props.current.get('word').get('word') or " "
+    word = @props.current.getWord().get('word') or " "
     word = word.trim()
     word = word or " "
 

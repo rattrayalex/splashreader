@@ -9,8 +9,8 @@ dispatcher = require '../dispatcher'
 class WordCollection extends Backbone.Collection
   model: WordModel
 
-  getTimeSince: (word) ->
-    remaining_words = @rest @indexOf(word)
+  getTimeSince: (idx) ->
+    remaining_words = @rest idx
 
     time_left = 0
     for w in remaining_words
@@ -22,7 +22,7 @@ class WordCollection extends Backbone.Collection
     return minutes_left
 
   getTotalTime: ->
-    @getTimeSince @at(0)
+    @getTimeSince 0
 
   initialize: ->
     @dispatchToken = dispatcher.register @dispatcherCallback
