@@ -8,6 +8,7 @@ OfflineBackbone = require './OfflineBackbone'
 ArticleStore = require './ArticleStore'
 WordStore = require './WordStore'
 RsvpStatusStore = require './RsvpStatusStore'
+CurrentPageStore = require './CurrentPageStore'
 
 dispatcher = require '../dispatcher'
 
@@ -78,10 +79,10 @@ class CurrentWordModel extends Backbone.Model
       prev = @getWord @previous('idx')
       word = @getWord(idx)
       prev?.trigger('change')
-      word.trigger 'change'
+      word?.trigger 'change'
 
       # paragraph change!
-      if prev.get('parent') isnt word.get('parent')
+      if prev?.get('parent') isnt word?.get('parent')
         # tell old/new they've changed
         prev.get('parent').trigger('change')
         word.get('parent').trigger('change')
@@ -112,6 +113,11 @@ class CurrentWordModel extends Backbone.Model
   dispatchCallback: (payload) =>
     switch payload.actionType
 
+      when 'page-change'
+        dispatcher.waitFor [CurrentPageStore.dispatchToken]
+        if not payload.url
+          @clear()
+
       when 'change-word'
         @updateWord(payload.word)
         if payload.source is 'click'
@@ -119,7 +125,7 @@ class CurrentWordModel extends Backbone.Model
 
       when 'process-article'
         dispatcher.waitFor [ArticleStore.dispatchToken]
-        if not @get 'word'
+        if not @get 'idx'
           console.log 'no word, starting at tthe top'
           @updateWord WordStore.at(0)
 
