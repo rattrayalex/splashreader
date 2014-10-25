@@ -1,7 +1,10 @@
 Backbone = require 'backbone'
+# Backbone.LocalStorage = require("backbone.localstorage")
 _ = require('underscore')
 
-{WordModel} = require './ArticleModels'
+OfflineBackbone = require './OfflineBackbone'
+
+{WordModel, ElementModel} = require './ArticleModels'
 ArticleStore = require './ArticleStore'
 WordStore = require './WordStore'
 RsvpStatusStore = require './RsvpStatusStore'
@@ -62,6 +65,13 @@ class CurrentWordModel extends Backbone.Model
     WordStore.getTimeSince @get('idx')
 
   initialize: ->
+    # offline stuff... not working rn.
+    _.extend @, OfflineBackbone.Model
+    @localLoad()
+    @on 'change', (model, options) =>
+      console.log 'options, model', options, model
+      @localSave(model)
+
     # when there's a new word,
     @on 'change:idx', (model, idx) =>
       # tell old/new they've changed
@@ -93,6 +103,10 @@ class CurrentWordModel extends Backbone.Model
         @getWord().trigger 'scroll'
 
 
+    # get data from localStorage
+    # @fetch
+    #   success: =>
+    #     console.log 'success', @get 'word'
     @dispatchToken = dispatcher.register @dispatchCallback
 
   dispatchCallback: (payload) =>
@@ -105,7 +119,9 @@ class CurrentWordModel extends Backbone.Model
 
       when 'process-article'
         dispatcher.waitFor [ArticleStore.dispatchToken]
-        @updateWord WordStore.at(0)
+        if not @get 'word'
+          console.log 'no word, starting at tthe top'
+          @updateWord WordStore.at(0)
 
       when 'play-pause', 'play', 'pause'
         dispatcher.waitFor [RsvpStatusStore.dispatchToken]

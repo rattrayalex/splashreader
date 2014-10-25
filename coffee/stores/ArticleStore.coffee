@@ -1,17 +1,41 @@
 Backbone = require 'backbone'
 validator = require 'validator'
 $ = require 'jQuery'
+_ = require 'underscore'
+
+read = require 'node-readability'
+
+NestedBackbone = require './NestedBackbone'
+OfflineBackbone = require './OfflineBackbone'
 
 CurrentPageStore = require './CurrentPageStore'
 WordStore = require './WordStore'
+{ElementModel} = require './ArticleModels'
 
 dispatcher = require '../dispatcher'
 constants = require '../constants'
 htmlToArticle = require '../htmlToArticle'
 
 
-class ArticleModel extends Backbone.Model
+getUrlDomain = (url) ->
+  # from stackoverflow.com/a/8498668
+  a = document.createElement('a')
+  a.href = url
+  a.hostname
+
+
+class ArticleModel extends NestedBackbone.Model
+
+  nested:
+    'elem': ElementModel
+
   initialize: ->
+    # _.extend @, OfflineBackbone.Model
+    # @localLoad()
+    # @on 'change', (model, options) =>
+    #   console.log 'options, model', options, model
+    #   @localSave(model)
+
     @dispatchToken = dispatcher.register @dispatcherCallback
 
   dispatcherCallback: (payload) =>
@@ -25,6 +49,8 @@ class ArticleModel extends Backbone.Model
         elem = htmlToArticle(payload.raw_html)
         @set {elem}
 
+        console.log "article json", @toJSON()
+
       when 'page-change'
         dispatcher.waitFor [CurrentPageStore.dispatchToken]
 
@@ -33,6 +59,17 @@ class ArticleModel extends Backbone.Model
             console.log 'back to home page'
             @clear()
           return
+
+        # read payload.url, {withCredentials: false}, (error, article, data) ->
+        #   console.log 'got readability', error, article, data
+        #   dispatcher.dispatch
+        #     actionType: 'process-article'
+        #     raw_html: article.content
+        #     title: article.title
+        #     author: null
+        #     url: payload.url
+        #     domain: data.domain or getUrlDomain(payload.url)
+        #     date: null
 
         req_url = "https://readability.com/api/content/v1/parser" +
           '?token=' + constants.READABILITY_TOKEN +
