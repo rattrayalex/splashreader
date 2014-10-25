@@ -92,10 +92,11 @@ CollectURL = React.createClass
     e.preventDefault()
     url = @refs.url.getDOMNode().value
     if not _.contains ['http://', 'https:/'], url[0..6]
-      url = 'http:// ' + url
+      console.log 'prepending http://'
+      url = 'http://' + url
 
     if not validator.isURL(url)
-      console.log 'isnt url'
+      console.log 'isnt url', url
       @setState
         error: 'not-url'
     else

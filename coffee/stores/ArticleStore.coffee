@@ -29,6 +29,9 @@ class ArticleModel extends Backbone.Model
         dispatcher.waitFor [CurrentPageStore.dispatchToken]
 
         if not validator.isURL(payload.url)
+          if not payload.url
+            console.log 'back to home page'
+            @clear()
           return
 
         req_url = "https://readability.com/api/content/v1/parser" +
