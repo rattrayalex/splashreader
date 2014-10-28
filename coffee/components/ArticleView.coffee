@@ -42,7 +42,7 @@ Word = React.createClass
     scrollToNode @getDOMNode()
 
   isCurrentWord: ->
-    @props.current.get('word') is @props.elem
+    @props.current.getWord() is @props.elem
 
   componentDidMount: ->
     @props.elem.on 'scroll', =>
@@ -67,7 +67,7 @@ Elem = React.createClass
   ]
 
   isCurrentPara: ->
-    @props.current.get('parent') is @props.elem
+    @props.current.getWord().get('parent') is @props.elem
 
   render: ->
     ReactElem = React.DOM[@props.elem.get('node_name')]
@@ -92,10 +92,11 @@ CollectURL = React.createClass
     e.preventDefault()
     url = @refs.url.getDOMNode().value
     if not _.contains ['http://', 'https:/'], url[0..6]
-      url = 'http:// ' + url
+      console.log 'prepending http://'
+      url = 'http://' + url
 
     if not validator.isURL(url)
-      console.log 'isnt url'
+      console.log 'isnt url', url
       @setState
         error: 'not-url'
     else
@@ -248,7 +249,7 @@ ArticleViewDisplay = React.createClass
         padding: @getPadding()
         ref: 'masthead'
       }
-      if @props.article.get('elem')
+      if @props.article.has('elem')
         Elem {
           elem: @props.article.get('elem')
           current: @props.current
