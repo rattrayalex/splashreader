@@ -27,14 +27,27 @@ getUrlDomain = (url) ->
 class ArticleModel extends NestedBackbone.Model
 
   nested:
-    'elem': ElementModel
+    _exclude: [
+      'elem'
+    ]
+
 
   initialize: ->
-    # _.extend @, OfflineBackbone.Model
-    # @localLoad()
-    # @on 'change', (model, options) =>
-    #   console.log 'options, model', options, model
-    #   @localSave(model)
+    _.extend @, OfflineBackbone.Model
+    @localLoad()
+    if @has('raw_html') and not @has('elem')
+      dispatcher.dispatch
+        actionType: 'process-article'
+        title: @get('title')
+        author: @get('author')
+        url: @get('url')
+        date: @get('date')
+        domain: @get('domain')
+        raw_html: @get('raw_html')
+
+    @on 'change', (model, options) =>
+      console.log 'options, model', options, model
+      @localSave(model)
 
     @dispatchToken = dispatcher.register @dispatcherCallback
 
@@ -43,10 +56,10 @@ class ArticleModel extends NestedBackbone.Model
       when 'process-article'
         WordStore.reset()
 
-        {title, author, url, date, domain} = payload
-        @set {title, author, url, date, domain}
+        {title, author, url, date, domain, raw_html} = payload
+        @set {title, author, url, date, domain, raw_html}
 
-        elem = htmlToArticle(payload.raw_html)
+        elem = htmlToArticle(raw_html)
         @set {elem}
 
         console.log "article json", @toJSON()
@@ -94,16 +107,16 @@ class ArticleModel extends NestedBackbone.Model
             data = require('../example_data')
 
             console.log 'REQ FAILED USING TEST DATA', data
-            setTimeout ->
-              dispatcher.dispatch
-                actionType: 'process-article'
-                raw_html: data.content
-                title: data.title
-                author: data.author
-                url: data.url
-                domain: data.domain
-                date: data.date_published
-            , 0
+            # setTimeout ->
+            #   dispatcher.dispatch
+            #     actionType: 'process-article'
+            #     raw_html: data.content
+            #     title: data.title
+            #     author: data.author
+            #     url: data.url
+            #     domain: data.domain
+            #     date: data.date_published
+            # , 0
 
 ArticleStore = new ArticleModel()
 module.exports = ArticleStore

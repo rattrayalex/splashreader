@@ -16,7 +16,7 @@ class Model extends Backbone.Model
         'You must define nested attribute on a NestedBackbone.Model instance')
 
     for name, value of data
-      if name in @_exclude?
+      if name in @nested._exclude?
         delete data[name]
         continue
 
@@ -32,7 +32,7 @@ class Model extends Backbone.Model
     @_isSerializing = true
     json = _.clone @attributes
     for name, value of json
-      if name in @_exclude?
+      if name in @nested._exclude?
         delete data[name]
         continue
 
@@ -57,7 +57,7 @@ class Collection extends Backbone.Model
         'You must define nested attribute on a NestedBackbone.Collection')
 
     for name, value of data
-      if name in @_exclude?
+      if name in @nested._exclude?
         delete data[name]
         continue
 
@@ -73,7 +73,7 @@ class Collection extends Backbone.Model
     @_isSerializing = true
     json = _.clone @models
     for name, value of json
-      if name in @_exclude?
+      if name in @nested._exclude?
         delete data[name]
         continue
 

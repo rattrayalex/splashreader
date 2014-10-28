@@ -249,7 +249,7 @@ ArticleViewDisplay = React.createClass
         padding: @getPadding()
         ref: 'masthead'
       }
-      if @props.article.get('elem')
+      if @props.article.has('elem')
         Elem {
           elem: @props.article.get('elem')
           current: @props.current
