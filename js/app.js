@@ -998,19 +998,6 @@ ArticleModel = (function(_super) {
   };
 
   ArticleModel.prototype.initialize = function() {
-    _.extend(this, OfflineBackbone.Model);
-    this.localLoad();
-    if (this.has('raw_html') && !this.has('elem')) {
-      dispatcher.dispatch({
-        actionType: 'process-article',
-        title: this.get('title'),
-        author: this.get('author'),
-        url: this.get('url'),
-        date: this.get('date'),
-        domain: this.get('domain'),
-        raw_html: this.get('raw_html')
-      });
-    }
     this.on('change', (function(_this) {
       return function(model, options) {
         console.log('options, model', options, model);
