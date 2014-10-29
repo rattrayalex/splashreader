@@ -33,17 +33,17 @@ class ArticleModel extends NestedBackbone.Model
 
 
   initialize: ->
-    _.extend @, OfflineBackbone.Model
-    @localLoad()
-    if @has('raw_html') and not @has('elem')
-      dispatcher.dispatch
-        actionType: 'process-article'
-        title: @get('title')
-        author: @get('author')
-        url: @get('url')
-        date: @get('date')
-        domain: @get('domain')
-        raw_html: @get('raw_html')
+    # _.extend @, OfflineBackbone.Model
+    # @localLoad()
+    # if @has('raw_html') and not @has('elem')
+    #   dispatcher.dispatch
+    #     actionType: 'process-article'
+    #     title: @get('title')
+    #     author: @get('author')
+    #     url: @get('url')
+    #     date: @get('date')
+    #     domain: @get('domain')
+    #     raw_html: @get('raw_html')
 
     @on 'change', (model, options) =>
       console.log 'options, model', options, model
