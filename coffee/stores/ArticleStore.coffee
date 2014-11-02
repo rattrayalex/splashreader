@@ -45,9 +45,9 @@ class ArticleModel extends NestedBackbone.Model
     #     domain: @get('domain')
     #     raw_html: @get('raw_html')
 
-    @on 'change', (model, options) =>
-      console.log 'options, model', options, model
-      @localSave(model)
+    # @on 'change', (model, options) =>
+    #   console.log 'options, model', options, model
+    #   @localSave(model)
 
     @dispatchToken = dispatcher.register @dispatcherCallback
 
