@@ -998,12 +998,6 @@ ArticleModel = (function(_super) {
   };
 
   ArticleModel.prototype.initialize = function() {
-    this.on('change', (function(_this) {
-      return function(model, options) {
-        console.log('options, model', options, model);
-        return _this.localSave(model);
-      };
-    })(this));
     return this.dispatchToken = dispatcher.register(this.dispatcherCallback);
   };
 
