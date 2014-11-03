@@ -196,8 +196,13 @@ Masthead = React.createClass
 ArticleFooter = React.createClass
 
   mixins: [
-    FluxBone.CollectionMixin('words', 'add remove reset')
+    FluxBone.CollectionMixin('words', 'add remove reset', 'deferUpdate')
   ]
+
+  deferUpdate: ->
+    setTimeout =>
+      @forceUpdate()
+    , 0
 
   render: ->
     total_time = @props.words.getTotalTime().toFixed(1)
