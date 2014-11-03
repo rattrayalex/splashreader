@@ -1,5 +1,6 @@
 chrome.browserAction.onClicked.addListener ->
-  chrome.tabs.executeScript
-    file: 'js/chrome.js'
+  chrome.tabs.insertCSS
+    file: 'css/chrome.css'
   , ->
-    alert 'finished running the thing!'
+    chrome.tabs.executeScript
+      file: 'js/chrome.js'

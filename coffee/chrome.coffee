@@ -1,4 +1,4 @@
-alert 'hello world'
+
 
 getCurrentUrl = () ->
   document.URL
@@ -20,20 +20,24 @@ insertIframe = (url)->
   iframe.style.overflow = 'hidden'
   iframe.style.zIndex = 999999
 
-  iframe.style.display = 'none'
+  iframe.className = ''
+  iframe.style.transition = "all .5s"
+  iframe.setAttribute 'id', 'splashreader'
 
   iframe.setAttribute 'src', 'http://www.splashreaderapp.com/#' + url
 
+  # iframe.style.display = 'none'
   document.body.appendChild(iframe)
 
   return iframe
 
 
 toggleIframe = (iframe) ->
-  if iframe.style.display is 'none'
-    iframe.style.display = 'block'
+  console.log 'toggling...'
+  if iframe.className is 'splashreader-out'
+    iframe.className = ''
   else
-    iframe.style.display = 'none'
+    iframe.className = 'splashreader-out'
 
 
 main = ->
@@ -42,8 +46,8 @@ main = ->
 
   if not window.SplashReader.iframe
     url = getCurrentUrl()
-    alert 'url is' + url
     window.SplashReader.iframe = insertIframe(url)
+    toggleIframe(window.SplashReader.iframe)
 
   toggleIframe(window.SplashReader.iframe)
 
