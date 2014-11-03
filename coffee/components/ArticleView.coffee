@@ -111,7 +111,7 @@ CollectURL = React.createClass
         className: 'text-center'
       },
         h1 {}, "SplashReader"
-        p {}, "A speed reader you'll actually want to use."
+        p {}, "A speed reader that lets you come up for air."
         form {
           className: 'form'
           style:
@@ -143,7 +143,7 @@ CollectURL = React.createClass
                   span {
                     className: "hidden-xs"
                   },
-                    "Speed Read "
+                    "Splash "
                   span {
                     className: 'glyphicon glyphicon-forward'
                   }
