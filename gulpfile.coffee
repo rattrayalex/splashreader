@@ -64,11 +64,10 @@ gulp.task "sourcemap", ['serve'], ->
     .pipe source("app.js")
     .pipe gulp.dest("js")
 
-
-gulp.task "watchify", ->
+watchifyFile = (filename) ->
   args = watchify.args
   args.extensions = ['.coffee']
-  bundler = watchify(browserify("./coffee/app.coffee", args), args)
+  bundler = watchify(browserify("./coffee/#{filename}.coffee", args), args)
   bundler.transform(coffeeify)
   bundler.ignore('iconv')
 
@@ -78,12 +77,19 @@ gulp.task "watchify", ->
       # log errors if they happen
       .on "error", gutil.log.bind(gutil, "Browserify Error")
       # I'm not really sure what this line is all about?
-      .pipe source("app.js")
+      .pipe source("#{filename}.js")
       .pipe gulp.dest("js")
       .pipe livereload()
     gutil.log gutil.colors.green 'rebundled.'
 
   bundler.on "update", rebundle
   rebundle()
+
+
+gulp.task "watchify", ->
+  watchifyFile 'app'
+  watchifyFile 'chrome'
+  watchifyFile 'chromeBrowserAction'
+
 
 gulp.task "default", ["watchify", "serve", "less", "watch"]
