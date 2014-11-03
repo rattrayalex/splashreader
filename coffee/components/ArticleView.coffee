@@ -67,7 +67,7 @@ Elem = React.createClass
   ]
 
   isCurrentPara: ->
-    @props.current.getWord().get('parent') is @props.elem
+    @props.current.getWord()?.get('parent') is @props.elem
 
   render: ->
     ReactElem = React.DOM[@props.elem.get('node_name')]
@@ -196,8 +196,13 @@ Masthead = React.createClass
 ArticleFooter = React.createClass
 
   mixins: [
-    FluxBone.CollectionMixin('words', 'add remove reset')
+    FluxBone.CollectionMixin('words', 'add remove reset', 'deferUpdate')
   ]
+
+  deferUpdate: ->
+    setTimeout =>
+      @forceUpdate()
+    , 0
 
   render: ->
     total_time = @props.words.getTotalTime().toFixed(1)
@@ -216,12 +221,51 @@ ArticleFooter = React.createClass
              in #{ total_time } minute#{ pluralize }."
 
 
+LoadingIcon = React.createClass
+  render: ->
+    div {
+      style:
+        position: 'absolute'
+        top: 0
+        left: 0
+        right: 0
+        bottom: 0
+        margin: 'auto'
+        zIndex: 100
+        # background: 'rgba(0,0,0,.1)'
+    },
+      div {
+        style:
+          display: 'table'
+          textAlign: 'center'
+          width: '100%'
+          height: '100%'
+      },
+        span {
+          className: "glyphicon glyphicon-repeat fa-spin"
+          style:
+            fontSize: '500%'
+            opacity: .5
+            display: 'table-cell'
+            verticalAlign: 'middle'
+        }
+
+
 ArticleViewDisplay = React.createClass
 
   mixins: [
     FluxBone.ModelMixin('status', 'change:playing')
-    FluxBone.ModelMixin('article', 'change:elem')
+    FluxBone.ModelMixin('article', 'change')
+    FluxBone.ModelMixin('page', 'change')
   ]
+
+  getLoadingState: ->
+    if @props.page.get('url') and not @props.article.get('elem')
+      true
+    else if @props.page.get('url') is not @props.article.get('url')
+      true
+    else
+      false
 
   getPadding: ->
     window.innerHeight * .4 - 60
@@ -236,14 +280,18 @@ ArticleViewDisplay = React.createClass
     $(window).on 'resize', ( => @forceUpdate() )
 
   render: ->
+    loading = @getLoadingState()
+
     div {
-      className: 'scroll-box'
+      className: 'loading' if loading
       style:
         paddingTop: @getPaddingTop()
         paddingBottom: @getPadding()
         # visibility instead of display b/c it retains the scroll position
         visibility: if @props.status.get('playing') then 'hidden' else 'visible'
     },
+      if loading
+        LoadingIcon {}
       Masthead {
         article: @props.article
         padding: @getPadding()

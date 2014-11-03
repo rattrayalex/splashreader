@@ -32,6 +32,7 @@ main = ->
       current: CurrentWordStore
       status: RsvpStatusStore
       words: WordStore
+      page: CurrentPageStore
     }
     document.querySelector('.article-main')
   )

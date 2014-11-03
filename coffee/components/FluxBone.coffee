@@ -1,7 +1,7 @@
 
 module.exports =
 
-  ModelMixin: (model_name, event_name="all") ->
+  ModelMixin: (model_name, event_name="all", cb_name) ->
 
     eventCallbackName = "_eventCallbacks_#{ model_name }_#{ event_name }"
 
@@ -18,14 +18,15 @@ module.exports =
           @
 
     mixin[eventCallbackName] = () ->
-      setTimeout =>
+      if cb_name? and @[cb_name]?
+        @[cb_name]()
+      else
         @forceUpdate()
-      , 0
 
     return mixin
 
 
-  CollectionMixin: (collection_name, event_name="all") ->
+  CollectionMixin: (collection_name, event_name="all", cb_name) ->
 
     eventCallbackName = "_eventCallbacks_#{ collection_name }_#{ event_name }"
 
@@ -42,9 +43,9 @@ module.exports =
           @
 
     mixin[eventCallbackName] = () ->
-      setTimeout =>
+      if cb_name? and @[cb_name]?
+        @[cb_name]()
+      else
         @forceUpdate()
-      , 0
 
     return mixin
-

@@ -67,11 +67,19 @@ class ArticleModel extends NestedBackbone.Model
       when 'page-change'
         dispatcher.waitFor [CurrentPageStore.dispatchToken]
 
+        # going back to the home page, or ignoring if invalid URL.
         if not validator.isURL(payload.url)
           if not payload.url
             console.log 'back to home page'
             @clear()
           return
+
+        # when you change from one page directly to another
+        if @get('url') isnt payload.url
+          console.log 'going to clear Article stuff'
+          @clear()
+          @set
+            url: payload.url
 
         # read payload.url, {withCredentials: false}, (error, article, data) ->
         #   console.log 'got readability', error, article, data
@@ -107,16 +115,16 @@ class ArticleModel extends NestedBackbone.Model
             data = require('../example_data')
 
             console.log 'REQ FAILED USING TEST DATA', data
-            # setTimeout ->
-            #   dispatcher.dispatch
-            #     actionType: 'process-article'
-            #     raw_html: data.content
-            #     title: data.title
-            #     author: data.author
-            #     url: data.url
-            #     domain: data.domain
-            #     date: data.date_published
-            # , 0
+            setTimeout ->
+              dispatcher.dispatch
+                actionType: 'process-article'
+                raw_html: data.content
+                title: data.title
+                author: data.author
+                url: data.url
+                domain: data.domain
+                date: data.date_published
+            , 0
 
 ArticleStore = new ArticleModel()
 module.exports = ArticleStore
