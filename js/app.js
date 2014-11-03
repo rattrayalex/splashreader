@@ -183,7 +183,7 @@ CollectURL = React.createClass({
   render: function() {
     return div({}, div({
       className: 'text-center'
-    }, h1({}, "SplashReader"), p({}, "A speed reader you'll actually want to use."), form({
+    }, h1({}, "SplashReader"), p({}, "A speed reader that lets you come up for air."), form({
       className: 'form',
       style: {
         marginTop: 30
@@ -199,6 +199,7 @@ CollectURL = React.createClass({
       className: 'form-control',
       type: 'text',
       placeholder: 'Enter an article URL',
+      value: this.props.url,
       ref: 'url'
     }), span({
       className: 'input-group-btn'
@@ -207,7 +208,7 @@ CollectURL = React.createClass({
       className: 'btn btn-warning'
     }, span({
       className: "hidden-xs"
-    }, "Speed Read "), span({
+    }, "Splash "), span({
       className: 'glyphicon glyphicon-forward'
     }))))))));
   }
@@ -351,7 +352,9 @@ ArticleViewDisplay = React.createClass({
     }), this.props.article.has('elem') ? Elem({
       elem: this.props.article.get('elem'),
       current: this.props.current
-    }) : CollectURL({}), ArticleFooter({
+    }) : CollectURL({
+      url: this.props.article.get('url') || this.props.page.get('url')
+    }), ArticleFooter({
       words: this.props.words
     }));
   }
@@ -1267,17 +1270,9 @@ CurrentWordModel = (function(_super) {
   };
 
   CurrentWordModel.prototype.initialize = function() {
-    _.extend(this, OfflineBackbone.Model);
-    this.localLoad();
-    this.on('change', (function(_this) {
-      return function(model, options) {
-        console.log('options, model', options, model);
-        return _this.localSave(model);
-      };
-    })(this));
     this.on('change:idx', (function(_this) {
       return function(model, idx) {
-        var prev, word;
+        var prev, word, _ref1, _ref2;
         prev = _this.getWord(_this.previous('idx'));
         word = _this.getWord(idx);
         if (prev != null) {
@@ -1287,8 +1282,12 @@ CurrentWordModel = (function(_super) {
           word.trigger('change');
         }
         if ((prev != null ? prev.get('parent') : void 0) !== (word != null ? word.get('parent') : void 0)) {
-          prev.get('parent').trigger('change');
-          word.get('parent').trigger('change');
+          if ((_ref1 = prev.get('parent')) != null) {
+            _ref1.trigger('change');
+          }
+          if ((_ref2 = word.get('parent')) != null) {
+            _ref2.trigger('change');
+          }
           if (RsvpStatusStore.get('playing')) {
             RsvpStatusStore.set({
               playing: false

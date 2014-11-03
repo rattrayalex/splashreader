@@ -1,8 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./coffee/chrome.coffee":[function(require,module,exports){
 var getCurrentUrl, insertIframe, main, toggleIframe;
 
-alert('hello world');
-
 getCurrentUrl = function() {
   return document.URL;
 };
@@ -22,17 +20,20 @@ insertIframe = function(url) {
   iframe.style.padding = 0;
   iframe.style.overflow = 'hidden';
   iframe.style.zIndex = 999999;
-  iframe.style.display = 'none';
+  iframe.className = '';
+  iframe.style.transition = "all .5s";
+  iframe.setAttribute('id', 'splashreader');
   iframe.setAttribute('src', 'http://www.splashreaderapp.com/#' + url);
   document.body.appendChild(iframe);
   return iframe;
 };
 
 toggleIframe = function(iframe) {
-  if (iframe.style.display === 'none') {
-    return iframe.style.display = 'block';
+  console.log('toggling...');
+  if (iframe.className === 'splashreader-out') {
+    return iframe.className = '';
   } else {
-    return iframe.style.display = 'none';
+    return iframe.className = 'splashreader-out';
   }
 };
 
@@ -45,8 +46,8 @@ main = function() {
   }
   if (!window.SplashReader.iframe) {
     url = getCurrentUrl();
-    alert('url is' + url);
     window.SplashReader.iframe = insertIframe(url);
+    toggleIframe(window.SplashReader.iframe);
   }
   return toggleIframe(window.SplashReader.iframe);
 };
