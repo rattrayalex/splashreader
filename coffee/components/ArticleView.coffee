@@ -131,6 +131,7 @@ CollectURL = React.createClass
                 className: 'form-control'
                 type: 'text'
                 placeholder: 'Enter an article URL'
+                value: @props.url
                 ref: 'url'
               }
               span {
@@ -303,7 +304,9 @@ ArticleViewDisplay = React.createClass
           current: @props.current
         }
       else
-        CollectURL {}
+        CollectURL {
+          url: @props.article.get('url') or @props.page.get('url')
+        }
       ArticleFooter {
         words: @props.words
       }

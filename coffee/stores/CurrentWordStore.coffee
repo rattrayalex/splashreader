@@ -67,11 +67,11 @@ class CurrentWordModel extends Backbone.Model
 
   initialize: ->
     # offline stuff... not working rn.
-    _.extend @, OfflineBackbone.Model
-    @localLoad()
-    @on 'change', (model, options) =>
-      console.log 'options, model', options, model
-      @localSave(model)
+    # _.extend @, OfflineBackbone.Model
+    # @localLoad()
+    # @on 'change', (model, options) =>
+    #   console.log 'options, model', options, model
+    #   @localSave(model)
 
     # when there's a new word,
     @on 'change:idx', (model, idx) =>
@@ -84,8 +84,8 @@ class CurrentWordModel extends Backbone.Model
       # paragraph change!
       if prev?.get('parent') isnt word?.get('parent')
         # tell old/new they've changed
-        prev.get('parent').trigger('change')
-        word.get('parent').trigger('change')
+        prev.get('parent')?.trigger('change')
+        word.get('parent')?.trigger('change')
 
         if RsvpStatusStore.get('playing')
 
