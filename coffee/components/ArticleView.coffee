@@ -111,7 +111,7 @@ CollectURL = React.createClass
         className: 'text-center'
       },
         h1 {}, "SplashReader"
-        p {}, "A speed reader you'll actually want to use."
+        p {}, "A speed reader that lets you come up for air."
         form {
           className: 'form'
           style:
@@ -131,6 +131,7 @@ CollectURL = React.createClass
                 className: 'form-control'
                 type: 'text'
                 placeholder: 'Enter an article URL'
+                value: @props.url
                 ref: 'url'
               }
               span {
@@ -143,7 +144,7 @@ CollectURL = React.createClass
                   span {
                     className: "hidden-xs"
                   },
-                    "Speed Read "
+                    "Splash "
                   span {
                     className: 'glyphicon glyphicon-forward'
                   }
@@ -303,7 +304,9 @@ ArticleViewDisplay = React.createClass
           current: @props.current
         }
       else
-        CollectURL {}
+        CollectURL {
+          url: @props.article.get('url') or @props.page.get('url')
+        }
       ArticleFooter {
         words: @props.words
       }
