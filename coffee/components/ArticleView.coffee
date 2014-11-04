@@ -6,6 +6,7 @@ _ = require 'underscore'
 router = require('../router')
 dispatcher = require('../dispatcher')
 FluxBone = require('./FluxBone')
+deferUpdateMixin = require('./deferUpdateMixin')
 
 {h1, div, span, form, input, button, p, a, em, small, hr} = React.DOM
 
@@ -131,7 +132,7 @@ CollectURL = React.createClass
                 className: 'form-control'
                 type: 'text'
                 placeholder: 'Enter an article URL'
-                value: @props.url
+                defaultValue: @props.url
                 ref: 'url'
               }
               span {
@@ -197,13 +198,9 @@ Masthead = React.createClass
 ArticleFooter = React.createClass
 
   mixins: [
+    deferUpdateMixin
     FluxBone.CollectionMixin('words', 'add remove reset', 'deferUpdate')
   ]
-
-  deferUpdate: ->
-    setTimeout =>
-      @forceUpdate()
-    , 0
 
   render: ->
     total_time = @props.words.getTotalTime().toFixed(1)
