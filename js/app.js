@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./coffee/app.coffee":[function(require,module,exports){
-var $, ArticleStore, ArticleViewDisplay, Backbone, CurrentPageStore, CurrentWordStore, React, RsvpDisplay, RsvpStatusStore, Topbar, WordStore, dispatcher, key, main;
+var $, ArticleStore, ArticleViewDisplay, Backbone, BottomBar, CurrentPageStore, CurrentWordStore, React, RsvpDisplay, RsvpStatusStore, Topbar, WordStore, dispatcher, key, main;
 
 React = require('react');
 
@@ -27,14 +27,23 @@ RsvpDisplay = require('./components/RsvpDisplay');
 
 Topbar = require('./components/Topbar');
 
+BottomBar = require('./components/BottomBar');
+
 dispatcher = require('./dispatcher');
 
 main = function() {
   React.renderComponent(Topbar({
     status: RsvpStatusStore,
     words: WordStore,
-    current: CurrentWordStore
+    current: CurrentWordStore,
+    article: ArticleStore
   }), document.querySelector('.topbar'));
+  React.renderComponent(BottomBar({
+    status: RsvpStatusStore,
+    current: CurrentWordStore,
+    words: WordStore,
+    article: ArticleStore
+  }), document.querySelector('.bottombar'));
   React.renderComponent(ArticleViewDisplay({
     article: ArticleStore,
     current: CurrentWordStore,
@@ -56,8 +65,8 @@ main();
 
 
 
-},{"./components/ArticleView":"/Users/alex/djcode/splashreader/coffee/components/ArticleView.coffee","./components/RsvpDisplay":"/Users/alex/djcode/splashreader/coffee/components/RsvpDisplay.coffee","./components/Topbar":"/Users/alex/djcode/splashreader/coffee/components/Topbar.coffee","./dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./stores/ArticleStore":"/Users/alex/djcode/splashreader/coffee/stores/ArticleStore.coffee","./stores/CurrentPageStore":"/Users/alex/djcode/splashreader/coffee/stores/CurrentPageStore.coffee","./stores/CurrentWordStore":"/Users/alex/djcode/splashreader/coffee/stores/CurrentWordStore.coffee","./stores/RsvpStatusStore":"/Users/alex/djcode/splashreader/coffee/stores/RsvpStatusStore.coffee","./stores/WordStore":"/Users/alex/djcode/splashreader/coffee/stores/WordStore.coffee","backbone":"/Users/alex/djcode/splashreader/node_modules/backbone/backbone.js","jquery":"/Users/alex/djcode/splashreader/node_modules/jquery/dist/jquery.js","keymaster":"/Users/alex/djcode/splashreader/node_modules/keymaster/keymaster.js","react":"/Users/alex/djcode/splashreader/node_modules/react/react.js"}],"/Users/alex/djcode/splashreader/coffee/components/ArticleView.coffee":[function(require,module,exports){
-var $, ArticleFooter, ArticleViewDisplay, CollectURL, Elem, FluxBone, LoadingIcon, Masthead, React, Word, a, button, dispatcher, div, em, form, getElemOrWord, h1, hr, input, p, router, scrollToNode, small, span, validator, _, _ref;
+},{"./components/ArticleView":"/Users/alex/djcode/splashreader/coffee/components/ArticleView.coffee","./components/BottomBar":"/Users/alex/djcode/splashreader/coffee/components/BottomBar.coffee","./components/RsvpDisplay":"/Users/alex/djcode/splashreader/coffee/components/RsvpDisplay.coffee","./components/Topbar":"/Users/alex/djcode/splashreader/coffee/components/Topbar.coffee","./dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./stores/ArticleStore":"/Users/alex/djcode/splashreader/coffee/stores/ArticleStore.coffee","./stores/CurrentPageStore":"/Users/alex/djcode/splashreader/coffee/stores/CurrentPageStore.coffee","./stores/CurrentWordStore":"/Users/alex/djcode/splashreader/coffee/stores/CurrentWordStore.coffee","./stores/RsvpStatusStore":"/Users/alex/djcode/splashreader/coffee/stores/RsvpStatusStore.coffee","./stores/WordStore":"/Users/alex/djcode/splashreader/coffee/stores/WordStore.coffee","backbone":"/Users/alex/djcode/splashreader/node_modules/backbone/backbone.js","jquery":"/Users/alex/djcode/splashreader/node_modules/jquery/dist/jquery.js","keymaster":"/Users/alex/djcode/splashreader/node_modules/keymaster/keymaster.js","react":"/Users/alex/djcode/splashreader/node_modules/react/react.js"}],"/Users/alex/djcode/splashreader/coffee/components/ArticleView.coffee":[function(require,module,exports){
+var $, ArticleFooter, ArticleViewDisplay, CollectURL, Elem, FluxBone, LoadingIcon, Masthead, React, Word, a, button, deferUpdateMixin, dispatcher, div, em, form, getElemOrWord, h1, hr, input, p, router, scrollToNode, small, span, validator, _, _ref;
 
 React = require('react/addons');
 
@@ -72,6 +81,8 @@ router = require('../router');
 dispatcher = require('../dispatcher');
 
 FluxBone = require('./FluxBone');
+
+deferUpdateMixin = require('./deferUpdateMixin');
 
 _ref = React.DOM, h1 = _ref.h1, div = _ref.div, span = _ref.span, form = _ref.form, input = _ref.input, button = _ref.button, p = _ref.p, a = _ref.a, em = _ref.em, small = _ref.small, hr = _ref.hr;
 
@@ -199,7 +210,7 @@ CollectURL = React.createClass({
       className: 'form-control',
       type: 'text',
       placeholder: 'Enter an article URL',
-      value: this.props.url,
+      defaultValue: this.props.url,
       ref: 'url'
     }), span({
       className: 'input-group-btn'
@@ -254,14 +265,7 @@ Masthead = React.createClass({
 });
 
 ArticleFooter = React.createClass({
-  mixins: [FluxBone.CollectionMixin('words', 'add remove reset', 'deferUpdate')],
-  deferUpdate: function() {
-    return setTimeout((function(_this) {
-      return function() {
-        return _this.forceUpdate();
-      };
-    })(this), 0);
-  },
+  mixins: [deferUpdateMixin, FluxBone.CollectionMixin('words', 'add remove reset', 'deferUpdate')],
   render: function() {
     var pluralize, total_time;
     total_time = this.props.words.getTotalTime().toFixed(1);
@@ -367,7 +371,155 @@ module.exports = {
 
 
 
-},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","../router":"/Users/alex/djcode/splashreader/coffee/router.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","jQuery":"/Users/alex/djcode/splashreader/node_modules/jQuery/dist/jquery.js","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js","underscore":"/Users/alex/djcode/splashreader/node_modules/underscore/underscore.js","validator":"/Users/alex/djcode/splashreader/node_modules/validator/validator.js"}],"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee":[function(require,module,exports){
+},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","../router":"/Users/alex/djcode/splashreader/coffee/router.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","./deferUpdateMixin":"/Users/alex/djcode/splashreader/coffee/components/deferUpdateMixin.coffee","jQuery":"/Users/alex/djcode/splashreader/node_modules/jQuery/dist/jquery.js","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js","underscore":"/Users/alex/djcode/splashreader/node_modules/underscore/underscore.js","validator":"/Users/alex/djcode/splashreader/node_modules/validator/validator.js"}],"/Users/alex/djcode/splashreader/coffee/components/BottomBar.coffee":[function(require,module,exports){
+var BottomBar, FluxBone, Nav, NavItem, Navbar, PlayPauseButton, React, WpmWidget, a, button, deferUpdateMixin, dispatcher, div, em, form, h1, li, p, span, _ref, _ref1;
+
+React = require('react/addons');
+
+_ref = require('react-bootstrap'), Navbar = _ref.Navbar, Nav = _ref.Nav, NavItem = _ref.NavItem;
+
+dispatcher = require('../dispatcher');
+
+FluxBone = require('./FluxBone');
+
+deferUpdateMixin = require('./deferUpdateMixin');
+
+_ref1 = React.DOM, h1 = _ref1.h1, div = _ref1.div, li = _ref1.li, p = _ref1.p, a = _ref1.a, span = _ref1.span, button = _ref1.button, form = _ref1.form, em = _ref1.em;
+
+WpmWidget = React.createClass({
+  mixins: [FluxBone.ModelMixin('status', 'change'), React.addons.PureRenderMixin],
+  handleIncreaseWpmClick: function() {
+    return dispatcher.dispatch({
+      actionType: 'increase-wpm',
+      amount: 50
+    });
+  },
+  handleDecreaseWpmClick: function() {
+    return dispatcher.dispatch({
+      actionType: 'decrease-wpm',
+      amount: 50
+    });
+  },
+  render: function() {
+    return div({
+      className: 'navbar-form'
+    }, div({
+      className: 'btn-group'
+    }, button({
+      type: 'button',
+      className: 'btn btn-info',
+      onClick: this.handleDecreaseWpmClick
+    }, span({
+      className: 'glyphicon glyphicon-chevron-down'
+    })), span({
+      className: 'btn btn-default disabled'
+    }, "" + (this.props.status.get('wpm')) + " wpm"), button({
+      type: 'button',
+      className: 'btn btn-info',
+      onClick: this.handleIncreaseWpmClick
+    }, span({
+      className: 'glyphicon glyphicon-chevron-up'
+    }))));
+  }
+});
+
+BottomBar = React.createClass({
+  mixins: [deferUpdateMixin, FluxBone.ModelMixin('status', 'change'), FluxBone.ModelMixin('current', 'change'), FluxBone.CollectionMixin('words', 'add remove reset', 'deferUpdate'), React.addons.PureRenderMixin],
+  render: function() {
+    var percent_done, pluralize, time_left;
+    percent_done = this.props.current.getPercentDone() * 100;
+    time_left = Math.round(this.props.current.getTimeLeft());
+    return div({
+      className: 'navbar-fluid navbar-default navbar-fixed-bottom'
+    }, PlayPauseButton({
+      status: this.props.status,
+      words: this.props.words
+    }), div({
+      className: 'container-fluid'
+    }, Nav({
+      className: 'navbar-left'
+    }, WpmWidget({
+      status: this.props.status
+    })), p({
+      className: 'navbar-text navbar-right text-muted',
+      style: {
+        marginRight: 75
+      }
+    }, em({
+      className: 'text-muted'
+    }, this.props.words.length && !isNaN(time_left) ? (pluralize = time_left !== 1 ? "s" : "", "" + time_left + " minute" + pluralize + " left") : "")), div({
+      className: 'progress',
+      style: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: 3,
+        borderRadius: 0,
+        marginBottom: 0,
+        boxShadow: 'none',
+        background: 'transparent'
+      }
+    }, div({
+      className: 'progress-bar progress-bar-warning',
+      role: 'progressbar',
+      style: {
+        width: "" + percent_done + "%"
+      }
+    }))));
+  }
+});
+
+PlayPauseButton = React.createClass({
+  mixins: [FluxBone.ModelMixin('status', 'change'), FluxBone.CollectionMixin('words', 'add remove reset'), React.addons.PureRenderMixin],
+  handlePlayPauseClick: function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    dispatcher.dispatch({
+      actionType: 'play-pause'
+    });
+    return false;
+  },
+  render: function() {
+    var play_pause_button_class;
+    play_pause_button_class = React.addons.classSet({
+      'btn': true,
+      'btn-info': true,
+      'glyphicon': true,
+      'glyphicon-play': !this.props.status.get('playing'),
+      'glyphicon-pause': this.props.status.get('playing'),
+      'active': this.props.status.get('playing'),
+      'disabled': !this.props.words.length
+    });
+    return div({
+      style: {
+        position: 'fixed',
+        bottom: 25,
+        right: 25,
+        top: 'initial',
+        borderRadius: '50%',
+        boxShadow: '0 3px 6px rgba(0,0,0,.2)'
+      }
+    }, button({
+      type: 'submit',
+      className: play_pause_button_class,
+      onClick: this.handlePlayPauseClick,
+      style: {
+        outline: 'none',
+        borderRadius: '50%',
+        height: 50,
+        width: 50,
+        top: 'initial'
+      }
+    }));
+  }
+});
+
+module.exports = BottomBar;
+
+
+
+},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","./deferUpdateMixin":"/Users/alex/djcode/splashreader/coffee/components/deferUpdateMixin.coffee","react-bootstrap":"/Users/alex/djcode/splashreader/node_modules/react-bootstrap/main.js","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js"}],"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee":[function(require,module,exports){
 module.exports = {
   ModelMixin: function(model_name, event_name, cb_name) {
     var eventCallbackName, mixin;
@@ -484,7 +636,7 @@ module.exports = RsvpDisplay;
 
 
 },{"../rsvp_utils":"/Users/alex/djcode/splashreader/coffee/rsvp_utils.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js"}],"/Users/alex/djcode/splashreader/coffee/components/Topbar.coffee":[function(require,module,exports){
-var FluxBone, Nav, NavItem, Navbar, React, Topbar, a, button, dispatcher, div, form, h1, li, p, span, _ref, _ref1;
+var FluxBone, Nav, NavItem, Navbar, React, Topbar, a, button, dispatcher, div, em, form, h1, li, p, span, _ref, _ref1;
 
 React = require('react/addons');
 
@@ -494,101 +646,18 @@ dispatcher = require('../dispatcher');
 
 FluxBone = require('./FluxBone');
 
-_ref1 = React.DOM, h1 = _ref1.h1, div = _ref1.div, li = _ref1.li, p = _ref1.p, a = _ref1.a, span = _ref1.span, button = _ref1.button, form = _ref1.form;
+_ref1 = React.DOM, h1 = _ref1.h1, div = _ref1.div, li = _ref1.li, p = _ref1.p, a = _ref1.a, span = _ref1.span, button = _ref1.button, form = _ref1.form, em = _ref1.em;
 
 Topbar = React.createClass({
-  mixins: [FluxBone.ModelMixin('status', 'change'), FluxBone.ModelMixin('current', 'change'), FluxBone.CollectionMixin('words', 'add remove reset'), React.addons.PureRenderMixin],
-  handleIncreaseWpmClick: function() {
-    return dispatcher.dispatch({
-      actionType: 'increase-wpm',
-      amount: 50
-    });
-  },
-  handleDecreaseWpmClick: function() {
-    return dispatcher.dispatch({
-      actionType: 'decrease-wpm',
-      amount: 50
-    });
-  },
-  handlePlayPauseClick: function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    dispatcher.dispatch({
-      actionType: 'play-pause'
-    });
-    return false;
-  },
+  mixins: [FluxBone.ModelMixin('article', 'change:title'), FluxBone.ModelMixin('status', 'change'), FluxBone.ModelMixin('current', 'change'), FluxBone.CollectionMixin('words', 'add remove reset'), React.addons.PureRenderMixin],
   render: function() {
-    var percent_done, play_pause_button_class, pluralize, time_left;
-    percent_done = this.props.current.getPercentDone() * 100;
-    time_left = Math.round(this.props.current.getTimeLeft());
-    play_pause_button_class = React.addons.classSet({
-      'btn': true,
-      'btn-default': true,
-      'glyphicon': true,
-      'glyphicon-play': !this.props.status.get('playing'),
-      'glyphicon-pause': this.props.status.get('playing'),
-      'active': this.props.status.get('playing'),
-      'disabled': !this.props.words.length
-    });
     return div({
-      className: 'navbar-fluid navbar-default navbar-fixed-bottom'
+      className: 'navbar-fluid navbar-default navbar-fixed-top'
     }, div({
       className: 'container-fluid'
     }, p({
       className: "navbar-center navbar-text navbar-brand hidden-xs"
-    }, "SplashReader"), Nav({
-      className: 'navbar-left'
-    }, div({
-      className: 'navbar-form'
-    }, div({
-      className: 'btn-group'
-    }, button({
-      type: 'button',
-      className: 'btn btn-default',
-      onClick: this.handleDecreaseWpmClick
-    }, span({
-      className: 'glyphicon glyphicon-chevron-down'
-    })), span({
-      className: 'btn btn-default disabled'
-    }, "" + (this.props.status.get('wpm')) + " wpm"), button({
-      type: 'button',
-      className: 'btn btn-default',
-      onClick: this.handleIncreaseWpmClick
-    }, span({
-      className: 'glyphicon glyphicon-chevron-up'
-    }))))), Nav({
-      className: 'navbar-right'
-    }, form({
-      className: 'navbar-form'
-    }, button({
-      type: 'submit',
-      className: play_pause_button_class,
-      onClick: this.handlePlayPauseClick,
-      style: {
-        outline: 'none'
-      }
-    }))), p({
-      className: 'navbar-text navbar-right'
-    }, this.props.words.length && time_left ? (pluralize = time_left !== 1 ? "s" : "", "" + time_left + " minute" + pluralize + " left") : ""), div({
-      className: 'progress',
-      style: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: 3,
-        borderRadius: 0,
-        boxShadow: 'none',
-        background: 'transparent'
-      }
-    }, div({
-      className: 'progress-bar progress-bar-warning',
-      role: 'progressbar',
-      style: {
-        width: "" + percent_done + "%"
-      }
-    }))));
+    }, this.props.article.get('title') ? this.props.article.get('title') : "SplashReader")));
   }
 });
 
@@ -596,7 +665,20 @@ module.exports = Topbar;
 
 
 
-},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","react-bootstrap":"/Users/alex/djcode/splashreader/node_modules/react-bootstrap/main.js","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js"}],"/Users/alex/djcode/splashreader/coffee/constants.coffee":[function(require,module,exports){
+},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","react-bootstrap":"/Users/alex/djcode/splashreader/node_modules/react-bootstrap/main.js","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js"}],"/Users/alex/djcode/splashreader/coffee/components/deferUpdateMixin.coffee":[function(require,module,exports){
+module.exports = {
+  deferUpdate: function() {
+    return setTimeout((function(_this) {
+      return function() {
+        return _this.forceUpdate();
+      };
+    })(this), 0);
+  }
+};
+
+
+
+},{}],"/Users/alex/djcode/splashreader/coffee/constants.coffee":[function(require,module,exports){
 module.exports = {
   READABILITY_TOKEN: '33cd31b9cce9187a74eb3f2c5ac114b6c0082c74',
   ALLOWED_REACT_NODES: ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b', 'base', 'bdi', 'bdo', 'big', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'cite', 'code', 'col', 'colgroup', 'data', 'datalist', 'dd', 'del', 'details', 'dfn', 'div', 'dl', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hr', 'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'legend', 'li', 'link', 'main', 'map', 'mark', 'menu', 'menuitem', 'meta', 'meter', 'nav', 'noscript', 'object', 'ol', 'optgroup', 'option', 'output', 'p', 'param', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'script', 'section', 'select', 'small', 'source', 'span', 'strong', 'style', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'u', 'ul', 'var', 'video', 'wbr', 'circle', 'defs', 'ellipse', 'g', 'line', 'linearGradient', 'mask', 'path', 'pattern', 'polygon', 'polyline', 'radialGradient', 'rect', 'stop', 'svg', 'text', 'tspan'],
