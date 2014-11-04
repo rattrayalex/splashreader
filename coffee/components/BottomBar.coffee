@@ -43,7 +43,10 @@ WpmWidget = React.createClass
         span {
           className: 'btn btn-default disabled'
         },
-          "#{ @props.status.get('wpm') } wpm"
+          "#{ @props.status.get('wpm') }"
+          span {
+            className: 'hidden-xs'
+          }, " wpm"
         button {
           type: 'button'
           className: 'btn btn-info'
@@ -71,10 +74,6 @@ BottomBar = React.createClass
     div {
       className: 'navbar-fluid navbar-default navbar-fixed-bottom'
     },
-      PlayPauseButton {
-        status: @props.status
-        words: @props.words
-      }
       div {
         className: 'container-fluid'
       },
@@ -119,7 +118,10 @@ BottomBar = React.createClass
             style:
               width: "#{percent_done}%"
           }
-
+      PlayPauseButton {
+        status: @props.status
+        words: @props.words
+      }
 
 
 PlayPauseButton = React.createClass

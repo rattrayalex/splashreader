@@ -4,7 +4,7 @@ React = require('react/addons')
 dispatcher = require('../dispatcher')
 FluxBone = require('./FluxBone')
 
-{h1, div, li, p, a, span, button, form, em} = React.DOM
+{h1, div, li, p, a, span, button, form, em, img} = React.DOM
 
 
 Topbar = React.createClass
@@ -25,12 +25,34 @@ Topbar = React.createClass
       div {
         className: 'container-fluid'
       },
-        p {
-          className: "navbar-center navbar-text navbar-brand hidden-xs"
+        div {
+          className: 'row'
         },
-          if @props.article.get('title')
-            @props.article.get('title')
-          else
-            "SplashReader"
+          div {
+            className: 'col-xs-1'
+          },
+            p {
+              className: 'navbar-text'
+              style:
+                marginTop: 10
+                marginBottom: 10
+            },
+              a {
+                href: '#'
+              },
+                img {
+                  src: '/images/icon32.png'
+                }
+          div {
+            className: 'col-xs-10'
+          },
+            p {
+              className: "navbar-center navbar-text navbar-brand hidden-xs"
+            },
+              if @props.article.get('title')
+                @props.article.get('title')
+              else
+                "SplashReader"
+
 
 module.exports = Topbar
