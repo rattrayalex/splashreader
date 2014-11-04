@@ -13,6 +13,7 @@ RsvpStatusStore = require('./stores/RsvpStatusStore')
 {ArticleViewDisplay} = require('./components/ArticleView')
 RsvpDisplay = require('./components/RsvpDisplay')
 Topbar = require('./components/Topbar')
+BottomBar = require('./components/BottomBar')
 
 dispatcher = require('./dispatcher')
 
@@ -23,8 +24,18 @@ main = ->
       status: RsvpStatusStore
       words: WordStore
       current: CurrentWordStore
+      article: ArticleStore
     }
     document.querySelector('.topbar')
+  )
+  React.renderComponent(
+    BottomBar {
+      status: RsvpStatusStore
+      current: CurrentWordStore
+      words: WordStore
+      article: ArticleStore
+    }
+    document.querySelector('.bottombar')
   )
   React.renderComponent(
     ArticleViewDisplay {
