@@ -24,20 +24,27 @@ insertIframe = (url)->
   iframe.style.transition = "all .5s"
   iframe.setAttribute 'id', 'splashreader'
 
-  iframe.setAttribute 'src', 'http://www.splashreaderapp.com/#' + url
+  iframe.setAttribute 'src', 'http://www.splashreaderapp.com/?view=chrome#' + url
+  iframe.onload = () ->
+    listenForEsc(iframe.contentWindow)
 
-  # iframe.style.display = 'none'
   document.body.appendChild(iframe)
 
   return iframe
 
 
 toggleIframe = (iframe) ->
-  console.log 'toggling...'
   if iframe.className is 'splashreader-out'
     iframe.className = ''
   else
     iframe.className = 'splashreader-out'
+
+
+listenForEsc = (env) ->
+  env.document.onkeyup = (e) ->
+    e = e or window.event
+    if e.keyCode is 27
+      toggleIframe(window.SplashReader.iframe)
 
 
 main = ->
@@ -48,6 +55,7 @@ main = ->
     url = getCurrentUrl()
     window.SplashReader.iframe = insertIframe(url)
     toggleIframe(window.SplashReader.iframe)
+    listenForEsc(window)
 
   toggleIframe(window.SplashReader.iframe)
 
