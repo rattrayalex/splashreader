@@ -1,5 +1,6 @@
 Backbone = require 'backbone'
 $ = require('jquery')
+key = require('keymaster')
 
 dispatcher = require('../dispatcher')
 
@@ -14,25 +15,44 @@ class RsvpStatusModel extends Backbone.Model
   initialize: ->
     @dispatchToken = dispatcher.register @dispatchCallback
 
-    @space_is_down = false
+    # key 'space', =>
+    #   dispatcher.dispatch
+    #     actionType: 'play-pause'
+    #     source: 'space'
+    #   false
     $(window).keydown (e) =>
       if e.which is 32  # space
-        if not @space_is_down
-          @space_is_down = true
-          dispatcher.dispatch
-            actionType: 'play'
-            source: 'space'
-        false
-
-    $(window).keyup (e) =>
-      if e.which is 32  # space
-        @space_is_down = false
         dispatcher.dispatch
-          actionType: 'pause'
+          actionType: 'play-pause'
           source: 'space'
         false
+    $(window).on 'touchend', (e) =>
+      if @get('playing')
+        dispatcher.dispatch
+          actionType: 'pause'
+          source: 'tap'
+        false
 
-    $(window).blur = ->
+
+    # @space_is_down = false
+    # $(window).keydown (e) =>
+    #   if e.which is 32  # space
+    #     if not @space_is_down
+    #       @space_is_down = true
+    #       dispatcher.dispatch
+    #         actionType: 'play'
+    #         source: 'space'
+    #     false
+
+    # $(window).keyup (e) =>
+    #   if e.which is 32  # space
+    #     @space_is_down = false
+    #     dispatcher.dispatch
+    #       actionType: 'pause'
+    #       source: 'space'
+    #     false
+
+    $(window).blur ->
       dispatcher.dispatch
         actionType: 'pause'
         source: 'window-blur'
@@ -50,7 +70,7 @@ class RsvpStatusModel extends Backbone.Model
       when 'play'
         # don't play if the trigger was a paragraph change
         # but the user has lifted the spacebar in the interim.
-        unless payload.source is 'para-change' and not @space_is_down
+        # unless payload.source is 'para-change' and not @space_is_down
           @set
             playing: true
 

@@ -266,7 +266,7 @@ ArticleViewDisplay = React.createClass
       false
 
   getPadding: ->
-    window.innerHeight * .4 - 100
+    window.innerHeight * .4 - 40
 
   getPaddingTop: ->
     if @refs.masthead
