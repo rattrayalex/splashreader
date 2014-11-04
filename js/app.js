@@ -323,7 +323,7 @@ ArticleViewDisplay = React.createClass({
     }
   },
   getPadding: function() {
-    return window.innerHeight * .4 - 60;
+    return window.innerHeight * .4 - 40;
   },
   getPaddingTop: function() {
     if (this.refs.masthead) {
@@ -413,7 +413,9 @@ WpmWidget = React.createClass({
       className: 'glyphicon glyphicon-chevron-down'
     })), span({
       className: 'btn btn-default disabled'
-    }, "" + (this.props.status.get('wpm')) + " wpm"), button({
+    }, "" + (this.props.status.get('wpm')), span({
+      className: 'hidden-xs'
+    }, " wpm")), button({
       type: 'button',
       className: 'btn btn-info',
       onClick: this.handleIncreaseWpmClick
@@ -431,10 +433,7 @@ BottomBar = React.createClass({
     time_left = Math.round(this.props.current.getTimeLeft());
     return div({
       className: 'navbar-fluid navbar-default navbar-fixed-bottom'
-    }, PlayPauseButton({
-      status: this.props.status,
-      words: this.props.words
-    }), div({
+    }, div({
       className: 'container-fluid'
     }, Nav({
       className: 'navbar-left'
@@ -466,7 +465,10 @@ BottomBar = React.createClass({
       style: {
         width: "" + percent_done + "%"
       }
-    }))));
+    }))), PlayPauseButton({
+      status: this.props.status,
+      words: this.props.words
+    }));
   }
 });
 
@@ -636,7 +638,7 @@ module.exports = RsvpDisplay;
 
 
 },{"../rsvp_utils":"/Users/alex/djcode/splashreader/coffee/rsvp_utils.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js"}],"/Users/alex/djcode/splashreader/coffee/components/Topbar.coffee":[function(require,module,exports){
-var FluxBone, Nav, NavItem, Navbar, React, Topbar, a, button, dispatcher, div, em, form, h1, li, p, span, _ref, _ref1;
+var FluxBone, Nav, NavItem, Navbar, React, Topbar, a, button, dispatcher, div, em, form, h1, img, li, p, span, _ref, _ref1;
 
 React = require('react/addons');
 
@@ -646,7 +648,7 @@ dispatcher = require('../dispatcher');
 
 FluxBone = require('./FluxBone');
 
-_ref1 = React.DOM, h1 = _ref1.h1, div = _ref1.div, li = _ref1.li, p = _ref1.p, a = _ref1.a, span = _ref1.span, button = _ref1.button, form = _ref1.form, em = _ref1.em;
+_ref1 = React.DOM, h1 = _ref1.h1, div = _ref1.div, li = _ref1.li, p = _ref1.p, a = _ref1.a, span = _ref1.span, button = _ref1.button, form = _ref1.form, em = _ref1.em, img = _ref1.img;
 
 Topbar = React.createClass({
   mixins: [FluxBone.ModelMixin('article', 'change:title'), FluxBone.ModelMixin('status', 'change'), FluxBone.ModelMixin('current', 'change'), FluxBone.CollectionMixin('words', 'add remove reset'), React.addons.PureRenderMixin],
@@ -655,9 +657,25 @@ Topbar = React.createClass({
       className: 'navbar-fluid navbar-default navbar-fixed-top'
     }, div({
       className: 'container-fluid'
+    }, div({
+      className: 'row'
+    }, div({
+      className: 'col-xs-1'
+    }, p({
+      className: 'navbar-text',
+      style: {
+        marginTop: 10,
+        marginBottom: 10
+      }
+    }, a({
+      href: '#'
+    }, img({
+      src: '/images/icon32.png'
+    })))), div({
+      className: 'col-xs-10'
     }, p({
       className: "navbar-center navbar-text navbar-brand hidden-xs"
-    }, this.props.article.get('title') ? this.props.article.get('title') : "SplashReader")));
+    }, this.props.article.get('title') ? this.props.article.get('title') : "SplashReader")))));
   }
 });
 
@@ -1614,7 +1632,7 @@ module.exports = {
 
 
 },{"backbone":"/Users/alex/djcode/splashreader/node_modules/backbone/backbone.js"}],"/Users/alex/djcode/splashreader/coffee/stores/RsvpStatusStore.coffee":[function(require,module,exports){
-var $, Backbone, RsvpStatusModel, RsvpStatusStore, dispatcher,
+var $, Backbone, RsvpStatusModel, RsvpStatusStore, dispatcher, key,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1622,6 +1640,8 @@ var $, Backbone, RsvpStatusModel, RsvpStatusStore, dispatcher,
 Backbone = require('backbone');
 
 $ = require('jquery');
+
+key = require('keymaster');
 
 dispatcher = require('../dispatcher');
 
@@ -1644,39 +1664,34 @@ RsvpStatusModel = (function(_super) {
 
   RsvpStatusModel.prototype.initialize = function() {
     this.dispatchToken = dispatcher.register(this.dispatchCallback);
-    this.space_is_down = false;
     $(window).keydown((function(_this) {
       return function(e) {
         if (e.which === 32) {
-          if (!_this.space_is_down) {
-            _this.space_is_down = true;
-            dispatcher.dispatch({
-              actionType: 'play',
-              source: 'space'
-            });
-          }
-          return false;
-        }
-      };
-    })(this));
-    $(window).keyup((function(_this) {
-      return function(e) {
-        if (e.which === 32) {
-          _this.space_is_down = false;
           dispatcher.dispatch({
-            actionType: 'pause',
+            actionType: 'play-pause',
             source: 'space'
           });
           return false;
         }
       };
     })(this));
-    return $(window).blur = function() {
+    $(window).on('touchend', (function(_this) {
+      return function(e) {
+        if (_this.get('playing')) {
+          dispatcher.dispatch({
+            actionType: 'pause',
+            source: 'tap'
+          });
+          return false;
+        }
+      };
+    })(this));
+    return $(window).blur(function() {
       return dispatcher.dispatch({
         actionType: 'pause',
         source: 'window-blur'
       });
-    };
+    });
   };
 
   RsvpStatusModel.prototype.dispatchCallback = function(payload) {
@@ -1690,12 +1705,9 @@ RsvpStatusModel = (function(_super) {
           playing: false
         });
       case 'play':
-        if (!(payload.source === 'para-change' && !this.space_is_down)) {
-          return this.set({
-            playing: true
-          });
-        }
-        break;
+        return this.set({
+          playing: true
+        });
       case 'set-wpm':
         return this.set({
           wpm: payload.wpm
@@ -1721,7 +1733,7 @@ module.exports = RsvpStatusStore;
 
 
 
-},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","backbone":"/Users/alex/djcode/splashreader/node_modules/backbone/backbone.js","jquery":"/Users/alex/djcode/splashreader/node_modules/jquery/dist/jquery.js"}],"/Users/alex/djcode/splashreader/coffee/stores/WordStore.coffee":[function(require,module,exports){
+},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","backbone":"/Users/alex/djcode/splashreader/node_modules/backbone/backbone.js","jquery":"/Users/alex/djcode/splashreader/node_modules/jquery/dist/jquery.js","keymaster":"/Users/alex/djcode/splashreader/node_modules/keymaster/keymaster.js"}],"/Users/alex/djcode/splashreader/coffee/stores/WordStore.coffee":[function(require,module,exports){
 var Backbone, CurrentPageStore, RsvpStatusStore, WordCollection, WordModel, dispatcher,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
