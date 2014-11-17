@@ -81,17 +81,6 @@ class ArticleModel extends NestedBackbone.Model
           @set
             url: payload.url
 
-        # read payload.url, {withCredentials: false}, (error, article, data) ->
-        #   console.log 'got readability', error, article, data
-        #   dispatcher.dispatch
-        #     actionType: 'process-article'
-        #     raw_html: article.content
-        #     title: article.title
-        #     author: null
-        #     url: payload.url
-        #     domain: data.domain or getUrlDomain(payload.url)
-        #     date: null
-
         req_url = "https://readability.com/api/content/v1/parser" +
           '?token=' + constants.READABILITY_TOKEN +
           '&url=' + payload.url +
@@ -110,21 +99,23 @@ class ArticleModel extends NestedBackbone.Model
               date: data.date_published
 
           .fail (err) ->
-            # throw err
+            console.log 'Readability failed, will try read lib:'
 
-            data = require('../example_data')
+            read payload.url, {withCredentials: false}, (error, article, data) ->
+              console.log 'got readability', error, article, data
 
-            console.log 'REQ FAILED USING TEST DATA', data
-            setTimeout ->
+              if error
+                console.log 'READ FAILED USING TEST DATA', data
+                data = article = require('../example_data')
+
               dispatcher.dispatch
                 actionType: 'process-article'
-                raw_html: data.content
-                title: data.title
-                author: data.author
-                url: data.url
-                domain: data.domain
-                date: data.date_published
-            , 0
+                raw_html: article.content
+                title: article.title
+                author: null
+                url: payload.url
+                domain: data.domain or getUrlDomain(payload.url)
+                date: null
 
 ArticleStore = new ArticleModel()
 module.exports = ArticleStore
