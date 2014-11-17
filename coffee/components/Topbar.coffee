@@ -10,7 +10,7 @@ FluxBone = require('./FluxBone')
 Topbar = React.createClass
 
   mixins: [
-    FluxBone.ModelMixin('article', 'change:title')
+    FluxBone.ModelMixin('article', 'change:title change:elem')
     FluxBone.ModelMixin('status', 'change')
     FluxBone.ModelMixin('current', 'change')
     FluxBone.CollectionMixin('words', 'add remove reset')
@@ -18,9 +18,11 @@ Topbar = React.createClass
   ]
 
   render: ->
+    if not (@props.article.get('elem') or @props.article.get('title'))
+      return div {}
 
     div {
-      className: 'navbar-fluid navbar-default navbar-fixed-top'
+      className: 'navbar-fluid navbar-default navbar-fixed-top hidden-xs'
     },
       div {
         className: 'container-fluid'
@@ -47,7 +49,7 @@ Topbar = React.createClass
             className: 'col-xs-10'
           },
             p {
-              className: "navbar-center navbar-text navbar-brand hidden-xs"
+              className: "navbar-center navbar-text navbar-brand"
             },
               if @props.article.get('title')
                 @props.article.get('title')
