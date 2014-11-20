@@ -429,6 +429,9 @@ BottomBar = React.createClass({
   mixins: [deferUpdateMixin, FluxBone.ModelMixin('status', 'change'), FluxBone.ModelMixin('current', 'change'), FluxBone.CollectionMixin('words', 'add remove reset', 'deferUpdate'), React.addons.PureRenderMixin],
   render: function() {
     var percent_done, pluralize, time_left;
+    if (!this.props.words.length) {
+      return div({});
+    }
     percent_done = this.props.current.getPercentDone() * 100;
     time_left = Math.round(this.props.current.getTimeLeft());
     return div({
@@ -465,10 +468,10 @@ BottomBar = React.createClass({
       style: {
         width: "" + percent_done + "%"
       }
-    }))), PlayPauseButton({
+    }))), this.props.words.length ? PlayPauseButton({
       status: this.props.status,
       words: this.props.words
-    }));
+    }) : void 0);
   }
 });
 
@@ -651,10 +654,13 @@ FluxBone = require('./FluxBone');
 _ref1 = React.DOM, h1 = _ref1.h1, div = _ref1.div, li = _ref1.li, p = _ref1.p, a = _ref1.a, span = _ref1.span, button = _ref1.button, form = _ref1.form, em = _ref1.em, img = _ref1.img;
 
 Topbar = React.createClass({
-  mixins: [FluxBone.ModelMixin('article', 'change:title'), FluxBone.ModelMixin('status', 'change'), FluxBone.ModelMixin('current', 'change'), FluxBone.CollectionMixin('words', 'add remove reset'), React.addons.PureRenderMixin],
+  mixins: [FluxBone.ModelMixin('article', 'change:title change:elem'), FluxBone.ModelMixin('status', 'change'), FluxBone.ModelMixin('current', 'change'), FluxBone.CollectionMixin('words', 'add remove reset'), React.addons.PureRenderMixin],
   render: function() {
+    if (!(this.props.article.get('elem') || this.props.article.get('title'))) {
+      return div({});
+    }
     return div({
-      className: 'navbar-fluid navbar-default navbar-fixed-top'
+      className: 'navbar-fluid navbar-default navbar-fixed-top hidden-xs'
     }, div({
       className: 'container-fluid'
     }, div({
@@ -674,7 +680,7 @@ Topbar = React.createClass({
     })))), div({
       className: 'col-xs-10'
     }, p({
-      className: "navbar-center navbar-text navbar-brand hidden-xs"
+      className: "navbar-center navbar-text navbar-brand"
     }, this.props.article.get('title') ? this.props.article.get('title') : "SplashReader")))));
   }
 });
@@ -1203,20 +1209,25 @@ ArticleModel = (function(_super) {
             date: data.date_published
           });
         }).fail(function(err) {
-          var data;
-          data = require('../example_data');
-          console.log('REQ FAILED USING TEST DATA', data);
-          return setTimeout(function() {
+          console.log('Readability failed, will try read lib:');
+          return read(payload.url, {
+            withCredentials: false
+          }, function(error, article, data) {
+            console.log('got readability', error, article, data);
+            if (error) {
+              console.log('READ FAILED USING TEST DATA', data);
+              data = article = require('../example_data');
+            }
             return dispatcher.dispatch({
               actionType: 'process-article',
-              raw_html: data.content,
-              title: data.title,
-              author: data.author,
-              url: data.url,
-              domain: data.domain,
-              date: data.date_published
+              raw_html: article.content,
+              title: article.title,
+              author: null,
+              url: payload.url,
+              domain: data.domain || getUrlDomain(payload.url),
+              date: null
             });
-          }, 0);
+          });
         });
     }
   };
@@ -1407,6 +1418,7 @@ CurrentWordModel = (function(_super) {
   };
 
   CurrentWordModel.prototype.dispatchCallback = function(payload) {
+    var _ref1;
     switch (payload.actionType) {
       case 'page-change':
         dispatcher.waitFor([CurrentPageStore.dispatchToken]);
@@ -1439,7 +1451,7 @@ CurrentWordModel = (function(_super) {
           }
         }
         if (payload.actionType === 'pause') {
-          return this.getWord().trigger('scroll');
+          return (_ref1 = this.getWord()) != null ? _ref1.trigger('scroll') : void 0;
         }
     }
   };
