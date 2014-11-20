@@ -68,8 +68,13 @@ BottomBar = React.createClass
   ]
 
   render: ->
+
+    if not @props.words.length
+      return div {}
+
     percent_done = @props.current.getPercentDone() * 100
     time_left = Math.round @props.current.getTimeLeft()
+
 
     div {
       className: 'navbar-fluid navbar-default navbar-fixed-bottom'
@@ -118,10 +123,11 @@ BottomBar = React.createClass
             style:
               width: "#{percent_done}%"
           }
-      PlayPauseButton {
-        status: @props.status
-        words: @props.words
-      }
+      if @props.words.length
+        PlayPauseButton {
+          status: @props.status
+          words: @props.words
+        }
 
 
 PlayPauseButton = React.createClass
@@ -142,6 +148,7 @@ PlayPauseButton = React.createClass
     false
 
   render: ->
+
     play_pause_button_class = React.addons.classSet
       'btn': true
       'btn-info': true

@@ -138,7 +138,7 @@ class CurrentWordModel extends Backbone.Model
           clearTimeout @timeout if @timeout?
 
         if payload.actionType is 'pause'
-          @getWord().trigger 'scroll'
+          @getWord()?.trigger 'scroll'
 
 
 CurrentWordStore = new CurrentWordModel()
