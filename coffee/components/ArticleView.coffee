@@ -54,7 +54,7 @@ Word = React.createClass
     @props.elem.off 'scroll', null, @
 
   render: ->
-    space = if @props.elem.get('spaceAfter') then ' ' else ''
+    space = if @props.elem.get('after') is ' ' then ' ' else ''
     span {
       onClick: @handleClick
       className: 'current-word' if @isCurrentWord()

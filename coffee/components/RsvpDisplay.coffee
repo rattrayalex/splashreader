@@ -33,7 +33,10 @@ RsvpDisplay = React.createClass
     # append a space before 1-letter words... uhh, it fixes bugs...
     if word.length is 1
       word = ' ' + word
-      length = 2
+
+    if @props.current.getWord().get('after') is '-'
+      word += '-'
+
     middle = getWordMiddle word.length
 
     word_p1 = word[0 .. (middle - 2)]
