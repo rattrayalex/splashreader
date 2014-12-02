@@ -24,36 +24,58 @@ handlePre = (text, parent) ->
   # handle `pre` elements, aka blocks of code.
   # put multiple words, no trimming, into "word"
   word = text
-  word_model = new WordModel {word, parent}
+  after = ''
+  word_model = new WordModel {word, parent, after}
 
   # don't add it to WordStore,
   # dont want to speedread this shit
   return word_model
 
 
+# result should be flattened.
+shortenLongWord = (word) ->
+  # console.log 'in shortenLongWord with', word
+  if word.length < 14
+    after = ' '
+    return [{word, after}]
+
+  _.compact(word.split(/([^A-z0-9]*\w{1,7})/)).map (part, i, parts) ->
+    if i < (parts.length - 1)
+      word: part
+      after: '-'
+    else
+      word: part
+      after: ' '
+
+
 textToWords = (textNode, parent) ->
   text = textNode.nodeValue
-  words = text.split /\s+/
-
-  # code blocks get special treatment
-  if parent.get('node_name') in ['pre', 'td', 'th']
-    return handlePre(text, parent)
+  words = text.replace(/(–|—)/g, ' $1 ').split /\s+/
 
   # remove blanks
   if not text.trim()
     return null
 
+  # code blocks get special treatment
+  if parent.get('node_name') in ['pre', 'td', 'th']
+    return handlePre(text, parent)
+
+  # split_words = splitHyphens(words)
+
   # turns the words into an array of Elements
   word_models = []
-  for word, i in words
-    # add trailing space to all words but the last one
-    if i < (words.length - 1)
-      word += ' '
-    word_model = new WordModel {word, parent}
-    word_models.push word_model
+  for full_word, i in words
+    parts = shortenLongWord(full_word)
+    for {word, after}, j in parts
+      # last word in textNode doesn't get space after.
+      if j == (parts.length - 1) and i == (words.length - 1)
+        after = ''
 
-    # also add it to list of words
-    WordList.push(word_model)
+      word_model = new WordModel {word, parent, after}
+      word_models.push word_model
+
+      # also add it to list of words
+      WordList.push(word_model)
 
   return word_models
 

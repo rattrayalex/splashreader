@@ -40,8 +40,8 @@ getDisplayMultiplier = (word) ->
   if word.match /[0-9]/
     display += 2
 
-  # triple up on words that end with one of: . ! ? : )
-  if _.last(word).match /\.|\!|\?|:|\)/
+  # triple up on words that end with one of: . ! ? : ) ]
+  if _.last(word).match /\.|\!|\?|:|\)|\]/
     display += 2
 
   return display
