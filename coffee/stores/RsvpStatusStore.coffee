@@ -1,6 +1,9 @@
 Backbone = require 'backbone'
 $ = require('jquery')
+_ = require('underscore')
 key = require('keymaster')
+
+OfflineBackbone = require('./OfflineBackbone')
 
 dispatcher = require('../dispatcher')
 
@@ -14,6 +17,12 @@ class RsvpStatusModel extends Backbone.Model
 
   initialize: ->
     @dispatchToken = dispatcher.register @dispatchCallback
+
+    # save/load WPM between sessions.
+    _.extend @, OfflineBackbone.Model
+    @localLoad()
+    @on 'change', (model, options) =>
+      @localSave()
 
     # key 'space', =>
     #   dispatcher.dispatch
