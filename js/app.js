@@ -134,10 +134,12 @@ Word = React.createClass({
     return this.props.elem.off('scroll', null, this);
   },
   render: function() {
+    var space;
+    space = this.props.elem.get('after') === ' ' ? ' ' : '';
     return span({
       onClick: this.handleClick,
       className: this.isCurrentWord() ? 'current-word' : void 0
-    }, this.props.elem.get('word'));
+    }, this.props.elem.get('word') + space);
   }
 });
 
@@ -600,7 +602,7 @@ RsvpDisplay = React.createClass({
     return this.ORP_center = full_width / 3;
   },
   render: function() {
-    var center_point, length, middle, offset, width_p1, width_p2, word, word_p1, word_p2, word_p3, _ref2;
+    var center_point, middle, offset, width_p1, width_p2, word, word_p1, word_p2, word_p3, _ref2;
     if (((_ref2 = this.props.current.getWord()) != null ? _ref2.get('word') : void 0) == null) {
       return div({});
     }
@@ -609,7 +611,9 @@ RsvpDisplay = React.createClass({
     word = word || " ";
     if (word.length === 1) {
       word = ' ' + word;
-      length = 2;
+    }
+    if (this.props.current.getWord().get('after') === '-') {
+      word += '-';
     }
     middle = getWordMiddle(word.length);
     word_p1 = word.slice(0, +(middle - 2) + 1 || 9e9);
@@ -622,8 +626,22 @@ RsvpDisplay = React.createClass({
     return div({
       className: 'rsvp-wrapper',
       style: {
+        display: this.props.status.get('playing') ? 'block' : 'none'
+      }
+    }, div({
+      className: 'rsvp-notch-top',
+      style: {
+        marginLeft: this.ORP_center + getTextWidth('m', this.font) / 2
+      }
+    }), div({
+      className: 'rsvp-notch-bottom',
+      style: {
+        marginLeft: this.ORP_center + getTextWidth('m', this.font) / 2
+      }
+    }), div({
+      className: 'rsvp-wrapper-inner',
+      style: {
         font: this.font,
-        display: this.props.status.get('playing') ? 'block' : 'none',
         marginLeft: offset || 0
       }
     }, span({
@@ -632,7 +650,7 @@ RsvpDisplay = React.createClass({
       className: 'rsvp-middle'
     }, word_p2), span({
       className: 'rsvp-after-middle'
-    }, word_p3));
+    }, word_p3)));
   }
 });
 
@@ -749,7 +767,7 @@ module.exports = data;
 
 
 },{}],"/Users/alex/djcode/splashreader/coffee/htmlToArticle.coffee":[function(require,module,exports){
-var ChildrenCollection, ElementModel, WordList, WordModel, WordStore, cleanedHtmlToElem, constants, dispatcher, domAttrsToDict, handlePre, isBlock, rawHtmlToArticle, sanitize, saveWordListToWordStore, textToWords, _, _ref,
+var ChildrenCollection, ElementModel, WordList, WordModel, WordStore, cleanedHtmlToElem, constants, dispatcher, domAttrsToDict, handlePre, isBlock, rawHtmlToArticle, sanitize, saveWordListToWordStore, shortenLongWord, textToWords, _, _ref,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 sanitize = require('sanitize-html');
@@ -771,37 +789,70 @@ isBlock = function(node_name) {
 };
 
 handlePre = function(text, parent) {
-  var word, word_model;
+  var after, word, word_model;
   word = text;
+  after = '';
   word_model = new WordModel({
     word: word,
-    parent: parent
+    parent: parent,
+    after: after
   });
   return word_model;
 };
 
-textToWords = function(textNode, parent) {
-  var i, text, word, word_model, word_models, words, _i, _len, _ref1;
-  text = textNode.nodeValue;
-  words = text.split(/\s+/);
-  if ((_ref1 = parent.get('node_name')) === 'pre' || _ref1 === 'td' || _ref1 === 'th') {
-    return handlePre(text, parent);
+shortenLongWord = function(word) {
+  var after;
+  if (word.length < 14) {
+    after = ' ';
+    return [
+      {
+        word: word,
+        after: after
+      }
+    ];
   }
+  return _.compact(word.split(/([^A-z0-9]*\w{1,7})/)).map(function(part, i, parts) {
+    if (i < (parts.length - 1)) {
+      return {
+        word: part,
+        after: '-'
+      };
+    } else {
+      return {
+        word: part,
+        after: ' '
+      };
+    }
+  });
+};
+
+textToWords = function(textNode, parent) {
+  var after, full_word, i, j, parts, text, word, word_model, word_models, words, _i, _j, _len, _len1, _ref1, _ref2;
+  text = textNode.nodeValue;
+  words = text.replace(/(–|—)/g, ' $1 ').split(/\s+/);
   if (!text.trim()) {
     return null;
   }
+  if ((_ref1 = parent.get('node_name')) === 'pre' || _ref1 === 'td' || _ref1 === 'th') {
+    return handlePre(text, parent);
+  }
   word_models = [];
   for (i = _i = 0, _len = words.length; _i < _len; i = ++_i) {
-    word = words[i];
-    if (i < (words.length - 1)) {
-      word += ' ';
+    full_word = words[i];
+    parts = shortenLongWord(full_word);
+    for (j = _j = 0, _len1 = parts.length; _j < _len1; j = ++_j) {
+      _ref2 = parts[j], word = _ref2.word, after = _ref2.after;
+      if (j === (parts.length - 1) && i === (words.length - 1)) {
+        after = '';
+      }
+      word_model = new WordModel({
+        word: word,
+        parent: parent,
+        after: after
+      });
+      word_models.push(word_model);
+      WordList.push(word_model);
     }
-    word_model = new WordModel({
-      word: word,
-      parent: parent
-    });
-    word_models.push(word_model);
-    WordList.push(word_model);
   }
   return word_models;
 };
@@ -980,7 +1031,7 @@ getDisplayMultiplier = function(word) {
   if (word.match(/[0-9]/)) {
     display += 2;
   }
-  if (_.last(word).match(/\.|\!|\?|:|\)/)) {
+  if (_.last(word).match(/\.|\!|\?|:|\)|\]/)) {
     display += 2;
   }
   return display;
@@ -1644,7 +1695,7 @@ module.exports = {
 
 
 },{"backbone":"/Users/alex/djcode/splashreader/node_modules/backbone/backbone.js"}],"/Users/alex/djcode/splashreader/coffee/stores/RsvpStatusStore.coffee":[function(require,module,exports){
-var $, Backbone, RsvpStatusModel, RsvpStatusStore, dispatcher, key,
+var $, Backbone, OfflineBackbone, RsvpStatusModel, RsvpStatusStore, dispatcher, key, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1653,7 +1704,11 @@ Backbone = require('backbone');
 
 $ = require('jquery');
 
+_ = require('underscore');
+
 key = require('keymaster');
+
+OfflineBackbone = require('./OfflineBackbone');
 
 dispatcher = require('../dispatcher');
 
@@ -1676,6 +1731,13 @@ RsvpStatusModel = (function(_super) {
 
   RsvpStatusModel.prototype.initialize = function() {
     this.dispatchToken = dispatcher.register(this.dispatchCallback);
+    _.extend(this, OfflineBackbone.Model);
+    this.localLoad();
+    this.on('change', (function(_this) {
+      return function(model, options) {
+        return _this.localSave();
+      };
+    })(this));
     $(window).keydown((function(_this) {
       return function(e) {
         if (e.which === 32) {
@@ -1745,7 +1807,7 @@ module.exports = RsvpStatusStore;
 
 
 
-},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","backbone":"/Users/alex/djcode/splashreader/node_modules/backbone/backbone.js","jquery":"/Users/alex/djcode/splashreader/node_modules/jquery/dist/jquery.js","keymaster":"/Users/alex/djcode/splashreader/node_modules/keymaster/keymaster.js"}],"/Users/alex/djcode/splashreader/coffee/stores/WordStore.coffee":[function(require,module,exports){
+},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./OfflineBackbone":"/Users/alex/djcode/splashreader/coffee/stores/OfflineBackbone.coffee","backbone":"/Users/alex/djcode/splashreader/node_modules/backbone/backbone.js","jquery":"/Users/alex/djcode/splashreader/node_modules/jquery/dist/jquery.js","keymaster":"/Users/alex/djcode/splashreader/node_modules/keymaster/keymaster.js","underscore":"/Users/alex/djcode/splashreader/node_modules/underscore/underscore.js"}],"/Users/alex/djcode/splashreader/coffee/stores/WordStore.coffee":[function(require,module,exports){
 var Backbone, CurrentPageStore, RsvpStatusStore, WordCollection, WordModel, dispatcher,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
