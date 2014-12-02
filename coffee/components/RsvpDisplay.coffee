@@ -18,6 +18,7 @@ RsvpDisplay = React.createClass
 
   componentDidMount: ->
     @font = '32pt libre_baskervilleregular, Georgia'
+    # @font = "600 32pt 'Open Sans'"
     full_width = Math.min window.innerWidth, getTextWidth(eleven_ems, @font)
     @ORP_center = full_width / 3
 
@@ -47,16 +48,30 @@ RsvpDisplay = React.createClass
     div {
       className: 'rsvp-wrapper'
       style:
-        font: @font
         display: if @props.status.get('playing') then 'block' else 'none'
-        marginLeft: offset or 0
     },
-      span {className: 'rsvp-before-middle'},
-        word_p1
-      span {className: 'rsvp-middle'},
-        word_p2
-      span {className: 'rsvp-after-middle'},
-        word_p3
+      div {
+        className: 'rsvp-notch-top'
+        style:
+          marginLeft: @ORP_center + getTextWidth('m', @font)/2
+      }
+      div {
+        className: 'rsvp-notch-bottom'
+        style:
+          marginLeft: @ORP_center + getTextWidth('m', @font)/2
+      }
+      div {
+        className: 'rsvp-wrapper-inner'
+        style:
+          font: @font
+          marginLeft: offset or 0
+      },
+        span {className: 'rsvp-before-middle'},
+          word_p1
+        span {className: 'rsvp-middle'},
+          word_p2
+        span {className: 'rsvp-after-middle'},
+          word_p3
 
 
 module.exports = RsvpDisplay
