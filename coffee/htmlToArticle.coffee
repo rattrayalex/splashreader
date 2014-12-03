@@ -32,14 +32,23 @@ handlePre = (text, parent) ->
   return word_model
 
 
-# result should be flattened.
+# pretty meh algo to split words longer than 14 chars,
+# preferring to split on - and otherwise being super naive.
 shortenLongWord = (word) ->
-  # console.log 'in shortenLongWord with', word
   if word.length < 14
     after = ' '
     return [{word, after}]
 
-  _.compact(word.split(/([^A-z0-9]*\w{1,7})/)).map (part, i, parts) ->
+  # first, try to split on hyphens...
+  parts = word.split(/(?=-)/).filter (part) ->
+    # getting rid of blanks...
+      part.length > 0
+    # then split greedily on strings longer than 13 chars if needed.
+    .map (part) ->
+      part.split(/(.{1,13})/).filter (subpart) ->
+        subpart.length > 0
+
+  _.flatten(parts).map (part, i, parts) ->
     if i < (parts.length - 1)
       word: part
       after: '-'
