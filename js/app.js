@@ -425,7 +425,14 @@ BottomBar = React.createClass({
       className: 'icon-bar'
     }), span({
       className: 'icon-bar'
-    }))))), p({
+    }))), WpmWidget({
+      status: this.props.status,
+      className: 'hidden-xs',
+      style: {
+        display: 'inline-block',
+        margin: '0px 10px'
+      }
+    }))), p({
       className: 'navbar-text navbar-right text-muted',
       style: {
         marginRight: 75
@@ -701,8 +708,13 @@ SideMenu = React.createClass({
     }, WpmWidget({
       status: this.props.status
     })), a({
+      className: 'list-group-item',
+      href: '#'
+    }, "SplashReader Home"), div({
       className: 'list-group-item'
-    }, "Hello World!")));
+    }, 'Created by ', a({
+      href: 'http://alexrattray.com'
+    }, 'Alex Rattray'))));
   }
 });
 
@@ -774,7 +786,8 @@ WpmWidget = React.createClass({
   },
   render: function() {
     return div({
-      className: 'navbar-form'
+      className: 'navbar-form ' + (this.props.className != null),
+      style: this.props.style || {}
     }, div({
       className: 'btn-group'
     }, button({
@@ -1889,6 +1902,11 @@ RsvpStatusModel = (function(_super) {
         return this.set({
           menuShown: !this.get('menuShown'),
           playing: false
+        });
+      case 'page-change':
+        return this.set({
+          playing: false,
+          menuShown: false
         });
     }
   };
