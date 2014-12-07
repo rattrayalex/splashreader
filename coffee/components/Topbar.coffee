@@ -30,23 +30,23 @@ Topbar = React.createClass
         div {
           className: 'row'
         },
+          # div {
+          #   className: 'col-xs-1'
+          # },
+          #   p {
+          #     className: 'navbar-text'
+          #     style:
+          #       marginTop: 10
+          #       marginBottom: 10
+          #   },
+          #     a {
+          #       href: '#'
+          #     },
+          #       img {
+          #         src: '/images/icon32.png'
+          #       }
           div {
-            className: 'col-xs-1'
-          },
-            p {
-              className: 'navbar-text'
-              style:
-                marginTop: 10
-                marginBottom: 10
-            },
-              a {
-                href: '#'
-              },
-                img {
-                  src: '/images/icon32.png'
-                }
-          div {
-            className: 'col-xs-10'
+            className: 'col-xs-12'
           },
             p {
               className: "navbar-center navbar-text navbar-brand"

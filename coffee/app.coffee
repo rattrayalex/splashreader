@@ -13,6 +13,7 @@ RsvpStatusStore = require('./stores/RsvpStatusStore')
 {ArticleViewDisplay} = require('./components/ArticleView')
 RsvpDisplay = require('./components/RsvpDisplay')
 Topbar = require('./components/Topbar')
+SideMenu = require('./components/SideMenu')
 BottomBar = require('./components/BottomBar')
 
 dispatcher = require('./dispatcher')
@@ -26,7 +27,13 @@ main = ->
       current: CurrentWordStore
       article: ArticleStore
     }
-    document.querySelector('.topbar')
+    document.querySelector('.topbar-here')
+  )
+  React.renderComponent(
+    SideMenu {
+      status: RsvpStatusStore
+    }
+    document.querySelector('.side-menu-here')
   )
   React.renderComponent(
     BottomBar {
@@ -35,7 +42,7 @@ main = ->
       words: WordStore
       article: ArticleStore
     }
-    document.querySelector('.bottombar')
+    document.querySelector('.bottombar-here')
   )
   React.renderComponent(
     ArticleViewDisplay {
@@ -45,7 +52,7 @@ main = ->
       words: WordStore
       page: CurrentPageStore
     }
-    document.querySelector('.article-main')
+    document.querySelector('.article-main-here')
   )
   React.renderComponent(
     RsvpDisplay {
@@ -53,7 +60,7 @@ main = ->
       key: 'current-word'
       status: RsvpStatusStore
     }
-    document.querySelector('.rsvp-main')
+    document.querySelector('.rsvp-main-here')
   )
 
   Backbone.history.start

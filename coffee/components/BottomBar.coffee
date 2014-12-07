@@ -5,56 +5,9 @@ dispatcher = require('../dispatcher')
 FluxBone = require('./FluxBone')
 deferUpdateMixin = require('./deferUpdateMixin')
 
+WpmWidget = require('./WpmWidget')
+
 {h1, div, li, p, a, span, button, form, em} = React.DOM
-
-
-WpmWidget = React.createClass
-
-  mixins: [
-    FluxBone.ModelMixin('status', 'change')
-    React.addons.PureRenderMixin
-  ]
-
-  handleIncreaseWpmClick: ->
-    dispatcher.dispatch
-      actionType: 'increase-wpm'
-      amount: 50
-
-  handleDecreaseWpmClick: ->
-    dispatcher.dispatch
-      actionType: 'decrease-wpm'
-      amount: 50
-
-  render: ->
-    div {
-      className: 'navbar-form'
-    },
-      div {
-        className: 'btn-group'
-      },
-        button {
-          type: 'button'
-          className: 'btn btn-info'
-          onClick: @handleDecreaseWpmClick
-        },
-          span {
-            className: 'glyphicon glyphicon-chevron-down'
-          }
-        span {
-          className: 'btn btn-default disabled'
-        },
-          "#{ @props.status.get('wpm') }"
-          span {
-            className: 'hidden-xs'
-          }, " wpm"
-        button {
-          type: 'button'
-          className: 'btn btn-info'
-          onClick: @handleIncreaseWpmClick
-        },
-          span {
-            className: 'glyphicon glyphicon-chevron-up'
-          }
 
 
 BottomBar = React.createClass
@@ -66,6 +19,10 @@ BottomBar = React.createClass
     FluxBone.CollectionMixin('words', 'add remove reset', 'deferUpdate')
     React.addons.PureRenderMixin
   ]
+
+  handleToggleMenuClick: ->
+    dispatcher.dispatch
+      actionType: 'toggle-side-menu'
 
   render: ->
 
@@ -86,9 +43,22 @@ BottomBar = React.createClass
         Nav {
           className: 'navbar-left'
         },
-          WpmWidget {
-            status: @props.status
-          }
+          div {
+            className: 'navbar-form'
+          },
+            div {
+              className: 'btn-group'
+            },
+              button {
+                type: 'button'
+                onClick: @handleToggleMenuClick
+                className: 'btn btn-warning'
+                style:
+                  padding: '9px 10px'
+              },
+                span className: 'icon-bar'
+                span className: 'icon-bar'
+                span className: 'icon-bar'
 
         p {
           className: 'navbar-text navbar-right text-muted'

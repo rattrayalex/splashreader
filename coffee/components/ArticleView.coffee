@@ -269,12 +269,6 @@ ArticleViewDisplay = React.createClass
   getPadding: ->
     window.innerHeight * .4 - 40
 
-  getPaddingTop: ->
-    if @refs.masthead
-      @getPadding() - @refs.masthead.getDOMNode().clientHeight
-    else
-      @getPadding()
-
   componentDidMount: ->
     $(window).on 'resize', ( => @forceUpdate() )
 
@@ -284,7 +278,7 @@ ArticleViewDisplay = React.createClass
     div {
       className: 'loading' if loading
       style:
-        paddingTop: @getPaddingTop()
+        paddingTop: @getPadding()
         paddingBottom: @getPadding()
         # visibility instead of display b/c it retains the scroll position
         visibility: if @props.status.get('playing') then 'hidden' else 'visible'
