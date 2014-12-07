@@ -59,6 +59,13 @@ BottomBar = React.createClass
                 span className: 'icon-bar'
                 span className: 'icon-bar'
                 span className: 'icon-bar'
+            WpmWidget {
+              status: @props.status
+              className: 'hidden-xs'
+              style:
+                display: 'inline-block'
+                margin: '0px 10px'
+            }
 
         p {
           className: 'navbar-text navbar-right text-muted'

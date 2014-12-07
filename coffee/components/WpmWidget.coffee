@@ -24,7 +24,8 @@ WpmWidget = React.createClass
 
   render: ->
     div {
-      className: 'navbar-form'
+      className: 'navbar-form ' + @props.className?
+      style: @props.style or {}
     },
       div {
         className: 'btn-group'

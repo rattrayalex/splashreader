@@ -107,6 +107,11 @@ class RsvpStatusModel extends Backbone.Model
           menuShown: !@get('menuShown')
           playing: false
 
+      when 'page-change'
+        @set
+          playing: false
+          menuShown: false
+
 
 RsvpStatusStore = new RsvpStatusModel()
 module.exports = RsvpStatusStore
