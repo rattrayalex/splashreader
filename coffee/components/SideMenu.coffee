@@ -67,8 +67,17 @@ SideMenu = React.createClass
           }
         a {
           className: 'list-group-item'
+          href: '#'
         },
-          "Hello World!"
+          "SplashReader Home"
+        div {
+          className: 'list-group-item'
+        },
+          'Created by '
+          a {
+            href: 'http://alexrattray.com'
+          },
+            'Alex Rattray'
 
 
 module.exports = SideMenu
