@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./coffee/app.coffee":[function(require,module,exports){
-var $, ArticleStore, ArticleViewDisplay, Backbone, BottomBar, CurrentPageStore, CurrentWordStore, React, RsvpDisplay, RsvpStatusStore, Topbar, WordStore, dispatcher, key, main;
+var $, ArticleStore, ArticleViewDisplay, Backbone, BottomBar, CurrentPageStore, CurrentWordStore, React, RsvpDisplay, RsvpStatusStore, SideMenu, Topbar, WordStore, dispatcher, key, main;
 
 React = require('react');
 
@@ -27,6 +27,8 @@ RsvpDisplay = require('./components/RsvpDisplay');
 
 Topbar = require('./components/Topbar');
 
+SideMenu = require('./components/SideMenu');
+
 BottomBar = require('./components/BottomBar');
 
 dispatcher = require('./dispatcher');
@@ -37,25 +39,28 @@ main = function() {
     words: WordStore,
     current: CurrentWordStore,
     article: ArticleStore
-  }), document.querySelector('.topbar'));
+  }), document.querySelector('.topbar-here'));
+  React.renderComponent(SideMenu({
+    status: RsvpStatusStore
+  }), document.querySelector('.side-menu-here'));
   React.renderComponent(BottomBar({
     status: RsvpStatusStore,
     current: CurrentWordStore,
     words: WordStore,
     article: ArticleStore
-  }), document.querySelector('.bottombar'));
+  }), document.querySelector('.bottombar-here'));
   React.renderComponent(ArticleViewDisplay({
     article: ArticleStore,
     current: CurrentWordStore,
     status: RsvpStatusStore,
     words: WordStore,
     page: CurrentPageStore
-  }), document.querySelector('.article-main'));
+  }), document.querySelector('.article-main-here'));
   React.renderComponent(RsvpDisplay({
     current: CurrentWordStore,
     key: 'current-word',
     status: RsvpStatusStore
-  }), document.querySelector('.rsvp-main'));
+  }), document.querySelector('.rsvp-main-here'));
   return Backbone.history.start({
     pushState: false
   });
@@ -65,7 +70,7 @@ main();
 
 
 
-},{"./components/ArticleView":"/Users/alex/djcode/splashreader/coffee/components/ArticleView.coffee","./components/BottomBar":"/Users/alex/djcode/splashreader/coffee/components/BottomBar.coffee","./components/RsvpDisplay":"/Users/alex/djcode/splashreader/coffee/components/RsvpDisplay.coffee","./components/Topbar":"/Users/alex/djcode/splashreader/coffee/components/Topbar.coffee","./dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./stores/ArticleStore":"/Users/alex/djcode/splashreader/coffee/stores/ArticleStore.coffee","./stores/CurrentPageStore":"/Users/alex/djcode/splashreader/coffee/stores/CurrentPageStore.coffee","./stores/CurrentWordStore":"/Users/alex/djcode/splashreader/coffee/stores/CurrentWordStore.coffee","./stores/RsvpStatusStore":"/Users/alex/djcode/splashreader/coffee/stores/RsvpStatusStore.coffee","./stores/WordStore":"/Users/alex/djcode/splashreader/coffee/stores/WordStore.coffee","backbone":"/Users/alex/djcode/splashreader/node_modules/backbone/backbone.js","jquery":"/Users/alex/djcode/splashreader/node_modules/jquery/dist/jquery.js","keymaster":"/Users/alex/djcode/splashreader/node_modules/keymaster/keymaster.js","react":"/Users/alex/djcode/splashreader/node_modules/react/react.js"}],"/Users/alex/djcode/splashreader/coffee/components/ArticleView.coffee":[function(require,module,exports){
+},{"./components/ArticleView":"/Users/alex/djcode/splashreader/coffee/components/ArticleView.coffee","./components/BottomBar":"/Users/alex/djcode/splashreader/coffee/components/BottomBar.coffee","./components/RsvpDisplay":"/Users/alex/djcode/splashreader/coffee/components/RsvpDisplay.coffee","./components/SideMenu":"/Users/alex/djcode/splashreader/coffee/components/SideMenu.coffee","./components/Topbar":"/Users/alex/djcode/splashreader/coffee/components/Topbar.coffee","./dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./stores/ArticleStore":"/Users/alex/djcode/splashreader/coffee/stores/ArticleStore.coffee","./stores/CurrentPageStore":"/Users/alex/djcode/splashreader/coffee/stores/CurrentPageStore.coffee","./stores/CurrentWordStore":"/Users/alex/djcode/splashreader/coffee/stores/CurrentWordStore.coffee","./stores/RsvpStatusStore":"/Users/alex/djcode/splashreader/coffee/stores/RsvpStatusStore.coffee","./stores/WordStore":"/Users/alex/djcode/splashreader/coffee/stores/WordStore.coffee","backbone":"/Users/alex/djcode/splashreader/node_modules/backbone/backbone.js","jquery":"/Users/alex/djcode/splashreader/node_modules/jquery/dist/jquery.js","keymaster":"/Users/alex/djcode/splashreader/node_modules/keymaster/keymaster.js","react":"/Users/alex/djcode/splashreader/node_modules/react/react.js"}],"/Users/alex/djcode/splashreader/coffee/components/ArticleView.coffee":[function(require,module,exports){
 var $, ArticleFooter, ArticleViewDisplay, CollectURL, Elem, FluxBone, LoadingIcon, Masthead, React, Word, a, button, deferUpdateMixin, dispatcher, div, em, form, getElemOrWord, h1, hr, input, p, router, scrollToNode, small, span, validator, _, _ref;
 
 React = require('react/addons');
@@ -327,13 +332,6 @@ ArticleViewDisplay = React.createClass({
   getPadding: function() {
     return window.innerHeight * .4 - 40;
   },
-  getPaddingTop: function() {
-    if (this.refs.masthead) {
-      return this.getPadding() - this.refs.masthead.getDOMNode().clientHeight;
-    } else {
-      return this.getPadding();
-    }
-  },
   componentDidMount: function() {
     return $(window).on('resize', ((function(_this) {
       return function() {
@@ -347,7 +345,7 @@ ArticleViewDisplay = React.createClass({
     return div({
       className: loading ? 'loading' : void 0,
       style: {
-        paddingTop: this.getPaddingTop(),
+        paddingTop: this.getPadding(),
         paddingBottom: this.getPadding(),
         visibility: this.props.status.get('playing') ? 'hidden' : 'visible'
       }
@@ -386,49 +384,17 @@ FluxBone = require('./FluxBone');
 
 deferUpdateMixin = require('./deferUpdateMixin');
 
-_ref1 = React.DOM, h1 = _ref1.h1, div = _ref1.div, li = _ref1.li, p = _ref1.p, a = _ref1.a, span = _ref1.span, button = _ref1.button, form = _ref1.form, em = _ref1.em;
+WpmWidget = require('./WpmWidget');
 
-WpmWidget = React.createClass({
-  mixins: [FluxBone.ModelMixin('status', 'change'), React.addons.PureRenderMixin],
-  handleIncreaseWpmClick: function() {
-    return dispatcher.dispatch({
-      actionType: 'increase-wpm',
-      amount: 50
-    });
-  },
-  handleDecreaseWpmClick: function() {
-    return dispatcher.dispatch({
-      actionType: 'decrease-wpm',
-      amount: 50
-    });
-  },
-  render: function() {
-    return div({
-      className: 'navbar-form'
-    }, div({
-      className: 'btn-group'
-    }, button({
-      type: 'button',
-      className: 'btn btn-info',
-      onClick: this.handleDecreaseWpmClick
-    }, span({
-      className: 'glyphicon glyphicon-chevron-down'
-    })), span({
-      className: 'btn btn-default disabled'
-    }, "" + (this.props.status.get('wpm')), span({
-      className: 'hidden-xs'
-    }, " wpm")), button({
-      type: 'button',
-      className: 'btn btn-info',
-      onClick: this.handleIncreaseWpmClick
-    }, span({
-      className: 'glyphicon glyphicon-chevron-up'
-    }))));
-  }
-});
+_ref1 = React.DOM, h1 = _ref1.h1, div = _ref1.div, li = _ref1.li, p = _ref1.p, a = _ref1.a, span = _ref1.span, button = _ref1.button, form = _ref1.form, em = _ref1.em;
 
 BottomBar = React.createClass({
   mixins: [deferUpdateMixin, FluxBone.ModelMixin('status', 'change'), FluxBone.ModelMixin('current', 'change'), FluxBone.CollectionMixin('words', 'add remove reset', 'deferUpdate'), React.addons.PureRenderMixin],
+  handleToggleMenuClick: function() {
+    return dispatcher.dispatch({
+      actionType: 'toggle-side-menu'
+    });
+  },
   render: function() {
     var percent_done, pluralize, time_left;
     if (!this.props.words.length) {
@@ -442,9 +408,24 @@ BottomBar = React.createClass({
       className: 'container-fluid'
     }, Nav({
       className: 'navbar-left'
-    }, WpmWidget({
-      status: this.props.status
-    })), p({
+    }, div({
+      className: 'navbar-form'
+    }, div({
+      className: 'btn-group'
+    }, button({
+      type: 'button',
+      onClick: this.handleToggleMenuClick,
+      className: 'btn btn-warning',
+      style: {
+        padding: '9px 10px'
+      }
+    }, span({
+      className: 'icon-bar'
+    }), span({
+      className: 'icon-bar'
+    }), span({
+      className: 'icon-bar'
+    }))))), p({
       className: 'navbar-text navbar-right text-muted',
       style: {
         marginRight: 75
@@ -526,14 +507,14 @@ module.exports = BottomBar;
 
 
 
-},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","./deferUpdateMixin":"/Users/alex/djcode/splashreader/coffee/components/deferUpdateMixin.coffee","react-bootstrap":"/Users/alex/djcode/splashreader/node_modules/react-bootstrap/main.js","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js"}],"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee":[function(require,module,exports){
+},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","./WpmWidget":"/Users/alex/djcode/splashreader/coffee/components/WpmWidget.coffee","./deferUpdateMixin":"/Users/alex/djcode/splashreader/coffee/components/deferUpdateMixin.coffee","react-bootstrap":"/Users/alex/djcode/splashreader/node_modules/react-bootstrap/main.js","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js"}],"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee":[function(require,module,exports){
 module.exports = {
   ModelMixin: function(model_name, event_name, cb_name) {
     var eventCallbackName, mixin;
     if (event_name == null) {
       event_name = "all";
     }
-    eventCallbackName = "_eventCallbacks_" + model_name + "_" + event_name;
+    eventCallbackName = "_eventCallbacks_" + model_name + "_" + event_name + "_" + (cb_name || '');
     mixin = {
       componentDidMount: function() {
         return this.props[model_name].on(event_name, this[eventCallbackName], this);
@@ -658,7 +639,78 @@ module.exports = RsvpDisplay;
 
 
 
-},{"../rsvp_utils":"/Users/alex/djcode/splashreader/coffee/rsvp_utils.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js"}],"/Users/alex/djcode/splashreader/coffee/components/Topbar.coffee":[function(require,module,exports){
+},{"../rsvp_utils":"/Users/alex/djcode/splashreader/coffee/rsvp_utils.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js"}],"/Users/alex/djcode/splashreader/coffee/components/SideMenu.coffee":[function(require,module,exports){
+var FluxBone, React, SideMenu, WpmWidget, a, button, dispatcher, div, em, form, h1, hr, input, p, small, span, _ref;
+
+React = require('react/addons');
+
+dispatcher = require('../dispatcher');
+
+FluxBone = require('./FluxBone');
+
+WpmWidget = require('./WpmWidget');
+
+_ref = React.DOM, h1 = _ref.h1, div = _ref.div, span = _ref.span, form = _ref.form, input = _ref.input, button = _ref.button, p = _ref.p, a = _ref.a, em = _ref.em, small = _ref.small, hr = _ref.hr;
+
+SideMenu = React.createClass({
+  mixins: [FluxBone.ModelMixin('status', 'change'), FluxBone.ModelMixin('status', 'change', 'detectMenuEverShown')],
+  getInitialState: function() {
+    return {
+      menuEverShown: false
+    };
+  },
+  detectMenuEverShown: function() {
+    if (this.props.status.get('menuShown')) {
+      return this.setState({
+        menuEverShown: true
+      });
+    }
+  },
+  render: function() {
+    var anim;
+    anim = this.props.status.get('menuShown') ? 'fadeInLeft' : 'fadeOutLeft';
+    return div({
+      className: 'animated side-menu ' + anim,
+      style: !this.state.menuEverShown ? {
+        display: 'none'
+      } : void 0
+    }, div({
+      className: 'list-group'
+    }, div({
+      className: 'list-group-item'
+    }, div({
+      className: 'form-group',
+      style: {
+        marginBottom: 0
+      }
+    }, div({
+      className: 'input-group'
+    }, input({
+      className: 'form-control',
+      type: 'text',
+      placeholder: 'Splash a new Article'
+    }, span({
+      className: 'input-group-btn'
+    }, button({
+      type: 'submit',
+      className: 'btn btn-warning'
+    }, span({
+      className: 'glyphicon glyphicon-forward'
+    }))))))), div({
+      className: 'list-group-item'
+    }, WpmWidget({
+      status: this.props.status
+    })), a({
+      className: 'list-group-item'
+    }, "Hello World!")));
+  }
+});
+
+module.exports = SideMenu;
+
+
+
+},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","./WpmWidget":"/Users/alex/djcode/splashreader/coffee/components/WpmWidget.coffee","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js"}],"/Users/alex/djcode/splashreader/coffee/components/Topbar.coffee":[function(require,module,exports){
 var FluxBone, Nav, NavItem, Navbar, React, Topbar, a, button, dispatcher, div, em, form, h1, img, li, p, span, _ref, _ref1;
 
 React = require('react/addons');
@@ -684,19 +736,7 @@ Topbar = React.createClass({
     }, div({
       className: 'row'
     }, div({
-      className: 'col-xs-1'
-    }, p({
-      className: 'navbar-text',
-      style: {
-        marginTop: 10,
-        marginBottom: 10
-      }
-    }, a({
-      href: '#'
-    }, img({
-      src: '/images/icon32.png'
-    })))), div({
-      className: 'col-xs-10'
+      className: 'col-xs-12'
     }, p({
       className: "navbar-center navbar-text navbar-brand"
     }, this.props.article.get('title') ? this.props.article.get('title') : "SplashReader")))));
@@ -707,7 +747,61 @@ module.exports = Topbar;
 
 
 
-},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","react-bootstrap":"/Users/alex/djcode/splashreader/node_modules/react-bootstrap/main.js","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js"}],"/Users/alex/djcode/splashreader/coffee/components/deferUpdateMixin.coffee":[function(require,module,exports){
+},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","react-bootstrap":"/Users/alex/djcode/splashreader/node_modules/react-bootstrap/main.js","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js"}],"/Users/alex/djcode/splashreader/coffee/components/WpmWidget.coffee":[function(require,module,exports){
+var FluxBone, React, WpmWidget, a, button, dispatcher, div, em, form, h1, li, p, span, _ref;
+
+React = require('react/addons');
+
+dispatcher = require('../dispatcher');
+
+FluxBone = require('./FluxBone');
+
+_ref = React.DOM, h1 = _ref.h1, div = _ref.div, li = _ref.li, p = _ref.p, a = _ref.a, span = _ref.span, button = _ref.button, form = _ref.form, em = _ref.em;
+
+WpmWidget = React.createClass({
+  mixins: [FluxBone.ModelMixin('status', 'change'), React.addons.PureRenderMixin],
+  handleIncreaseWpmClick: function() {
+    return dispatcher.dispatch({
+      actionType: 'increase-wpm',
+      amount: 50
+    });
+  },
+  handleDecreaseWpmClick: function() {
+    return dispatcher.dispatch({
+      actionType: 'decrease-wpm',
+      amount: 50
+    });
+  },
+  render: function() {
+    return div({
+      className: 'navbar-form'
+    }, div({
+      className: 'btn-group'
+    }, button({
+      type: 'button',
+      className: 'btn btn-warning',
+      onClick: this.handleDecreaseWpmClick
+    }, span({
+      className: 'glyphicon glyphicon-chevron-down'
+    })), span({
+      className: 'btn btn-default disabled'
+    }, "" + (this.props.status.get('wpm')), span({
+      className: 'hidden-xs'
+    }, " wpm")), button({
+      type: 'button',
+      className: 'btn btn-warning',
+      onClick: this.handleIncreaseWpmClick
+    }, span({
+      className: 'glyphicon glyphicon-chevron-up'
+    }))));
+  }
+});
+
+module.exports = WpmWidget;
+
+
+
+},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js"}],"/Users/alex/djcode/splashreader/coffee/components/deferUpdateMixin.coffee":[function(require,module,exports){
 module.exports = {
   deferUpdate: function() {
     return setTimeout((function(_this) {
@@ -801,7 +895,7 @@ handlePre = function(text, parent) {
 };
 
 shortenLongWord = function(word) {
-  var after;
+  var after, parts;
   if (word.length < 14) {
     after = ' ';
     return [
@@ -811,7 +905,14 @@ shortenLongWord = function(word) {
       }
     ];
   }
-  return _.compact(word.split(/([^A-z0-9]*\w{1,7})/)).map(function(part, i, parts) {
+  parts = word.split(/(?=-)/).filter(function(part) {
+    return part.length > 0;
+  }).map(function(part) {
+    return part.split(/(.{1,13})/).filter(function(subpart) {
+      return subpart.length > 0;
+    });
+  });
+  return _.flatten(parts).map(function(part, i, parts) {
     if (i < (parts.length - 1)) {
       return {
         word: part,
@@ -990,30 +1091,10 @@ module.exports = new SplashRouter();
 
 
 },{"./dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","backbone":"/Users/alex/djcode/splashreader/node_modules/backbone/backbone.js"}],"/Users/alex/djcode/splashreader/coffee/rsvp_utils.coffee":[function(require,module,exports){
-var getDisplayMultiplier, getTextWidth, getWordMiddle, shortenLongWord, _,
+var getDisplayMultiplier, getTextWidth, getWordMiddle, _,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 _ = require('underscore');
-
-shortenLongWord = function(word) {
-  var first_half, hyphen, max_length, middle, second_half, words;
-  max_length = 15;
-  if (word.length < max_length) {
-    return word;
-  }
-  hyphen = word.match(/-/);
-  if (hyphen) {
-    first_half = word.slice(0, hyphen.index + 1);
-    second_half = word.slice(hyphen.index + 1);
-  } else {
-    middle = Math.floor(word.length / 2);
-    middle = Math.min(middle, max_length - 2);
-    first_half = word.slice(0, middle) + '-';
-    second_half = word.slice(middle);
-  }
-  words = [shortenLongWord(first_half), shortenLongWord(second_half)];
-  return words;
-};
 
 getDisplayMultiplier = function(word) {
   var display;
@@ -1722,7 +1803,8 @@ RsvpStatusModel = (function(_super) {
 
   RsvpStatusModel.prototype.defaults = {
     playing: false,
-    wpm: 500
+    wpm: 500,
+    menuShown: false
   };
 
   RsvpStatusModel.prototype.msPerWord = function() {
@@ -1736,6 +1818,15 @@ RsvpStatusModel = (function(_super) {
     this.on('change', (function(_this) {
       return function(model, options) {
         return _this.localSave();
+      };
+    })(this));
+    this.on('change:playing', (function(_this) {
+      return function(model, options) {
+        if (model.get('playing')) {
+          return _this.set({
+            menuShown: false
+          });
+        }
       };
     })(this));
     $(window).keydown((function(_this) {
@@ -1793,6 +1884,11 @@ RsvpStatusModel = (function(_super) {
       case 'decrease-wpm':
         return this.set({
           wpm: this.get('wpm') - payload.amount
+        });
+      case 'toggle-side-menu':
+        return this.set({
+          menuShown: !this.get('menuShown'),
+          playing: false
         });
     }
   };
