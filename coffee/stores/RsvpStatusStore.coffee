@@ -11,6 +11,7 @@ class RsvpStatusModel extends Backbone.Model
   defaults:
     playing: false
     wpm: 500
+    menuShown: false
 
   msPerWord: ->
     60000 / @get('wpm')
@@ -23,6 +24,12 @@ class RsvpStatusModel extends Backbone.Model
     @localLoad()
     @on 'change', (model, options) =>
       @localSave()
+
+    # hide menu when play is resumed
+    @on 'change:playing', (model, options) =>
+      if model.get('playing')
+        @set
+          menuShown: false
 
     # key 'space', =>
     #   dispatcher.dispatch
@@ -94,6 +101,12 @@ class RsvpStatusModel extends Backbone.Model
       when 'decrease-wpm'
         @set
           wpm: @get('wpm') - payload.amount
+
+      when 'toggle-side-menu'
+        @set
+          menuShown: !@get('menuShown')
+          playing: false
+
 
 RsvpStatusStore = new RsvpStatusModel()
 module.exports = RsvpStatusStore
