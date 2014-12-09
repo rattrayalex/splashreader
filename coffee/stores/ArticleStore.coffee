@@ -67,23 +67,28 @@ class ArticleModel extends NestedBackbone.Model
       when 'page-change'
         dispatcher.waitFor [CurrentPageStore.dispatchToken]
 
+        url = payload.url
+
         # going back to the home page, or ignoring if invalid URL.
-        if not validator.isURL(payload.url)
-          if not payload.url
+        if not validator.isURL(url)
+          if not url
             console.log 'back to home page'
             @clear()
           return
 
+        # remove hashtag and thereafter, can't have two titles
+        url = url.split('#')[0]
+
         # when you change from one page directly to another
-        if @get('url') isnt payload.url
+        if @get('url') isnt url
           console.log 'going to clear Article stuff'
           @clear()
           @set
-            url: payload.url
+            url: url
 
         req_url = "https://readability.com/api/content/v1/parser" +
           '?token=' + constants.READABILITY_TOKEN +
-          '&url=' + payload.url +
+          '&url=' + url +
           '&callback=?' # for JSONP, which allows cross-domain ajax.
 
         $.getJSON req_url
@@ -101,7 +106,7 @@ class ArticleModel extends NestedBackbone.Model
           .fail (err) ->
             console.log 'Readability failed, will try read lib:'
 
-            read payload.url, {withCredentials: false}, (error, article, data) ->
+            read url, {withCredentials: false}, (error, article, data) ->
               console.log 'got readability', error, article, data
 
               if error
@@ -113,8 +118,8 @@ class ArticleModel extends NestedBackbone.Model
                 raw_html: article.content
                 title: article.title
                 author: null
-                url: payload.url
-                domain: data.domain or getUrlDomain(payload.url)
+                url: url
+                domain: data.domain or getUrlDomain(url)
                 date: null
 
 ArticleStore = new ArticleModel()
