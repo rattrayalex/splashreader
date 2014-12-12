@@ -33,54 +33,52 @@ BottomBar = React.createClass
     time_left = Math.round @props.current.getTimeLeft()
 
 
-    div {
+    div
       className: 'navbar-fluid navbar-default navbar-fixed-bottom'
-    },
-      div {
+      ,
+      div
         className: 'container-fluid'
-      },
-
-        Nav {
+        ,
+        Nav
           className: 'navbar-left'
-        },
-          div {
+          ,
+          div
             className: 'navbar-form'
-          },
-            div {
+            ,
+            div
               className: 'btn-group'
-            },
-              button {
+              ,
+              button
                 type: 'button'
                 onClick: @handleToggleMenuClick
                 className: 'btn btn-warning'
                 style:
                   padding: '9px 10px'
-              },
+                ,
                 span className: 'icon-bar'
                 span className: 'icon-bar'
                 span className: 'icon-bar'
-            WpmWidget {
+            WpmWidget
               status: @props.status
               className: 'hidden-xs'
               style:
                 display: 'inline-block'
                 margin: '0px 10px'
-            }
 
-        p {
+        p
           className: 'navbar-text navbar-right text-muted'
           style:
             marginRight: 75
-        },
-          em {
+          ,
+          em
             className: 'text-muted'
-          },
+            ,
             if @props.words.length and !isNaN(time_left)
               pluralize = unless time_left is 1 then "s" else ""
               "#{ time_left } minute#{ pluralize } left"
             else
               ""
-        div {
+        div
           className: 'progress'
           style:
             position: 'absolute'
@@ -93,18 +91,17 @@ BottomBar = React.createClass
             marginBottom: 0
             boxShadow: 'none'
             background: 'transparent'
-        },
-          div {
+          ,
+          div
             className: 'progress-bar progress-bar-warning'
             role: 'progressbar'
             style:
               width: "#{percent_done}%"
-          }
       if @props.words.length
-        PlayPauseButton {
+        PlayPauseButton
           status: @props.status
           words: @props.words
-        }
+
 
 
 PlayPauseButton = React.createClass
@@ -135,7 +132,7 @@ PlayPauseButton = React.createClass
       'active': @props.status.get('playing')
       'disabled': not @props.words.length
 
-    div {
+    div
       style:
         position: 'fixed'
         bottom: 25
@@ -143,8 +140,8 @@ PlayPauseButton = React.createClass
         top: 'initial'  # to override glyphicon
         borderRadius: '50%'
         boxShadow: '0 3px 6px rgba(0,0,0,.2)'
-    },
-      button {
+      ,
+      button
         type: 'submit'
         className: play_pause_button_class
         onClick: @handlePlayPauseClick
@@ -154,7 +151,6 @@ PlayPauseButton = React.createClass
           height: 50
           width: 50
           top: 'initial'
-      }
 
 
 module.exports = BottomBar

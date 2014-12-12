@@ -23,35 +23,35 @@ WpmWidget = React.createClass
       amount: 50
 
   render: ->
-    div {
+    div
       className: 'navbar-form ' + @props.className?
       style: @props.style or {}
-    },
-      div {
+      ,
+      div
         className: 'btn-group'
-      },
-        button {
+        ,
+        button
           type: 'button'
           className: 'btn btn-warning'
           onClick: @handleDecreaseWpmClick
-        },
-          span {
+          ,
+          span
             className: 'glyphicon glyphicon-chevron-down'
-          }
-        span {
+        span
           className: 'btn btn-default disabled'
-        },
+          ,
           "#{ @props.status.get('wpm') }"
-          span {
+          span
             className: 'hidden-xs'
-          }, " wpm"
-        button {
+            ,
+            " wpm"
+        button
           type: 'button'
           className: 'btn btn-warning'
           onClick: @handleIncreaseWpmClick
-        },
-          span {
+          ,
+          span
             className: 'glyphicon glyphicon-chevron-up'
-          }
+
 
 module.exports = WpmWidget

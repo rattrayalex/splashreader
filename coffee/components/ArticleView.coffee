@@ -55,10 +55,10 @@ Word = React.createClass
 
   render: ->
     space = if @props.elem.get('after') is ' ' then ' ' else ''
-    span {
+    span
       onClick: @handleClick
       className: 'current-word' if @isCurrentWord()
-    },
+      ,
       @props.elem.get('word') + space
 
 Elem = React.createClass
@@ -108,48 +108,54 @@ CollectURL = React.createClass
     false
 
   render: ->
-    div {},
-      div {
+    div {}
+      ,
+      div
         className: 'text-center'
-      },
-        h1 {}, "SplashReader"
-        p {}, "A speed reader that lets you come up for air."
-        form {
+        ,
+        h1 {}
+          ,
+          "SplashReader"
+        p {}
+          ,
+          "A speed reader that lets you come up for air."
+        form
           className: 'form'
           style:
             marginTop: 30
           onSubmit: @handleSubmit
-        },
-          div {
+          ,
+          div
             className: 'form-group'
-          },
-            div {
+            ,
+            div
               className: 'input-group'
-            },
-              div {
+              ,
+              div
                 className: 'input-group-addon'
-              }, "http://"
-              input {
+                ,
+                "http://"
+              input
                 className: 'form-control'
                 type: 'text'
                 placeholder: 'Enter an article URL'
                 defaultValue: @props.url
                 ref: 'url'
-              }
-              span {
+
+              span
                 className: 'input-group-btn'
-              },
-                button {
+                ,
+                button
                   type: 'submit'
                   className: 'btn btn-warning'
-                },
-                  span {
+                  ,
+                  span
                     className: "hidden-xs"
-                  },
+                    ,
                     "Splash "
-                  span {
+                  span
                     className: 'glyphicon glyphicon-forward'
-                  }
+
 
 Masthead = React.createClass
 
@@ -159,41 +165,56 @@ Masthead = React.createClass
     Math.max target, min
 
   render: ->
-    if @props.article.get('title')
-      date = @props.article.get('date')
+    if not  @props.article.get('title')
+      return div {}
 
-      div {
-        className: 'masthead'
-        style:
-          paddingBottom: 60
-      },
-        h1 {}, @props.article.get('title')
-        hr {}
-        div {className: 'row'},
-          div {className: 'col-sm-6'},
-            small {className: 'text-muted'},
-              "By " if @props.article.get('author')
-            small {},
-              @props.article.get('author')
-            div {},
-              small {className: 'text-muted'},
-                "on " if date
-              small {},
-                new Date(date).toDateString() if date
+    date = @props.article.get('date')
 
-          div {className: 'col-sm-6'},
-            small {},
-              a {
-                className: 'pull-right text-muted'
-                href: @props.article.get('url')
-                target: '_blank'
-              },
-                "from #{ @props.article.get('domain') } "
-                span {
-                  className: 'glyphicon glyphicon-share-alt'
-                }
-    else
-      div {}
+    div
+      className: 'masthead'
+      style:
+        paddingBottom: 60
+      ,
+      h1 {}
+        ,
+        @props.article.get('title')
+      hr {}
+      div
+        className: 'row'
+        ,
+        div
+          className: 'col-sm-6'
+          ,
+          small
+            className: 'text-muted'
+            ,
+            "By " if @props.article.get('author')
+          small {}
+            ,
+            @props.article.get('author')
+          div {}
+            ,
+            small
+              className: 'text-muted'
+              ,
+              "on " if date
+            small {}
+              ,
+              new Date(date).toDateString() if date
+
+        div
+          className: 'col-sm-6'
+          ,
+          small {}
+            ,
+            a
+              className: 'pull-right text-muted'
+              href: @props.article.get('url')
+              target: '_blank'
+              ,
+              "from #{ @props.article.get('domain') } "
+              span
+                className: 'glyphicon glyphicon-share-alt'
 
 
 ArticleFooter = React.createClass
@@ -210,19 +231,21 @@ ArticleFooter = React.createClass
     else
       pluralize = unless total_time is 1 then "s" else ""
 
-      div {},
+      div {}
+        ,
         hr {}
-        small {
+        small
           className: 'text-muted pull-right'
-        },
-          em {},
+          ,
+          em {}
+            ,
             "You just read #{ @props.words.length } words
              in #{ total_time } minute#{ pluralize }."
 
 
 LoadingIcon = React.createClass
   render: ->
-    div {
+    div
       style:
         position: 'absolute'
         top: 0
@@ -232,22 +255,21 @@ LoadingIcon = React.createClass
         margin: 'auto'
         zIndex: 100
         # background: 'rgba(0,0,0,.1)'
-    },
-      div {
+      ,
+      div
         style:
           display: 'table'
           textAlign: 'center'
           width: '100%'
           height: '100%'
-      },
-        span {
+        ,
+        span
           className: "glyphicon glyphicon-repeat fa-spin"
           style:
             fontSize: '500%'
             opacity: .5
             display: 'table-cell'
             verticalAlign: 'middle'
-        }
 
 
 ArticleViewDisplay = React.createClass
@@ -275,32 +297,29 @@ ArticleViewDisplay = React.createClass
   render: ->
     loading = @getLoadingState()
 
-    div {
-      className: 'loading' if loading
+    div
+      className: if loading then 'loading' else ''
       style:
         paddingTop: @getPadding()
         paddingBottom: @getPadding()
         # visibility instead of display b/c it retains the scroll position
         visibility: if @props.status.get('playing') then 'hidden' else 'visible'
-    },
+      ,
       if loading
         LoadingIcon {}
-      Masthead {
+      Masthead
         article: @props.article
         padding: @getPadding()
         ref: 'masthead'
-      }
       if @props.article.has('elem')
-        Elem {
+        Elem
           elem: @props.article.get('elem')
           current: @props.current
-        }
       else
-        CollectURL {
+        CollectURL
           url: @props.article.get('url') or @props.page.get('url')
-        }
-      ArticleFooter {
+      ArticleFooter
         words: @props.words
-      }
+
 
 module.exports = {Elem, ArticleViewDisplay}

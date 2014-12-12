@@ -21,45 +21,40 @@ dispatcher = require('./dispatcher')
 main = ->
 
   React.renderComponent(
-    Topbar {
+    Topbar
       status: RsvpStatusStore
       words: WordStore
       current: CurrentWordStore
       article: ArticleStore
-    }
     document.querySelector('.topbar-here')
   )
   React.renderComponent(
-    SideMenu {
+    SideMenu
       status: RsvpStatusStore
-    }
     document.querySelector('.side-menu-here')
   )
   React.renderComponent(
-    BottomBar {
+    BottomBar
       status: RsvpStatusStore
       current: CurrentWordStore
       words: WordStore
       article: ArticleStore
-    }
     document.querySelector('.bottombar-here')
   )
   React.renderComponent(
-    ArticleViewDisplay {
+    ArticleViewDisplay
       article: ArticleStore
       current: CurrentWordStore
       status: RsvpStatusStore
       words: WordStore
       page: CurrentPageStore
-    }
     document.querySelector('.article-main-here')
   )
   React.renderComponent(
-    RsvpDisplay {
+    RsvpDisplay
       current: CurrentWordStore
       key: 'current-word'
       status: RsvpStatusStore
-    }
     document.querySelector('.rsvp-main-here')
   )
 

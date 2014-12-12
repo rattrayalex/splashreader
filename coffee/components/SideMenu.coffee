@@ -24,59 +24,59 @@ SideMenu = React.createClass
 
   render: ->
     anim = if @props.status.get('menuShown') then 'fadeInLeft' else 'fadeOutLeft'
-    div {
+    div
       className: 'animated side-menu ' + anim
       style:
         display: 'none' unless @state.menuEverShown
         # left: if @props.status.get('menuShown') then 0 else -350
-    },
-      div {
+      ,
+      div
         className: 'list-group'
-      },
-        div {
+        ,
+        div
           className: 'list-group-item'
-        },
-          div {
+          ,
+          div
             className: 'form-group'
             style:
               marginBottom: 0
-          },
-            div {
+            ,
+            div
               className: 'input-group'
-            },
-              input {
+              ,
+              input
                 className: 'form-control'
                 type: 'text'
                 placeholder: 'Splash a new Article'
-              },
-              span {
+                ,
+              span
                 className: 'input-group-btn'
-              },
-                button {
+                ,
+                button
                   type: 'submit'
                   className: 'btn btn-warning'
-                },
-                  span {
+                  ,
+                  span
                     className: 'glyphicon glyphicon-forward'
-                  }
-        div {
+
+        div
           className: 'list-group-item'
-        },
-          WpmWidget {
+          ,
+          WpmWidget
             status: @props.status
-          }
-        a {
+
+        a
           className: 'list-group-item'
           href: '#'
-        },
+          ,
           "SplashReader Home"
-        div {
+        div
           className: 'list-group-item'
-        },
+          ,
           'Created by '
-          a {
+          a
             href: 'http://alexrattray.com'
-          },
+            ,
             'Alex Rattray'
 
 
