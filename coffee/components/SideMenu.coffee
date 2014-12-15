@@ -4,7 +4,6 @@ dispatcher = require('../dispatcher')
 FluxBone = require('./FluxBone')
 
 WpmWidget = require('./WpmWidget')
-CollectURL = require('./CollectURL')
 
 {h1, div, span, form, input, button, p, a, em, small, hr} = React.DOM
 
@@ -17,6 +16,14 @@ SideMenu = React.createClass
 
   getInitialState: ->
     menuEverShown: false
+
+  handleUrlSubmitted: (e) ->
+    e.preventDefault()
+    url = @refs.url.getDOMNode().value
+    dispatcher.dispatch
+      actionType: 'url-requested'
+      url: url
+    false
 
   detectMenuEverShown: ->
     if @props.status.get('menuShown')
@@ -34,33 +41,33 @@ SideMenu = React.createClass
       div
         className: 'list-group'
         ,
-        div
+        form
           className: 'list-group-item'
+          onSubmit: @handleUrlSubmitted
           ,
-          CollectURL
-            url: ''
-          # div
-          #   className: 'form-group'
-          #   style:
-          #     marginBottom: 0
-          #   ,
-          #   div
-          #     className: 'input-group'
-          #     ,
-          #     input
-          #       className: 'form-control'
-          #       type: 'text'
-          #       placeholder: 'Splash a new Article'
-          #       ,
-          #     span
-          #       className: 'input-group-btn'
-          #       ,
-          #       button
-          #         type: 'submit'
-          #         className: 'btn btn-warning'
-          #         ,
-          #         span
-          #           className: 'glyphicon glyphicon-forward'
+          div
+            className: 'form-group'
+            style:
+              marginBottom: 0
+            ,
+            div
+              className: 'input-group'
+              ,
+              input
+                className: 'form-control'
+                type: 'text'
+                placeholder: 'Splash a new Article'
+                ref: 'url'
+              span
+                className: 'input-group-btn'
+                ,
+                button
+                  type: 'submit'
+                  className: 'btn btn-warning'
+                  onSubmit: @handleUrlSubmitted
+                  ,
+                  span
+                    className: 'glyphicon glyphicon-forward'
 
         div
           className: 'list-group-item'
