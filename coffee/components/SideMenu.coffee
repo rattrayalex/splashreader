@@ -4,6 +4,7 @@ dispatcher = require('../dispatcher')
 FluxBone = require('./FluxBone')
 
 WpmWidget = require('./WpmWidget')
+CollectURL = require('./CollectURL')
 
 {h1, div, span, form, input, button, p, a, em, small, hr} = React.DOM
 
@@ -36,28 +37,30 @@ SideMenu = React.createClass
         div
           className: 'list-group-item'
           ,
-          div
-            className: 'form-group'
-            style:
-              marginBottom: 0
-            ,
-            div
-              className: 'input-group'
-              ,
-              input
-                className: 'form-control'
-                type: 'text'
-                placeholder: 'Splash a new Article'
-                ,
-              span
-                className: 'input-group-btn'
-                ,
-                button
-                  type: 'submit'
-                  className: 'btn btn-warning'
-                  ,
-                  span
-                    className: 'glyphicon glyphicon-forward'
+          CollectURL
+            url: ''
+          # div
+          #   className: 'form-group'
+          #   style:
+          #     marginBottom: 0
+          #   ,
+          #   div
+          #     className: 'input-group'
+          #     ,
+          #     input
+          #       className: 'form-control'
+          #       type: 'text'
+          #       placeholder: 'Splash a new Article'
+          #       ,
+          #     span
+          #       className: 'input-group-btn'
+          #       ,
+          #       button
+          #         type: 'submit'
+          #         className: 'btn btn-warning'
+          #         ,
+          #         span
+          #           className: 'glyphicon glyphicon-forward'
 
         div
           className: 'list-group-item'

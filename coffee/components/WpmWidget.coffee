@@ -24,7 +24,7 @@ WpmWidget = React.createClass
 
   render: ->
     div
-      className: 'navbar-form ' + @props.className?
+      className: 'navbar-form ' + @props.className or ''
       style: @props.style or {}
       ,
       div
