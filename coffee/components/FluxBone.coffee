@@ -1,6 +1,7 @@
 
 module.exports =
 
+
   ModelMixin: (model_name, event_name="all", cb_name) ->
 
     eventCallbackName = "_eventCallbacks_#{ model_name }_#{ event_name }_#{ cb_name or '' }"
@@ -28,7 +29,7 @@ module.exports =
 
   CollectionMixin: (collection_name, event_name="all", cb_name) ->
 
-    eventCallbackName = "_eventCallbacks_#{ collection_name }_#{ event_name }"
+    eventCallbackName = "_eventCallbacks_#{ collection_name }_#{ event_name }_#{ cb_name or '' }"
 
     mixin =
 
