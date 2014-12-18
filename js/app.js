@@ -70,40 +70,10 @@ main();
 
 
 
-},{"./components/ArticleView":"/Users/alex/djcode/splashreader/coffee/components/ArticleView.coffee","./components/BottomBar":"/Users/alex/djcode/splashreader/coffee/components/BottomBar.coffee","./components/RsvpDisplay":"/Users/alex/djcode/splashreader/coffee/components/RsvpDisplay.coffee","./components/SideMenu":"/Users/alex/djcode/splashreader/coffee/components/SideMenu.coffee","./components/Topbar":"/Users/alex/djcode/splashreader/coffee/components/Topbar.coffee","./dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./stores/ArticleStore":"/Users/alex/djcode/splashreader/coffee/stores/ArticleStore.coffee","./stores/CurrentPageStore":"/Users/alex/djcode/splashreader/coffee/stores/CurrentPageStore.coffee","./stores/CurrentWordStore":"/Users/alex/djcode/splashreader/coffee/stores/CurrentWordStore.coffee","./stores/RsvpStatusStore":"/Users/alex/djcode/splashreader/coffee/stores/RsvpStatusStore.coffee","./stores/WordStore":"/Users/alex/djcode/splashreader/coffee/stores/WordStore.coffee","backbone":"/Users/alex/djcode/splashreader/node_modules/backbone/backbone.js","jquery":"/Users/alex/djcode/splashreader/node_modules/jquery/dist/jquery.js","keymaster":"/Users/alex/djcode/splashreader/node_modules/keymaster/keymaster.js","react":"/Users/alex/djcode/splashreader/node_modules/react/react.js"}],"/Users/alex/djcode/splashreader/coffee/components/ArticleView.coffee":[function(require,module,exports){
-var $, ArticleFooter, ArticleViewDisplay, CollectURL, Elem, FluxBone, LoadingIcon, Masthead, React, Word, a, button, deferUpdateMixin, dispatcher, div, em, form, getElemOrWord, h1, hr, input, p, router, scrollToNode, small, span, validator, _, _ref;
-
-React = require('react/addons');
-
-validator = require('validator');
+},{"./components/ArticleView":"/Users/alex/djcode/splashreader/coffee/components/ArticleView.coffee","./components/BottomBar":"/Users/alex/djcode/splashreader/coffee/components/BottomBar.coffee","./components/RsvpDisplay":"/Users/alex/djcode/splashreader/coffee/components/RsvpDisplay.coffee","./components/SideMenu":"/Users/alex/djcode/splashreader/coffee/components/SideMenu.coffee","./components/Topbar":"/Users/alex/djcode/splashreader/coffee/components/Topbar.coffee","./dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./stores/ArticleStore":"/Users/alex/djcode/splashreader/coffee/stores/ArticleStore.coffee","./stores/CurrentPageStore":"/Users/alex/djcode/splashreader/coffee/stores/CurrentPageStore.coffee","./stores/CurrentWordStore":"/Users/alex/djcode/splashreader/coffee/stores/CurrentWordStore.coffee","./stores/RsvpStatusStore":"/Users/alex/djcode/splashreader/coffee/stores/RsvpStatusStore.coffee","./stores/WordStore":"/Users/alex/djcode/splashreader/coffee/stores/WordStore.coffee","backbone":"/Users/alex/djcode/splashreader/node_modules/backbone/backbone.js","jquery":"/Users/alex/djcode/splashreader/node_modules/jquery/dist/jquery.js","keymaster":"/Users/alex/djcode/splashreader/node_modules/keymaster/keymaster.js","react":"/Users/alex/djcode/splashreader/node_modules/react/react.js"}],"/Users/alex/djcode/splashreader/coffee/article_utils.coffee":[function(require,module,exports){
+var $, scrollToNode;
 
 $ = require('jQuery');
-
-_ = require('underscore');
-
-router = require('../router');
-
-dispatcher = require('../dispatcher');
-
-FluxBone = require('./FluxBone');
-
-deferUpdateMixin = require('./deferUpdateMixin');
-
-_ref = React.DOM, h1 = _ref.h1, div = _ref.div, span = _ref.span, form = _ref.form, input = _ref.input, button = _ref.button, p = _ref.p, a = _ref.a, em = _ref.em, small = _ref.small, hr = _ref.hr;
-
-getElemOrWord = function(elem, current) {
-  if (elem.get('word') != null) {
-    return Word({
-      elem: elem,
-      current: current
-    });
-  } else {
-    return Elem({
-      elem: elem,
-      current: current
-    });
-  }
-};
 
 scrollToNode = function(node) {
   var offset;
@@ -113,124 +83,28 @@ scrollToNode = function(node) {
   }, 500);
 };
 
-Word = React.createClass({
-  mixins: [FluxBone.ModelMixin('elem', 'change'), React.addons.PureRenderMixin],
-  handleClick: function() {
-    return dispatcher.dispatch({
-      actionType: 'change-word',
-      word: this.props.elem,
-      source: 'click'
-    });
-  },
-  scrollToMe: function() {
-    return scrollToNode(this.getDOMNode());
-  },
-  isCurrentWord: function() {
-    return this.props.current.getWord() === this.props.elem;
-  },
-  componentDidMount: function() {
-    return this.props.elem.on('scroll', (function(_this) {
-      return function() {
-        return _this.scrollToMe();
-      };
-    })(this), this);
-  },
-  componentWillUnmount: function() {
-    return this.props.elem.off('scroll', null, this);
-  },
-  render: function() {
-    var space;
-    space = this.props.elem.get('after') === ' ' ? ' ' : '';
-    return span({
-      onClick: this.handleClick,
-      className: this.isCurrentWord() ? 'current-word' : void 0
-    }, this.props.elem.get('word') + space);
-  }
-});
+module.exports = {
+  scrollToNode: scrollToNode
+};
 
-Elem = React.createClass({
-  mixins: [FluxBone.ModelMixin('elem', 'change'), React.addons.PureRenderMixin],
-  isCurrentPara: function() {
-    var _ref1;
-    return ((_ref1 = this.props.current.getWord()) != null ? _ref1.get('parent') : void 0) === this.props.elem;
-  },
-  render: function() {
-    var ReactElem, attrs, children, elem;
-    ReactElem = React.DOM[this.props.elem.get('node_name')];
-    attrs = _.extend(this.props.elem.get('attrs'), {
-      className: this.isCurrentPara() ? 'current-para' : void 0
-    });
-    children = [
-      (function() {
-        var _i, _len, _ref1, _results;
-        _ref1 = this.props.elem.get('children').models;
-        _results = [];
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          elem = _ref1[_i];
-          _results.push(getElemOrWord(elem, this.props.current));
-        }
-        return _results;
-      }).call(this)
-    ];
-    return ReactElem(attrs, children);
-  }
-});
 
-CollectURL = React.createClass({
-  handleSubmit: function(e) {
-    var url;
-    e.preventDefault();
-    url = this.refs.url.getDOMNode().value;
-    if (!_.contains(['http://', 'https:/'], url.slice(0, 7))) {
-      console.log('prepending http://');
-      url = 'http://' + url;
-    }
-    if (!validator.isURL(url)) {
-      console.log('isnt url', url);
-      this.setState({
-        error: 'not-url'
-      });
-    } else {
-      url = '/' + url;
-      router.navigate(url, {
-        trigger: true
-      });
-    }
-    return false;
-  },
-  render: function() {
-    return div({}, div({
-      className: 'text-center'
-    }, h1({}, "SplashReader"), p({}, "A speed reader that lets you come up for air."), form({
-      className: 'form',
-      style: {
-        marginTop: 30
-      },
-      onSubmit: this.handleSubmit
-    }, div({
-      className: 'form-group'
-    }, div({
-      className: 'input-group'
-    }, div({
-      className: 'input-group-addon'
-    }, "http://"), input({
-      className: 'form-control',
-      type: 'text',
-      placeholder: 'Enter an article URL',
-      defaultValue: this.props.url,
-      ref: 'url'
-    }), span({
-      className: 'input-group-btn'
-    }, button({
-      type: 'submit',
-      className: 'btn btn-warning'
-    }, span({
-      className: "hidden-xs"
-    }, "Splash "), span({
-      className: 'glyphicon glyphicon-forward'
-    }))))))));
-  }
-});
+
+},{"jQuery":"/Users/alex/djcode/splashreader/node_modules/jQuery/dist/jquery.js"}],"/Users/alex/djcode/splashreader/coffee/components/ArticleView.coffee":[function(require,module,exports){
+var $, ArticleFooter, ArticleViewDisplay, ElemOrWord, FluxBone, HomePage, LoadingIcon, Masthead, React, a, button, deferUpdateMixin, div, em, form, h1, hr, input, p, small, span, _ref;
+
+React = require('react/addons');
+
+$ = require('jQuery');
+
+FluxBone = require('./FluxBone');
+
+deferUpdateMixin = require('./deferUpdateMixin');
+
+ElemOrWord = require('./ElemOrWord');
+
+HomePage = require('./HomePage').HomePage;
+
+_ref = React.DOM, h1 = _ref.h1, div = _ref.div, span = _ref.span, form = _ref.form, input = _ref.input, button = _ref.button, p = _ref.p, a = _ref.a, em = _ref.em, small = _ref.small, hr = _ref.hr;
 
 Masthead = React.createClass({
   getMarginBottom: function() {
@@ -241,33 +115,32 @@ Masthead = React.createClass({
   },
   render: function() {
     var date;
-    if (this.props.article.get('title')) {
-      date = this.props.article.get('date');
-      return div({
-        className: 'masthead',
-        style: {
-          paddingBottom: 60
-        }
-      }, h1({}, this.props.article.get('title')), hr({}), div({
-        className: 'row'
-      }, div({
-        className: 'col-sm-6'
-      }, small({
-        className: 'text-muted'
-      }, this.props.article.get('author') ? "By " : void 0), small({}, this.props.article.get('author')), div({}, small({
-        className: 'text-muted'
-      }, date ? "on " : void 0), small({}, date ? new Date(date).toDateString() : void 0))), div({
-        className: 'col-sm-6'
-      }, small({}, a({
-        className: 'pull-right text-muted',
-        href: this.props.article.get('url'),
-        target: '_blank'
-      }, "from " + (this.props.article.get('domain')) + " ", span({
-        className: 'glyphicon glyphicon-share-alt'
-      }))))));
-    } else {
+    if (!this.props.article.get('title')) {
       return div({});
     }
+    date = this.props.article.get('date');
+    return div({
+      className: 'masthead',
+      style: {
+        paddingBottom: 60
+      }
+    }, h1({}, this.props.article.get('title')), hr({}), div({
+      className: 'row'
+    }, div({
+      className: 'col-sm-6'
+    }, small({
+      className: 'text-muted'
+    }, this.props.article.get('author') ? "By " : void 0), small({}, this.props.article.get('author')), div({}, small({
+      className: 'text-muted'
+    }, date ? "on " : void 0)), date ? small({}, new Date(date).toDateString()) : void 0), div({
+      className: 'col-sm-6'
+    }, small({}, a({
+      className: 'pull-right text-muted',
+      href: this.props.article.get('url'),
+      target: '_blank'
+    }, "from " + (this.props.article.get('domain')) + " ", span({
+      className: 'glyphicon glyphicon-share-alt'
+    }))))));
   }
 });
 
@@ -280,9 +153,10 @@ ArticleFooter = React.createClass({
       return div({});
     } else {
       pluralize = total_time !== 1 ? "s" : "";
-      return div({}, hr({}), small({
+      div({}, hr({}));
+      return small({
         className: 'text-muted pull-right'
-      }, em({}, "You just read " + this.props.words.length + " words in " + total_time + " minute" + pluralize + ".")));
+      }, em({}, "You just read " + this.props.words.length + " words in " + total_time + " minute" + pluralize + "."));
     }
   }
 });
@@ -343,7 +217,7 @@ ArticleViewDisplay = React.createClass({
     var loading;
     loading = this.getLoadingState();
     return div({
-      className: loading ? 'loading' : void 0,
+      className: loading ? 'loading' : '',
       style: {
         paddingTop: this.getPadding(),
         paddingBottom: this.getPadding(),
@@ -353,10 +227,10 @@ ArticleViewDisplay = React.createClass({
       article: this.props.article,
       padding: this.getPadding(),
       ref: 'masthead'
-    }), this.props.article.has('elem') ? Elem({
+    }), this.props.article.has('elem') ? ElemOrWord({
       elem: this.props.article.get('elem'),
       current: this.props.current
-    }) : CollectURL({
+    }) : HomePage({
       url: this.props.article.get('url') || this.props.page.get('url')
     }), ArticleFooter({
       words: this.props.words
@@ -365,13 +239,12 @@ ArticleViewDisplay = React.createClass({
 });
 
 module.exports = {
-  Elem: Elem,
   ArticleViewDisplay: ArticleViewDisplay
 };
 
 
 
-},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","../router":"/Users/alex/djcode/splashreader/coffee/router.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","./deferUpdateMixin":"/Users/alex/djcode/splashreader/coffee/components/deferUpdateMixin.coffee","jQuery":"/Users/alex/djcode/splashreader/node_modules/jQuery/dist/jquery.js","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js","underscore":"/Users/alex/djcode/splashreader/node_modules/underscore/underscore.js","validator":"/Users/alex/djcode/splashreader/node_modules/validator/validator.js"}],"/Users/alex/djcode/splashreader/coffee/components/BottomBar.coffee":[function(require,module,exports){
+},{"./ElemOrWord":"/Users/alex/djcode/splashreader/coffee/components/ElemOrWord.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","./HomePage":"/Users/alex/djcode/splashreader/coffee/components/HomePage.coffee","./deferUpdateMixin":"/Users/alex/djcode/splashreader/coffee/components/deferUpdateMixin.coffee","jQuery":"/Users/alex/djcode/splashreader/node_modules/jQuery/dist/jquery.js","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js"}],"/Users/alex/djcode/splashreader/coffee/components/BottomBar.coffee":[function(require,module,exports){
 var BottomBar, FluxBone, Nav, NavItem, Navbar, PlayPauseButton, React, WpmWidget, a, button, deferUpdateMixin, dispatcher, div, em, form, h1, li, p, span, _ref, _ref1;
 
 React = require('react/addons');
@@ -514,7 +387,165 @@ module.exports = BottomBar;
 
 
 
-},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","./WpmWidget":"/Users/alex/djcode/splashreader/coffee/components/WpmWidget.coffee","./deferUpdateMixin":"/Users/alex/djcode/splashreader/coffee/components/deferUpdateMixin.coffee","react-bootstrap":"/Users/alex/djcode/splashreader/node_modules/react-bootstrap/main.js","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js"}],"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee":[function(require,module,exports){
+},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","./WpmWidget":"/Users/alex/djcode/splashreader/coffee/components/WpmWidget.coffee","./deferUpdateMixin":"/Users/alex/djcode/splashreader/coffee/components/deferUpdateMixin.coffee","react-bootstrap":"/Users/alex/djcode/splashreader/node_modules/react-bootstrap/main.js","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js"}],"/Users/alex/djcode/splashreader/coffee/components/CollectURL.coffee":[function(require,module,exports){
+var CollectURL, React, button, dispatcher, div, form, h1, input, p, span, _ref;
+
+React = require('react/addons');
+
+dispatcher = require('../dispatcher');
+
+_ref = React.DOM, div = _ref.div, span = _ref.span, h1 = _ref.h1, p = _ref.p, form = _ref.form, input = _ref.input, button = _ref.button;
+
+CollectURL = React.createClass({
+  handleSubmit: function(e) {
+    var url;
+    e.preventDefault();
+    url = this.refs.url.getDOMNode().value;
+    dispatcher.dispatch({
+      actionType: 'url-requested',
+      url: url
+    });
+    return false;
+  },
+  render: function() {
+    return form({
+      className: 'form',
+      style: {
+        marginTop: 30
+      },
+      onSubmit: this.handleSubmit
+    }, div({
+      className: 'form-group'
+    }, div({
+      className: 'input-group'
+    }, div({
+      className: 'input-group-addon'
+    }, "http://"), input({
+      className: 'form-control',
+      type: 'text',
+      placeholder: 'Enter an article URL',
+      defaultValue: this.props.url,
+      ref: 'url'
+    }), span({
+      className: 'input-group-btn'
+    }, button({
+      type: 'submit',
+      className: 'btn btn-warning'
+    }, span({
+      className: "hidden-xs"
+    }, "Splash "), span({
+      className: 'glyphicon glyphicon-forward'
+    }))))));
+  }
+});
+
+module.exports = CollectURL;
+
+
+
+},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js"}],"/Users/alex/djcode/splashreader/coffee/components/ElemOrWord.coffee":[function(require,module,exports){
+var Elem, ElemOrWord, FluxBone, React, Word, dispatcher, scrollToNode, span, _;
+
+React = require('react/addons');
+
+_ = require('underscore');
+
+FluxBone = require('./FluxBone');
+
+dispatcher = require('../dispatcher');
+
+scrollToNode = require('../article_utils.coffee').scrollToNode;
+
+span = React.DOM.span;
+
+ElemOrWord = React.createClass({
+  mixins: [React.addons.PureRenderMixin],
+  render: function() {
+    if (this.props.elem.get('word') != null) {
+      return Word({
+        elem: this.props.elem,
+        current: this.props.current
+      });
+    } else {
+      return Elem({
+        elem: this.props.elem,
+        current: this.props.current
+      });
+    }
+  }
+});
+
+Word = React.createClass({
+  mixins: [FluxBone.ModelMixin('elem', 'change'), React.addons.PureRenderMixin],
+  handleClick: function() {
+    return dispatcher.dispatch({
+      actionType: 'change-word',
+      word: this.props.elem,
+      source: 'click'
+    });
+  },
+  scrollToMe: function() {
+    return scrollToNode(this.getDOMNode());
+  },
+  isCurrentWord: function() {
+    return this.props.current.getWord() === this.props.elem;
+  },
+  componentDidMount: function() {
+    return this.props.elem.on('scroll', (function(_this) {
+      return function() {
+        return _this.scrollToMe();
+      };
+    })(this), this);
+  },
+  componentWillUnmount: function() {
+    return this.props.elem.off('scroll', null, this);
+  },
+  render: function() {
+    var space;
+    space = this.props.elem.get('after') === ' ' ? ' ' : '';
+    return span({
+      onClick: this.handleClick,
+      className: this.isCurrentWord() ? 'current-word' : void 0
+    }, this.props.elem.get('word') + space);
+  }
+});
+
+Elem = React.createClass({
+  mixins: [FluxBone.ModelMixin('elem', 'change'), React.addons.PureRenderMixin],
+  isCurrentPara: function() {
+    var _ref;
+    return ((_ref = this.props.current.getWord()) != null ? _ref.get('parent') : void 0) === this.props.elem;
+  },
+  render: function() {
+    var ReactElem, attrs, children, elem;
+    ReactElem = React.DOM[this.props.elem.get('node_name')];
+    attrs = _.extend(this.props.elem.get('attrs'), {
+      className: this.isCurrentPara() ? 'current-para' : void 0
+    });
+    children = [
+      (function() {
+        var _i, _len, _ref, _results;
+        _ref = this.props.elem.get('children').models;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          elem = _ref[_i];
+          _results.push(ElemOrWord({
+            elem: elem,
+            current: this.props.current
+          }));
+        }
+        return _results;
+      }).call(this)
+    ];
+    return ReactElem(attrs, children);
+  }
+});
+
+module.exports = ElemOrWord;
+
+
+
+},{"../article_utils.coffee":"/Users/alex/djcode/splashreader/coffee/article_utils.coffee","../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","./FluxBone":"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js","underscore":"/Users/alex/djcode/splashreader/node_modules/underscore/underscore.js"}],"/Users/alex/djcode/splashreader/coffee/components/FluxBone.coffee":[function(require,module,exports){
 module.exports = {
   ModelMixin: function(model_name, event_name, cb_name) {
     var eventCallbackName, mixin;
@@ -544,7 +575,7 @@ module.exports = {
     if (event_name == null) {
       event_name = "all";
     }
-    eventCallbackName = "_eventCallbacks_" + collection_name + "_" + event_name;
+    eventCallbackName = "_eventCallbacks_" + collection_name + "_" + event_name + "_" + (cb_name || '');
     mixin = {
       componentDidMount: function() {
         return this.props[collection_name].on(event_name, this[eventCallbackName], this);
@@ -566,7 +597,32 @@ module.exports = {
 
 
 
-},{}],"/Users/alex/djcode/splashreader/coffee/components/RsvpDisplay.coffee":[function(require,module,exports){
+},{}],"/Users/alex/djcode/splashreader/coffee/components/HomePage.coffee":[function(require,module,exports){
+var CollectURL, HomePage, React, div, h1, p, _ref;
+
+React = require('react/addons');
+
+CollectURL = require('./CollectURL');
+
+_ref = React.DOM, div = _ref.div, h1 = _ref.h1, p = _ref.p;
+
+HomePage = React.createClass({
+  render: function() {
+    return div({}, div({
+      className: 'text-center'
+    }, h1({}, "SplashReader"), p({}, "A speed reader that lets you come up for air."), CollectURL({
+      url: this.props.url
+    })));
+  }
+});
+
+module.exports = {
+  HomePage: HomePage
+};
+
+
+
+},{"./CollectURL":"/Users/alex/djcode/splashreader/coffee/components/CollectURL.coffee","react/addons":"/Users/alex/djcode/splashreader/node_modules/react/addons.js"}],"/Users/alex/djcode/splashreader/coffee/components/RsvpDisplay.coffee":[function(require,module,exports){
 var FluxBone, React, RsvpDisplay, div, eleven_dots, eleven_ems, getTextWidth, getWordMiddle, span, _ref, _ref1;
 
 React = require('react/addons');
@@ -666,6 +722,16 @@ SideMenu = React.createClass({
       menuEverShown: false
     };
   },
+  handleUrlSubmitted: function(e) {
+    var url;
+    e.preventDefault();
+    url = this.refs.url.getDOMNode().value;
+    dispatcher.dispatch({
+      actionType: 'url-requested',
+      url: url
+    });
+    return false;
+  },
   detectMenuEverShown: function() {
     if (this.props.status.get('menuShown')) {
       return this.setState({
@@ -683,8 +749,9 @@ SideMenu = React.createClass({
       } : void 0
     }, div({
       className: 'list-group'
-    }, div({
-      className: 'list-group-item'
+    }, form({
+      className: 'list-group-item',
+      onSubmit: this.handleUrlSubmitted
     }, div({
       className: 'form-group',
       style: {
@@ -695,15 +762,17 @@ SideMenu = React.createClass({
     }, input({
       className: 'form-control',
       type: 'text',
-      placeholder: 'Splash a new Article'
-    }, span({
+      placeholder: 'Splash a new Article',
+      ref: 'url'
+    }), span({
       className: 'input-group-btn'
     }, button({
       type: 'submit',
-      className: 'btn btn-warning'
+      className: 'btn btn-warning',
+      onSubmit: this.handleUrlSubmitted
     }, span({
       className: 'glyphicon glyphicon-forward'
-    }))))))), div({
+    })))))), div({
       className: 'list-group-item'
     }, WpmWidget({
       status: this.props.status
@@ -786,7 +855,7 @@ WpmWidget = React.createClass({
   },
   render: function() {
     return div({
-      className: 'navbar-form ' + (this.props.className != null),
+      className: 'navbar-form ' + this.props.className || '',
       style: this.props.style || {}
     }, div({
       className: 'btn-group'
@@ -1327,21 +1396,23 @@ ArticleModel = (function(_super) {
         return console.log("article json", this.toJSON());
       case 'page-change':
         dispatcher.waitFor([CurrentPageStore.dispatchToken]);
-        if (!validator.isURL(payload.url)) {
-          if (!payload.url) {
+        url = payload.url;
+        if (!validator.isURL(url)) {
+          if (!url) {
             console.log('back to home page');
             this.clear();
           }
           return;
         }
-        if (this.get('url') !== payload.url) {
+        url = url.split('#')[0];
+        if (this.get('url') !== url) {
           console.log('going to clear Article stuff');
           this.clear();
           this.set({
-            url: payload.url
+            url: url
           });
         }
-        req_url = "https://readability.com/api/content/v1/parser" + '?token=' + constants.READABILITY_TOKEN + '&url=' + payload.url + '&callback=?';
+        req_url = "https://readability.com/api/content/v1/parser" + '?token=' + constants.READABILITY_TOKEN + '&url=' + url + '&callback=?';
         return $.getJSON(req_url).then(function(data, status, jqXHR) {
           console.log('got response', data);
           return dispatcher.dispatch({
@@ -1355,7 +1426,7 @@ ArticleModel = (function(_super) {
           });
         }).fail(function(err) {
           console.log('Readability failed, will try read lib:');
-          return read(payload.url, {
+          return read(url, {
             withCredentials: false
           }, function(error, article, data) {
             console.log('got readability', error, article, data);
@@ -1368,8 +1439,8 @@ ArticleModel = (function(_super) {
               raw_html: article.content,
               title: article.title,
               author: null,
-              url: payload.url,
-              domain: data.domain || getUrlDomain(payload.url),
+              url: url,
+              domain: data.domain || getUrlDomain(url),
               date: null
             });
           });
@@ -1388,14 +1459,18 @@ module.exports = ArticleStore;
 
 
 },{"../constants":"/Users/alex/djcode/splashreader/coffee/constants.coffee","../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","../example_data":"/Users/alex/djcode/splashreader/coffee/example_data.coffee","../htmlToArticle":"/Users/alex/djcode/splashreader/coffee/htmlToArticle.coffee","./ArticleModels":"/Users/alex/djcode/splashreader/coffee/stores/ArticleModels.coffee","./CurrentPageStore":"/Users/alex/djcode/splashreader/coffee/stores/CurrentPageStore.coffee","./NestedBackbone":"/Users/alex/djcode/splashreader/coffee/stores/NestedBackbone.coffee","./OfflineBackbone":"/Users/alex/djcode/splashreader/coffee/stores/OfflineBackbone.coffee","./WordStore":"/Users/alex/djcode/splashreader/coffee/stores/WordStore.coffee","backbone":"/Users/alex/djcode/splashreader/node_modules/backbone/backbone.js","jQuery":"/Users/alex/djcode/splashreader/node_modules/jQuery/dist/jquery.js","node-readability":"/Users/alex/djcode/splashreader/node_modules/node-readability/src/readability.js","underscore":"/Users/alex/djcode/splashreader/node_modules/underscore/underscore.js","validator":"/Users/alex/djcode/splashreader/node_modules/validator/validator.js"}],"/Users/alex/djcode/splashreader/coffee/stores/CurrentPageStore.coffee":[function(require,module,exports){
-var Backbone, CurrentPageModel, CurrentPageStore, SplashRouter, dispatcher,
+var Backbone, CurrentPageModel, CurrentPageStore, dispatcher, router, validator, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Backbone = require('backbone');
 
-SplashRouter = require('../router');
+_ = require('underscore');
+
+validator = require('validator');
+
+router = require('../router');
 
 dispatcher = require('../dispatcher');
 
@@ -1412,7 +1487,28 @@ CurrentPageModel = (function(_super) {
   };
 
   CurrentPageModel.prototype.dispatcherCallback = function(payload) {
+    var url;
     switch (payload.actionType) {
+      case 'url-requested':
+        url = payload.url;
+        if (!_.contains(['http://', 'https:/'], url.slice(0, 7))) {
+          console.log('prepending http://');
+          url = 'http://' + url;
+        }
+        if (!validator.isURL(url)) {
+          console.log('isnt url', url);
+          return this.set({
+            error: 'Invalid URL'
+          });
+        } else {
+          url = '/' + url;
+          return setTimeout(function() {
+            return router.navigate(url, {
+              trigger: true
+            });
+          }, 0);
+        }
+        break;
       case 'page-change':
         this.set({
           url: payload.url
@@ -1431,7 +1527,7 @@ module.exports = CurrentPageStore;
 
 
 
-},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","../router":"/Users/alex/djcode/splashreader/coffee/router.coffee","backbone":"/Users/alex/djcode/splashreader/node_modules/backbone/backbone.js"}],"/Users/alex/djcode/splashreader/coffee/stores/CurrentWordStore.coffee":[function(require,module,exports){
+},{"../dispatcher":"/Users/alex/djcode/splashreader/coffee/dispatcher.coffee","../router":"/Users/alex/djcode/splashreader/coffee/router.coffee","backbone":"/Users/alex/djcode/splashreader/node_modules/backbone/backbone.js","underscore":"/Users/alex/djcode/splashreader/node_modules/underscore/underscore.js","validator":"/Users/alex/djcode/splashreader/node_modules/validator/validator.js"}],"/Users/alex/djcode/splashreader/coffee/stores/CurrentWordStore.coffee":[function(require,module,exports){
 var ArticleStore, Backbone, CurrentPageStore, CurrentWordModel, CurrentWordStore, ElementModel, OfflineBackbone, RsvpStatusStore, WordModel, WordStore, dispatcher, _, _ref,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
