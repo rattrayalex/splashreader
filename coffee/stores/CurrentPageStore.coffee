@@ -1,6 +1,8 @@
 Backbone = require 'backbone'
+_ = require 'underscore'
+validator = require 'validator'
 
-SplashRouter = require '../router'
+router = require '../router'
 dispatcher = require '../dispatcher'
 
 
@@ -10,6 +12,23 @@ class CurrentPageModel extends Backbone.Model
 
   dispatcherCallback: (payload) =>
     switch payload.actionType
+      when 'url-requested'
+        url = payload.url
+        if not _.contains ['http://', 'https:/'], url[0..6]
+          console.log 'prepending http://'
+          url = 'http://' + url
+        if not validator.isURL(url)
+          console.log 'isnt url', url
+          @set
+            error: 'Invalid URL'
+        else
+          url = '/' + url
+          # perform asyncronously b/c dispatch w/in dispatch
+          setTimeout ->
+            router.navigate url,
+              trigger: true
+          , 0
+
       when 'page-change'
         @set
           url: payload.url

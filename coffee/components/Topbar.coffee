@@ -21,36 +21,36 @@ Topbar = React.createClass
     if not (@props.article.get('elem') or @props.article.get('title'))
       return div {}
 
-    div {
+    div
       className: 'navbar-fluid navbar-default navbar-fixed-top hidden-xs'
-    },
-      div {
+      ,
+      div
         className: 'container-fluid'
-      },
-        div {
+        ,
+        div
           className: 'row'
-        },
-          # div {
+          ,
+          # div
           #   className: 'col-xs-1'
-          # },
-          #   p {
+          #   ,
+          #   p
           #     className: 'navbar-text'
           #     style:
           #       marginTop: 10
           #       marginBottom: 10
-          #   },
-          #     a {
+          #     ,
+          #     a
           #       href: '#'
-          #     },
-          #       img {
+          #       ,
+          #       img
           #         src: '/images/icon32.png'
-          #       }
-          div {
+
+          div
             className: 'col-xs-12'
-          },
-            p {
+            ,
+            p
               className: "navbar-center navbar-text navbar-brand"
-            },
+              ,
               if @props.article.get('title')
                 @props.article.get('title')
               else
