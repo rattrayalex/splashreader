@@ -1,10 +1,28 @@
+fs = require('fs')
 
+# inlined by brfs: https://github.com/substack/brfs
+APP_CSS = fs.readFileSync(__dirname + '/../css/style.css', 'utf8')
+APP_JS = fs.readFileSync(__dirname + '/../js/app.js', 'utf8')
 
 getCurrentUrl = () ->
   document.URL
 
 
-insertIframe = (url)->
+insertCSS = (iframe, css) ->
+  style = iframe.contentWindow.document.createElement('style')
+  style.innerHTML = css
+  iframe.contentWindow.document.head.appendChild(style)
+  style
+
+
+insertScript = (iframe, js) ->
+  script = iframe.contentWindow.document.createElement('script')
+  script.innerHTML = js
+  iframe.contentWindow.document.head.appendChild(script)
+  script
+
+
+insertIframe = (url) ->
   iframe = document.createElement('iframe')
 
   iframe.style.position = 'fixed'
@@ -24,8 +42,9 @@ insertIframe = (url)->
   iframe.style.transition = "all .5s"
   iframe.setAttribute 'id', 'splashreader'
 
-  target_url = 'http://www.splashreaderapp.com/?view=chrome#' + url
-  iframe.setAttribute 'src', target_url
+  # target_url = 'http://www.splashreaderapp.com/?view=chrome#' + url
+  # target_url = '#' + url
+  # iframe.setAttribute 'src', target_url
 
   iframe.onload = () ->
     console.log 'iframe loaded just fiiine'
@@ -39,27 +58,20 @@ insertIframe = (url)->
   catch e
     console.log 'oh noes, cannot insert iframe!', e
 
-  setTimeout ->
-    doc = iframe.contentWindow.document
-    actual_url = doc.URL
-    if actual_url != target_url
-      console.log 'oh noes, iframe failed!', actual_url
-      h1 = doc.createElement('h1')
-      h1.innerText = 'Redirecting...'
-      h1.style.top = 0
-      h1.style.bottom = 0
-      h1.style.width = '100%'
-      h1.style.height = '100%'
-      h1.style.background = 'white'
-      h1.style.fontFamily = 'Georgia'
-      h1.style.textAlign = 'center'
-      h1.style.fontStyle = 'italic'
-      h1.style.color = '#888'
-      h1.style.lineHeight = '10em'
+  insertCSS iframe, APP_CSS
 
-      doc.querySelector('body').appendChild(h1)
-      document.location = 'http://www.splashreaderapp.com/#' + url
-  , 1000
+  insertScript iframe, "
+    window.SplashReaderExt = {};
+    window.SplashReaderExt.url = decodeURIComponent(
+      \"#{ encodeURIComponent(window.location.href) }\"
+    );
+    window.SplashReaderExt.html = decodeURIComponent(
+      \"#{ encodeURIComponent(document.body.innerHTML) }\"
+    );
+    "
+  insertScript iframe, APP_JS
+
+  iframe.focus()
 
   return iframe
 

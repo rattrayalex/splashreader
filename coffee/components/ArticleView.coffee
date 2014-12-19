@@ -151,7 +151,7 @@ ArticleViewDisplay = React.createClass
     loading = @getLoadingState()
 
     div
-      className: if loading then 'loading' else ''
+      className: "article-main #{ if loading then 'loading' else '' }"
       style:
         paddingTop: @getPadding()
         paddingBottom: @getPadding()
