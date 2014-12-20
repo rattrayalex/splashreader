@@ -10,8 +10,8 @@ WpmWidget = require('./WpmWidget')
 
 SideMenu = React.createClass
   mixins: [
-    FluxBone.ModelMixin('status', 'change')
-    FluxBone.ModelMixin('status', 'change', 'detectMenuEverShown')
+    # FluxBone.ModelMixin('status', 'change')
+    # FluxBone.ModelMixin('status', 'change', 'detectMenuEverShown')
   ]
 
   getInitialState: ->
@@ -26,17 +26,17 @@ SideMenu = React.createClass
     false
 
   detectMenuEverShown: ->
-    if @props.status.get('menuShown')
+    if @props.status.menuShown.getValue()
       @setState
         menuEverShown: true
 
   render: ->
-    anim = if @props.status.get('menuShown') then 'fadeInLeft' else 'fadeOutLeft'
+    anim = if @props.status.menuShown.getValue() then 'fadeInLeft' else 'fadeOutLeft'
     div
       className: 'animated side-menu ' + anim
       style:
         display: 'none' unless @state.menuEverShown
-        # left: if @props.status.get('menuShown') then 0 else -350
+        # left: if @props.status.menuShown.getValue() then 0 else -350
       ,
       div
         className: 'list-group'

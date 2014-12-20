@@ -128,7 +128,7 @@ LoadingIcon = React.createClass
 ArticleViewDisplay = React.createClass
 
   mixins: [
-    FluxBone.ModelMixin('status', 'change:playing')
+    # FluxBone.ModelMixin('status', 'change:playing')
     FluxBone.ModelMixin('article', 'change')
     FluxBone.ModelMixin('page', 'change')
   ]
@@ -156,7 +156,7 @@ ArticleViewDisplay = React.createClass
         paddingTop: @getPadding()
         paddingBottom: @getPadding()
         # visibility instead of display b/c it retains the scroll position
-        visibility: if @props.status.get('playing') then 'hidden' else 'visible'
+        visibility: if @props.status.playing.getValue() then 'hidden' else 'visible'
       ,
       if loading
         LoadingIcon {}

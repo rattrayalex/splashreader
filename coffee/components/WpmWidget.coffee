@@ -8,7 +8,7 @@ FluxBone = require('./FluxBone')
 WpmWidget = React.createClass
 
   mixins: [
-    FluxBone.ModelMixin('status', 'change')
+    # FluxBone.ModelMixin('status', 'change')
     React.addons.PureRenderMixin
   ]
 
@@ -40,7 +40,7 @@ WpmWidget = React.createClass
         span
           className: 'btn btn-default disabled'
           ,
-          "#{ @props.status.get('wpm') }"
+          "#{ @props.status.wpm.getValue() }"
           span
             className: 'hidden-xs'
             ,

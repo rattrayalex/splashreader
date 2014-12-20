@@ -12,8 +12,8 @@ RsvpDisplay = React.createClass
 
   mixins: [
     FluxBone.ModelMixin('current', 'change:idx')
-    FluxBone.ModelMixin('status', 'change')
-    React.addons.PureRenderMixin
+    # FluxBone.ModelMixin('status', 'change')
+    # React.addons.PureRenderMixin
   ]
 
   componentDidMount: ->
@@ -51,7 +51,7 @@ RsvpDisplay = React.createClass
     div
       className: 'rsvp-wrapper'
       style:
-        display: if @props.status.get('playing') then 'block' else 'none'
+        display: if @props.status.playing.getValue() then 'block' else 'none'
       ,
       div
         className: 'rsvp-notch-top'
