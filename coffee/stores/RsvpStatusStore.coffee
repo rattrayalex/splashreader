@@ -9,6 +9,7 @@ dispatcher = require('../dispatcher')
 
 class RsvpStatusStore
   constructor: (@store) ->
+    # @cursor = @store.cursor('status').cursor
 
     dispatcher.tokens.RsvpStatusStore = dispatcher.register(@dispatchCallback)
 
@@ -29,41 +30,46 @@ class RsvpStatusStore
         actionType: 'pause'
         source: 'window-blur'
 
+  cursor: (path...) ->
+    @store.cursor('status').cursor(path)
+
   msPerWord: ->
-    60000 / @store.status.wpm.getValue()
+    60000 / @cursor().get('wpm')
 
   dispatchCallback: (payload) =>
     switch payload.actionType
       when 'play-pause'
-        @store.status.playing.set !@store.status.playing.getValue()
-        @store.status.menuShown.set(false)
+        @cursor('playing').update (x) -> !x
+        @cursor('menuShown').update -> false
 
       when 'pause'
-        @store.status.playing.set(false)
+        @cursor('playing').update -> false
 
       when 'play'
-        # don't play if the trigger was a paragraph change
-        # but the user has lifted the spacebar in the interim.
+        # # don't play if the trigger was a paragraph change
+        # # but the user has lifted the spacebar in the interim.
         # unless payload.source is 'para-change' and not @space_is_down
-        @store.status.playing.set(true)
-        @store.status.menuShown.set(false)
+        @cursor('playing').update -> true
+        @cursor('menuShown').update -> false
 
       when 'set-wpm'
-        @store.status.wpm.set(payload.wpm)
+        @cursor('wpm').update -> payload.wpm
 
       when 'increase-wpm'
-        @store.status.wpm.set(@store.status.wpm.getValue() + payload.amount)
+        @cursor('wpm').update (x) ->
+          x + payload.amount
 
       when 'decrease-wpm'
-        @store.status.wpm.set(@store.status.wpm.getValue() - payload.amount)
+        @cursor('wpm').update (x) ->
+          x - payload.amount
 
       when 'toggle-side-menu'
-        @store.status.menuShown.set(!@store.status.menuShown.getValue())
-        @store.status.playing.set(false)
+        @cursor('menuShown').update (x) -> !x
+        @cursor('playing').update -> false
 
       when 'page-change'
-        @store.status.playing.set(false)
-        @store.status.menuShown.set(false)
+        @cursor('playing').update -> false
+        @cursor('menuShown').update -> false
 
 class RsvpStatusModel extends Backbone.Model
   defaults:
@@ -172,4 +178,7 @@ class RsvpStatusModel extends Backbone.Model
 
 
 # RsvpStatusStore = new RsvpStatusModel()
+
+# TODO: move instantiation into app.coffee
+# module.exports = new RsvpStatusStore(require('./store').cursor('status').cursor)
 module.exports = new RsvpStatusStore(require('./store'))

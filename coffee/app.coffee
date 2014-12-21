@@ -1,13 +1,11 @@
 React = require('react')
-store = require('./stores/store')
+Immutable = require('immutable')
 Backbone = require('backbone')
 Backbone.$ = require('jquery')  # so Backbone.Router doesnt die
 
-ArticleStore = require('./stores/ArticleStore')
-WordStore = require('./stores/WordStore')
-CurrentWordStore = require('./stores/CurrentWordStore')
-CurrentPageStore = require('./stores/CurrentPageStore')
-RsvpStatusStore = require('./stores/RsvpStatusStore')
+
+
+store = require('./stores/store')
 
 Body = require('./components/Body')
 
@@ -18,10 +16,18 @@ dispatcher = require('./dispatcher')
 main = ->
 
   # initial data
-  store.add 'status',
-    playing: false
-    wpm: 500
-    menuShown: false
+  store.cursor().update ->
+    Immutable.fromJS
+      status:
+        playing: false
+        wpm: 500
+        menuShown: false
+
+  ArticleStore = require('./stores/ArticleStore')
+  WordStore = require('./stores/WordStore')
+  CurrentWordStore = require('./stores/CurrentWordStore')
+  CurrentPageStore = require('./stores/CurrentPageStore')
+  RsvpStatusStore = require('./stores/RsvpStatusStore')
 
   RenderedBodyComponent = React.renderComponent(
     Body
@@ -29,11 +35,12 @@ main = ->
       words: WordStore
       current: CurrentWordStore
       page: CurrentPageStore
-      status: store.status
+      status: store.current.get('status')
     document.body
   )
   store.on "update", (updatedStore) ->
-    RenderedBodyComponent.setProps({status: updatedStore.status})
+    RenderedBodyComponent.setProps
+      status: updatedStore.get('status')
 
   # in chrome ext, no url; instead, use ext-planted vars.
   if window.location.origin is "null"

@@ -40,7 +40,7 @@ WpmWidget = React.createClass
         span
           className: 'btn btn-default disabled'
           ,
-          "#{ @props.status.wpm.getValue() }"
+          "#{ @props.status.get('wpm') }"
           span
             className: 'hidden-xs'
             ,

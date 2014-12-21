@@ -127,9 +127,9 @@ PlayPauseButton = React.createClass
       'btn': true
       'btn-info': true
       'glyphicon': true
-      'glyphicon-play': not @props.status.playing.getValue()
-      'glyphicon-pause': @props.status.playing.getValue()
-      'active': @props.status.playing.getValue()
+      'glyphicon-play': not @props.status.get('playing')
+      'glyphicon-pause': @props.status.get('playing')
+      'active': @props.status.get('playing')
       'disabled': not @props.words.length
 
     div

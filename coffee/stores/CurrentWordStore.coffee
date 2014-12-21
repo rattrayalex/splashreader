@@ -35,7 +35,7 @@ class CurrentWordModel extends Backbone.Model
     @set {idx}
 
     # trigger the next word to update.
-    if RsvpStatusStore.store.status.playing.getValue() is true
+    if RsvpStatusStore.cursor().get('playing') is true
       next_word = WordStore.at(idx + 1)
       time_to_display = RsvpStatusStore.msPerWord() * word.get('display')
 
@@ -87,10 +87,12 @@ class CurrentWordModel extends Backbone.Model
         prev.get('parent')?.trigger('change')
         word.get('parent')?.trigger('change')
 
-        if RsvpStatusStore.store.status.playing.getValue()
+        if RsvpStatusStore.cursor().get('playing')
 
           # pause on para change
-          RsvpStatusStore.store.status.playing.set(false)
+          # TODO: set paraChange instead of playing,
+          #   read from that too in display
+          RsvpStatusStore.cursor('playing').update -> false
 
           # start playing after para change
           setTimeout ->
@@ -131,7 +133,7 @@ class CurrentWordModel extends Backbone.Model
       when 'play-pause', 'play', 'pause'
         dispatcher.waitFor [dispatcher.tokens.RsvpStatusStore]
 
-        if RsvpStatusStore.store.status.playing.getValue()
+        if RsvpStatusStore.cursor().get('playing')
           @updateWord @getWord() or WordStore.at(0)
         else
           clearTimeout @timeout if @timeout?

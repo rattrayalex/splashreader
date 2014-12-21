@@ -1,10 +1,25 @@
-# Cortex = require('../../node_modules/cortexjs/src/cortext')  # TODO; file issue
-Cortex = require('cortexjs')  # TODO; file issue
+Backbone = require('backbone')
+_ = require('underscore')
+Immutable = require('immutable')
+Cursor = require('immutable/contrib/cursor')
 
-# RsvpStatusStore = require('./RsvpStatusStore')
 
-store = new Cortex({})
+class Store
+  constructor: (data) ->
+    @current = Immutable.fromJS(data or {})
+    # TODO: replace with eventemitter3
+    _.extend(this, Backbone.Events)
 
-# new RsvpStatusStore(store)
+  cursor: (path...) ->
+    Cursor.from(@current, path, @_updateCursor)
 
-module.exports = store
+  _updateCursor: (newRoot, oldRoot, path) =>
+    @current = newRoot
+    @trigger('update', @current)
+    @current
+
+
+store = new Store()
+
+
+module.exports = new Store({})

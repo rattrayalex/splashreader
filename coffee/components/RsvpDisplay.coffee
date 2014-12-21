@@ -51,7 +51,7 @@ RsvpDisplay = React.createClass
     div
       className: 'rsvp-wrapper'
       style:
-        display: if @props.status.playing.getValue() then 'block' else 'none'
+        display: if @props.status.get('playing') then 'block' else 'none'
       ,
       div
         className: 'rsvp-notch-top'
