@@ -59,6 +59,5 @@ Body = React.createClass
         status: @props.status
         current: @props.current
         words: @props.words
-        article: @props.article
 
 module.exports = Body

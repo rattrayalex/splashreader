@@ -4,7 +4,6 @@ _ = require('underscore')
 
 dispatcher = require('./dispatcher')
 constants = require('./constants')
-WordStore = require './stores/WordStore'
 {
   ChildrenCollection,
   WordModel,
@@ -14,7 +13,9 @@ WordStore = require './stores/WordStore'
 
 # evil global.
 # TODO: rethink this
-WordList = []
+WordList = {
+  words: []
+}
 
 isBlock = (node_name) ->
   node_name not in constants.INLINE_ELEMENTS
@@ -84,7 +85,7 @@ textToWords = (textNode, parent) ->
       word_models.push word_model
 
       # also add it to list of words
-      WordList.push(word_model)
+      WordList.words.push(word_model)
 
   return word_models
 
@@ -139,9 +140,15 @@ cleanedHtmlToElem = (node, parent) ->
 
 
 saveWordListToWordStore = () ->
-  WordStore.reset(WordList)
-  # I know, I know... evil globals...
-  WordList = []
+  setTimeout =>
+    dispatcher.dispatch
+      actionType: 'wordlist-complete'
+      words: WordList.words
+    # I know, I know... evil globals...
+    WordList.words = []
+  , 0
+
+
 
 
 rawHtmlToArticle = (raw_html) ->

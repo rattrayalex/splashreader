@@ -74,12 +74,11 @@ ArticleFooter = React.createClass
 
   mixins: [
     deferUpdateMixin
-    FluxBone.CollectionMixin('words', 'add remove reset', 'deferUpdate')
   ]
 
   render: ->
     total_time = @props.words.getTotalTime().toFixed(1)
-    if @props.words.length < 2 or isNaN(total_time)
+    if @props.words.numWords() < 2 or isNaN(total_time)
       div {}
     else
       pluralize = unless total_time is 1 then "s" else ""
@@ -92,7 +91,7 @@ ArticleFooter = React.createClass
           ,
           em {}
             ,
-            "You just read #{ @props.words.length } words
+            "You just read #{ @props.words.numWords() } words
              in #{ total_time } minute#{ pluralize }."
 
 
@@ -128,9 +127,7 @@ LoadingIcon = React.createClass
 ArticleViewDisplay = React.createClass
 
   mixins: [
-    # FluxBone.ModelMixin('status', 'change:playing')
-    FluxBone.ModelMixin('article', 'change')
-    FluxBone.ModelMixin('page', 'change')
+    React.addons.PureRenderMixin
   ]
 
   getLoadingState: ->

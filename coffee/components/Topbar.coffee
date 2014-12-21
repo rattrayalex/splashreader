@@ -10,10 +10,7 @@ FluxBone = require('./FluxBone')
 Topbar = React.createClass
 
   mixins: [
-    FluxBone.ModelMixin('article', 'change:title change:elem')
-    # FluxBone.ModelMixin('status', 'change')
     FluxBone.ModelMixin('current', 'change')
-    FluxBone.CollectionMixin('words', 'add remove reset')
     React.addons.PureRenderMixin
   ]
 

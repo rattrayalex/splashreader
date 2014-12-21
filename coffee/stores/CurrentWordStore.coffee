@@ -5,10 +5,8 @@ _ = require('underscore')
 OfflineBackbone = require './OfflineBackbone'
 
 {WordModel, ElementModel} = require './ArticleModels'
-ArticleStore = require './ArticleStore'
 WordStore = require './WordStore'
 RsvpStatusStore = require './RsvpStatusStore'
-CurrentPageStore = require './CurrentPageStore'
 
 dispatcher = require '../dispatcher'
 
@@ -18,7 +16,7 @@ class CurrentWordModel extends Backbone.Model
   getWord: (idx=null) ->
     if idx is null
       idx = @get('idx')
-    WordStore.at(idx)
+    WordStore.getWord(idx)
 
   getParent: (idx=null) ->
     word = @getWord(idx)
@@ -27,16 +25,16 @@ class CurrentWordModel extends Backbone.Model
   updateWord: (word) ->
 
     # code blocks (in `pre`) aren't in WordStore, don't go to them.
-    if WordStore.indexOf(word) < 0
-      console.log 'word not in WordStore, ignore'
+    if WordStore.indexOfWord(word) < 0
+      console.log 'word not in WordStore, ignore', word
       return
 
-    idx = WordStore.indexOf(word)
+    idx = WordStore.indexOfWord(word)
     @set {idx}
 
     # trigger the next word to update.
     if RsvpStatusStore.cursor().get('playing') is true
-      next_word = WordStore.at(idx + 1)
+      next_word = WordStore.getWord(idx + 1)
       time_to_display = RsvpStatusStore.msPerWord() * word.get('display')
 
       if next_word
@@ -60,7 +58,7 @@ class CurrentWordModel extends Backbone.Model
         , time_to_display
 
   getPercentDone: ->
-    @get('idx') / WordStore.length
+    @get('idx') / WordStore.numWords()
 
   getTimeLeft: ->
     WordStore.getTimeSince @get('idx')
@@ -115,7 +113,7 @@ class CurrentWordModel extends Backbone.Model
     switch payload.actionType
 
       when 'page-change'
-        dispatcher.waitFor [CurrentPageStore.dispatchToken]
+        dispatcher.waitFor [dispatcher.tokens.CurrentPageStore]
         if not payload.url
           @clear()
 
@@ -124,17 +122,16 @@ class CurrentWordModel extends Backbone.Model
         if payload.source is 'click'
           payload.word.trigger 'scroll'
 
-      when 'process-article'
-        dispatcher.waitFor [ArticleStore.dispatchToken]
-        if not @get 'idx'
-          console.log 'no word, starting at tthe top'
-          @updateWord WordStore.at(0)
+      when 'wordlist-complete'
+        dispatcher.waitFor [dispatcher.tokens.WordStore]
+        console.log 'starting at the top'
+        @updateWord WordStore.getWord(0)
 
       when 'play-pause', 'play', 'pause'
         dispatcher.waitFor [dispatcher.tokens.RsvpStatusStore]
 
         if RsvpStatusStore.cursor().get('playing')
-          @updateWord @getWord() or WordStore.at(0)
+          @updateWord @getWord() or WordStore.getWord(0)
         else
           clearTimeout @timeout if @timeout?
 

@@ -1,16 +1,30 @@
+Immutable = require 'immutable'
 Backbone = require 'backbone'
 {WordModel} = require './ArticleModels'
 RsvpStatusStore = require './RsvpStatusStore'
-CurrentPageStore = require './CurrentPageStore'
 
 dispatcher = require '../dispatcher'
 
 
-class WordCollection extends Backbone.Collection
-  model: WordModel
+class WordStore
+  constructor: (@store) ->
+    dispatcher.tokens.WordStore = dispatcher.register @dispatcherCallback
+
+  cursor: (path...) ->
+    @store.cursor('words').cursor(path)
+
+  numWords: ->
+    @cursor().valueOf().count()
+
+  getWord: (idx) ->
+    @cursor().valueOf().get(idx)
+
+  indexOfWord: (word) ->
+    @cursor().valueOf().indexOf(word)
 
   getTimeSince: (idx) ->
-    remaining_words = @rest idx
+    # http://facebook.github.io/immutable-js/docs/#/List/skip
+    remaining_words = @cursor().valueOf().skip(idx).toJS()
 
     time_left = 0
     for w in remaining_words
@@ -24,14 +38,20 @@ class WordCollection extends Backbone.Collection
   getTotalTime: ->
     @getTimeSince 0
 
-  initialize: ->
-    @dispatchToken = dispatcher.register @dispatcherCallback
-
   dispatcherCallback: (payload) =>
     switch payload.actionType
-      when 'page-change'
-        dispatcher.waitFor [CurrentPageStore.dispatchToken]
-        if not payload.url
-          @reset()
 
-module.exports = new WordCollection()
+      when 'wordlist-complete'
+        console.log 'wordlist-complete'
+        @cursor().update ->
+          Immutable.List payload.words
+
+      when 'process-article'
+        @cursor().clear()
+
+      when 'page-change'
+        dispatcher.waitFor [dispatcher.tokens.CurrentPageStore]
+        if not payload.url
+          @cursor().clear()
+
+module.exports = new WordStore(require('./store'))

@@ -12,8 +12,7 @@ RsvpDisplay = React.createClass
 
   mixins: [
     FluxBone.ModelMixin('current', 'change:idx')
-    # FluxBone.ModelMixin('status', 'change')
-    # React.addons.PureRenderMixin
+    React.addons.PureRenderMixin
   ]
 
   componentDidMount: ->

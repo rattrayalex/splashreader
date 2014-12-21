@@ -6,9 +6,12 @@ router = require '../router'
 dispatcher = require '../dispatcher'
 
 
-class CurrentPageModel extends Backbone.Model
-  initialize: ->
-    @dispatchToken = dispatcher.register @dispatcherCallback
+class CurrentPageStore
+  constructor: (@store) ->
+    dispatcher.tokens.CurrentPageStore = dispatcher.register @dispatcherCallback
+
+  cursor: (path...) ->
+    @store.cursor('page').cursor(path)
 
   dispatcherCallback: (payload) =>
     switch payload.actionType
@@ -19,8 +22,8 @@ class CurrentPageModel extends Backbone.Model
           url = 'http://' + url
         if not validator.isURL(url)
           console.log 'isnt url', url
-          @set
-            error: 'Invalid URL'
+          @cursor('error').update ->
+            'Invalid URL'
         else
           url = '/' + url
           # perform asyncronously b/c dispatch w/in dispatch
@@ -30,9 +33,8 @@ class CurrentPageModel extends Backbone.Model
           , 0
 
       when 'page-change'
-        @set
-          url: payload.url
+        @cursor('url').update -> payload.url
         console.log 'url changed to ', payload.url
 
-CurrentPageStore = new CurrentPageModel()
+# CurrentPageStore = new CurrentPageModel()
 module.exports = CurrentPageStore

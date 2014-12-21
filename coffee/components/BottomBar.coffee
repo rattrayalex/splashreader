@@ -14,9 +14,7 @@ BottomBar = React.createClass
 
   mixins: [
     deferUpdateMixin
-    # FluxBone.ModelMixin('status', 'change')
     FluxBone.ModelMixin('current', 'change')
-    FluxBone.CollectionMixin('words', 'add remove reset', 'deferUpdate')
     React.addons.PureRenderMixin
   ]
 
@@ -107,8 +105,6 @@ BottomBar = React.createClass
 PlayPauseButton = React.createClass
 
   mixins: [
-    # FluxBone.ModelMixin('status', 'change')
-    FluxBone.CollectionMixin('words', 'add remove reset')
     React.addons.PureRenderMixin
   ]
 

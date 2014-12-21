@@ -1,3 +1,4 @@
+Immutable = require 'immutable'
 Backbone = require 'backbone'
 validator = require 'validator'
 $ = require 'jQuery'
@@ -8,7 +9,6 @@ read = require 'node-readability'
 NestedBackbone = require './NestedBackbone'
 OfflineBackbone = require './OfflineBackbone'
 
-CurrentPageStore = require './CurrentPageStore'
 WordStore = require './WordStore'
 {ElementModel} = require './ArticleModels'
 
@@ -24,48 +24,30 @@ getUrlDomain = (url) ->
   a.hostname
 
 
-class ArticleModel extends NestedBackbone.Model
+class ArticleStore
 
-  nested:
-    _exclude: [
-      'elem'
-    ]
+  constructor: (@store) ->
+    dispatcher.tokens.ArticleStore = dispatcher.register @dispatcherCallback
 
-
-  initialize: ->
-    # _.extend @, OfflineBackbone.Model
-    # @localLoad()
-    # if @has('raw_html') and not @has('elem')
-    #   dispatcher.dispatch
-    #     actionType: 'process-article'
-    #     title: @get('title')
-    #     author: @get('author')
-    #     url: @get('url')
-    #     date: @get('date')
-    #     domain: @get('domain')
-    #     raw_html: @get('raw_html')
-
-    # @on 'change', (model, options) =>
-    #   console.log 'options, model', options, model
-    #   @localSave(model)
-
-    @dispatchToken = dispatcher.register @dispatcherCallback
+  cursor: (path...) ->
+    @store.cursor('article').cursor(path)
 
   dispatcherCallback: (payload) =>
     switch payload.actionType
       when 'process-article'
-        WordStore.reset()
+        dispatcher.waitFor([dispatcher.tokens.WordStore])
 
         {title, author, url, date, domain, raw_html} = payload
-        @set {title, author, url, date, domain, raw_html}
+        @cursor().update ->
+          Immutable.fromJS {title, author, url, date, domain, raw_html}
 
         elem = htmlToArticle(raw_html)
-        @set {elem}
+        @cursor('elem').update -> elem
 
-        console.log "article json", @toJSON()
+        # console.log "article json", @cursor().toString()
 
       when 'page-change'
-        dispatcher.waitFor [CurrentPageStore.dispatchToken]
+        dispatcher.waitFor [dispatcher.tokens.CurrentPageStore]
 
         url = payload.url
 
@@ -73,18 +55,17 @@ class ArticleModel extends NestedBackbone.Model
         if not validator.isURL(url)
           if not url
             console.log 'back to home page'
-            @clear()
+            @cursor().clear()
           return
 
         # remove hashtag and thereafter, can't have two titles
         url = url.split('#')[0]
 
         # when you change from one page directly to another
-        if @get('url') isnt url
+        if @cursor().get('url') isnt url
           console.log 'going to clear Article stuff'
-          @clear()
-          @set
-            url: url
+          @cursor().clear()
+          @cursor('url').update -> url
 
         req_url = "https://readability.com/api/content/v1/parser" +
           '?token=' + constants.READABILITY_TOKEN +
@@ -122,5 +103,4 @@ class ArticleModel extends NestedBackbone.Model
                 domain: data.domain or getUrlDomain(url)
                 date: null
 
-ArticleStore = new ArticleModel()
 module.exports = ArticleStore

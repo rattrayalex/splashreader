@@ -8,7 +8,6 @@ FluxBone = require('./FluxBone')
 WpmWidget = React.createClass
 
   mixins: [
-    # FluxBone.ModelMixin('status', 'change')
     React.addons.PureRenderMixin
   ]
 
