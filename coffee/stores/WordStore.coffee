@@ -1,9 +1,9 @@
 Immutable = require 'immutable'
 Backbone = require 'backbone'
-{WordModel} = require './ArticleModels'
 RsvpStatusStore = require './RsvpStatusStore'
 
 dispatcher = require '../dispatcher'
+
 
 
 class WordStore
@@ -13,31 +13,6 @@ class WordStore
   cursor: (path...) ->
     @store.cursor('words').cursor(path)
 
-  numWords: ->
-    @cursor().valueOf().count()
-
-  getWord: (idx) ->
-    @cursor().valueOf().get(idx)
-
-  indexOfWord: (word) ->
-    @cursor().valueOf().indexOf(word)
-
-  getTimeSince: (idx) ->
-    # http://facebook.github.io/immutable-js/docs/#/List/skip
-    remaining_words = @cursor().valueOf().skip(idx).toJS()
-
-    time_left = 0
-    for w in remaining_words
-      time_left += w.get('display')
-
-    seconds_left = time_left * RsvpStatusStore.msPerWord() / 1000
-    minutes_left = seconds_left / 60
-
-    return minutes_left
-
-  getTotalTime: ->
-    @getTimeSince 0
-
   dispatcherCallback: (payload) =>
     switch payload.actionType
 
@@ -45,6 +20,7 @@ class WordStore
         console.log 'wordlist-complete'
         @cursor().update ->
           Immutable.List payload.words
+        console.log 'wordlist processing done'
 
       when 'process-article'
         @cursor().clear()
@@ -54,4 +30,11 @@ class WordStore
         if not payload.url
           @cursor().clear()
 
-module.exports = new WordStore(require('./store'))
+      when 'change-word'
+        oldIdx = @store.get('current').get('idx')
+        @cursor(oldIdx).set('current', false)
+        @cursor(payload.idx).set('current', true)
+
+module.exports = WordStore
+
+

@@ -2,6 +2,7 @@ React = require 'react/addons'
 
 FluxBone = require('./FluxBone')
 {getWordMiddle, getTextWidth} = require '../rsvp_utils'
+{getCurrentWord} = require '../stores/computed'
 
 {div, span} = React.DOM
 eleven_dots = Array(11).join('.')
@@ -11,8 +12,7 @@ eleven_ems = Array(11).join('m')
 RsvpDisplay = React.createClass
 
   mixins: [
-    FluxBone.ModelMixin('current', 'change:idx')
-    React.addons.PureRenderMixin
+    # React.addons.PureRenderMixin
   ]
 
   componentDidMount: ->
@@ -22,10 +22,11 @@ RsvpDisplay = React.createClass
     @ORP_center = full_width / 3
 
   render: ->
-    if not @props.current.getWord()?.get('word')?
+    currentWord = getCurrentWord @props.words, @props.current
+    if not currentWord
       return div {}
 
-    word = @props.current.getWord().get('word') or " "
+    word = currentWord.get('word') or " "
     word = word.trim()
     word = word or " "
 
@@ -33,7 +34,7 @@ RsvpDisplay = React.createClass
     if word.length is 1
       word = ' ' + word
 
-    if @props.current.getWord().get('after') is '-'
+    if currentWord.get('after') is '-'
       word += '-'
 
     middle = getWordMiddle word.length

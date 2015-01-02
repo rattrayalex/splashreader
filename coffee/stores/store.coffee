@@ -10,6 +10,12 @@ class Store
     # TODO: replace with eventemitter3
     _.extend(this, Backbone.Events)
 
+  get: (key) ->
+    @current.get(key)
+
+  getIn: (keys) ->
+    @current.getIn(keys)
+
   cursor: (path...) ->
     Cursor.from(@current, path, @_updateCursor)
 

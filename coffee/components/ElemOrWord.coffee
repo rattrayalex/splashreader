@@ -4,8 +4,10 @@ _ = require 'underscore'
 FluxBone = require('./FluxBone')
 dispatcher = require('../dispatcher')
 {scrollToNode} = require('../article_utils.coffee')
+{getCurrentWord} = require('../stores/computed')
 
 {span} = React.DOM
+
 
 ElemOrWord = React.createClass
   mixins: [
@@ -13,61 +15,69 @@ ElemOrWord = React.createClass
   ]
 
   render: ->
-    if @props.elem.get('word')?
+    if typeof @props.elem is "number"
+      # console.log 'we have a word?', @props
       Word
-        elem: @props.elem
-        current: @props.current
+        word: @props.words.get(@props.elem)
+        # current: @props.current
     else
       Elem
         elem: @props.elem
+        words: @props.words
         current: @props.current
 
 
 Word = React.createClass
 
   mixins: [
-    FluxBone.ModelMixin('elem', 'change')
     React.addons.PureRenderMixin
   ]
+
+  # shouldComponentUpdate: (nextProps) ->
+  #   @props.word isnt nextProps.word
 
   handleClick: ->
     dispatcher.dispatch
       actionType: 'change-word'
-      word: @props.elem
+      idx: @props.word.get('idx')
       source: 'click'
 
   scrollToMe: ->
     scrollToNode @getDOMNode()
 
   isCurrentWord: ->
-    @props.current.getWord() is @props.elem
+    @props.word.get('current')
+    # @props.current.get('idx') is @props.word.get('idx')
 
-  componentDidMount: ->
-    @props.elem.on 'scroll', =>
-      @scrollToMe()
-    , @
+  # componentDidMount: ->
+  #   @props.word.on 'scroll', =>
+  #     @scrollToMe()
+  #   , @
 
-  componentWillUnmount: ->
-    @props.elem.off 'scroll', null, @
+  # componentWillUnmount: ->
+  #   @props.word.off 'scroll', null, @
 
   render: ->
-    space = if @props.elem.get('after') is ' ' then ' ' else ''
+    space = if @props.word.get('after') is ' ' then ' ' else ''
     span
       onClick: @handleClick
       className: 'current-word' if @isCurrentWord()
       ,
-      @props.elem.get('word') + space
+      @props.word.get('word') + space
 
 
 Elem = React.createClass
 
   mixins: [
-    FluxBone.ModelMixin('elem', 'change')
     React.addons.PureRenderMixin
   ]
+  # shouldComponentUpdate: (nextProps) ->
+  #   @isCurrentPara() or (nextProps.elem.get('cid') is
+  #     getCurrentWord(nextProps.words, nextProps.current).get('parent'))
 
   isCurrentPara: ->
-    @props.current.getWord()?.get('parent') is @props.elem
+    getCurrentWord(@props.words, @props.current).get('parent') is
+      @props.elem.get('cid')
 
   render: ->
     ReactElem = React.DOM[@props.elem.get('node_name')]
@@ -78,9 +88,11 @@ Elem = React.createClass
       # TODO: fix that.
       className: if @isCurrentPara() then 'current-para'
 
+    current = @props.current
+    words = @props.words
     children = [
-      ElemOrWord({elem: elem, current: @props.current}) \
-      for elem in @props.elem.get('children').models
+      ElemOrWord({elem, current, words}) \
+      for elem in @props.elem.get('children').toArray()
     ]
 
     ReactElem(attrs, children)

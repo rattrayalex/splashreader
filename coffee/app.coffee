@@ -2,8 +2,7 @@ React = require('react')
 Immutable = require('immutable')
 Backbone = require('backbone')
 Backbone.$ = require('jquery')  # so Backbone.Router doesnt die
-
-
+window.React = React
 
 store = require('./stores/store')
 
@@ -20,6 +19,8 @@ main = ->
     Immutable.fromJS
       article: {}
       words: []
+      current:
+        idx: 0
       page:
         url: window.location.hash.split('#')[1]
       status:
@@ -34,21 +35,25 @@ main = ->
   RsvpStatusStore = require('./stores/RsvpStatusStore')
 
   new ArticleStore(store)
+  new WordStore(store)
+  new CurrentWordStore(store)
   new CurrentPageStore(store)
-  # new RsvpStatusStore(store)
+  new RsvpStatusStore(store)
 
   RenderedBodyComponent = React.renderComponent(
     Body
-      article: store.current.get('article')
-      words: WordStore
-      current: CurrentWordStore
-      page: store.current.get('page')
-      status: store.current.get('status')
+      article: store.get('article')
+      words: store.get('words')
+      current: store.get('current')
+      page: store.get('page')
+      status: store.get('status')
     document.body
   )
   store.on "update", (updatedStore) ->
     RenderedBodyComponent.setProps
       article: updatedStore.get('article')
+      words: updatedStore.get('words')
+      current: updatedStore.get('current')
       page: updatedStore.get('page')
       status: updatedStore.get('status')
 

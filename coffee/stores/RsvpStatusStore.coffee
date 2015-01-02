@@ -33,9 +33,6 @@ class RsvpStatusStore
   cursor: (path...) ->
     @store.cursor('status').cursor(path)
 
-  msPerWord: ->
-    60000 / @cursor().get('wpm')
-
   dispatchCallback: (payload) =>
     switch payload.actionType
       when 'play-pause'
@@ -73,4 +70,4 @@ class RsvpStatusStore
 
 
 # TODO: move instantiation into app.coffee
-module.exports = new RsvpStatusStore(require('./store'))
+module.exports = RsvpStatusStore

@@ -1,24 +1,19 @@
 React = require 'react/addons'
-$ = require 'jQuery'
 
 FluxBone = require('./FluxBone')
 deferUpdateMixin = require('./deferUpdateMixin')
 
 ElemOrWord = require('./ElemOrWord')
-{HomePage} = require('./HomePage')
+
+computed = require('../stores/computed')
 
 {h1, div, span, form, input, button, p, a, em, small, hr} = React.DOM
 
 
 Masthead = React.createClass
 
-  getMarginBottom: ->
-    target = (@props.padding - @getDOMNode().clientHeight * 2)
-    min = 20
-    Math.max target, min
-
   render: ->
-    if not  @props.article.get('title')
+    if not  @props.article.has('title')
       return div {}
 
     date = @props.article.get('date')
@@ -77,8 +72,8 @@ ArticleFooter = React.createClass
   ]
 
   render: ->
-    total_time = @props.words.getTotalTime().toFixed(1)
-    if @props.words.numWords() < 2 or isNaN(total_time)
+    total_time = computed.getTotalTime(@props.words, @props.status).toFixed(1)
+    if @props.words.size < 2 or isNaN(total_time)
       div {}
     else
       pluralize = unless total_time is 1 then "s" else ""
@@ -91,37 +86,8 @@ ArticleFooter = React.createClass
           ,
           em {}
             ,
-            "You just read #{ @props.words.numWords() } words
+            "You just read #{ @props.words.size } words
              in #{ total_time } minute#{ pluralize }."
-
-
-LoadingIcon = React.createClass
-  render: ->
-    div
-      style:
-        position: 'absolute'
-        top: 0
-        left: 0
-        right: 0
-        bottom: 0
-        margin: 'auto'
-        zIndex: 100
-        # background: 'rgba(0,0,0,.1)'
-      ,
-      div
-        style:
-          display: 'table'
-          textAlign: 'center'
-          width: '100%'
-          height: '100%'
-        ,
-        span
-          className: "glyphicon glyphicon-repeat fa-spin"
-          style:
-            fontSize: '500%'
-            opacity: .5
-            display: 'table-cell'
-            verticalAlign: 'middle'
 
 
 ArticleViewDisplay = React.createClass
@@ -130,46 +96,18 @@ ArticleViewDisplay = React.createClass
     React.addons.PureRenderMixin
   ]
 
-  getLoadingState: ->
-    if @props.page.get('url') and not @props.article.get('elem')
-      true
-    else if @props.page.get('url') is not @props.article.get('url')
-      true
-    else
-      false
-
-  getPadding: ->
-    window.innerHeight * .4 - 40
-
-  componentDidMount: ->
-    $(window).on 'resize', ( => @forceUpdate() )
-
   render: ->
-    loading = @getLoadingState()
-
-    div
-      className: "article-main #{ if loading then 'loading' else '' }"
-      style:
-        paddingTop: @getPadding()
-        paddingBottom: @getPadding()
-        # visibility instead of display b/c it retains the scroll position
-        visibility: if @props.status.get('playing') then 'hidden' else 'visible'
-      ,
-      if loading
-        LoadingIcon {}
+    div {},
       Masthead
         article: @props.article
-        padding: @getPadding()
-        ref: 'masthead'
-      if @props.article.has('elem')
+      if @props.article.get('elem') and @props.words.size
         ElemOrWord
           elem: @props.article.get('elem')
+          words: @props.words
           current: @props.current
-      else
-        HomePage
-          url: @props.article.get('url') or @props.page.get('url')
       ArticleFooter
         words: @props.words
+        status: @props.status
 
 
 module.exports = {ArticleViewDisplay}

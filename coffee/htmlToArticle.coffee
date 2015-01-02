@@ -1,15 +1,10 @@
-
+Immutable = require('immutable')
 sanitize = require('sanitize-html')
 _ = require('underscore')
 
 dispatcher = require('./dispatcher')
 constants = require('./constants')
-{
-  ChildrenCollection,
-  WordModel,
-  ElementModel
-} = require('./stores/ArticleModels')
-
+{getDisplayMultiplier} = require './rsvp_utils'
 
 # evil global.
 # TODO: rethink this
@@ -25,8 +20,12 @@ handlePre = (text, parent) ->
   # handle `pre` elements, aka blocks of code.
   # put multiple words, no trimming, into "word"
   word = text
+  parent = parent.get('cid')
   after = ''
-  word_model = new WordModel {word, parent, after}
+  display = 0
+  cid = _.uniqueId('w')
+  current = false
+  word_model = Immutable.Map {word, parent, after, display, cid, current}
 
   # don't add it to WordStore,
   # dont want to speedread this shit
@@ -70,9 +69,9 @@ textToWords = (textNode, parent) ->
   if parent.get('node_name') in ['pre', 'td', 'th']
     return handlePre(text, parent)
 
-  # split_words = splitHyphens(words)
 
   # turns the words into an array of Elements
+  parent = parent.get('cid')
   word_models = []
   for full_word, i in words
     parts = shortenLongWord(full_word)
@@ -81,8 +80,13 @@ textToWords = (textNode, parent) ->
       if j == (parts.length - 1) and i == (words.length - 1)
         after = ''
 
-      word_model = new WordModel {word, parent, after}
-      word_models.push word_model
+      display = getDisplayMultiplier(word)
+      cid = _.uniqueId('w')
+      current = false
+      idx = WordList.words.length
+
+      word_model = Immutable.Map {word, parent, after, display, cid, current, idx}
+      word_models.push idx
 
       # also add it to list of words
       WordList.words.push(word_model)
@@ -121,8 +125,9 @@ cleanedHtmlToElem = (node, parent) ->
 
   node_name = node.nodeName.toLowerCase()
   attrs = domAttrsToDict(node.attributes)
+  cid = _.uniqueId('p')
 
-  elem = new ElementModel {node_name, attrs}
+  elem = Immutable.fromJS {node_name, attrs, cid}
 
   # `parent` is stored on Words, representing their nearest Block parent.
   if isBlock(node_name)
@@ -130,12 +135,12 @@ cleanedHtmlToElem = (node, parent) ->
     unless parent?.get('node_name') is 'pre'
       parent = elem
 
-  children_list = _.compact _.flatten [  # unpacks text words, removes nulls
+  children_list = _.without _.flatten [  # unpacks text words, removes nulls
     cleanedHtmlToElem(child, parent) for child in node.childNodes
-  ]
-  children = new ChildrenCollection children_list
+  ], null
+  children = Immutable.List children_list
 
-  elem.set {children}, {silent: true}
+  elem = elem.merge {children}
   return elem
 
 
@@ -144,11 +149,8 @@ saveWordListToWordStore = () ->
     dispatcher.dispatch
       actionType: 'wordlist-complete'
       words: WordList.words
-    # I know, I know... evil globals...
     WordList.words = []
   , 0
-
-
 
 
 rawHtmlToArticle = (raw_html) ->
@@ -173,8 +175,6 @@ rawHtmlToArticle = (raw_html) ->
   console.log 'cleanedHtmlToElem took', post_elem - post_wrapper_elem
 
   saveWordListToWordStore()
-  post_wordlist = new Date()
-  console.log 'saveWordListToWordStore took', post_wordlist - post_elem
 
   return elem
 

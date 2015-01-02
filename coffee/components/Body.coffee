@@ -1,7 +1,11 @@
 React = require('react')
+$ = require 'jQuery'
+
 
 {ArticleViewDisplay} = require('./ArticleView')
+{HomePage} = require('./HomePage')
 RsvpDisplay = require('./RsvpDisplay')
+LoadingIcon = require('./LoadingIcon')
 Topbar = require('./Topbar')
 SideMenu = require('./SideMenu')
 BottomBar = require('./BottomBar')
@@ -10,7 +14,24 @@ BottomBar = require('./BottomBar')
 
 
 Body = React.createClass
+
+  getLoadingState: ->
+    if @props.page.get('url') and not @props.article.get('elem')
+      true
+    else if @props.page.get('url') is not @props.article.get('url')
+      true
+    else
+      false
+
+  getPadding: ->
+    window.innerHeight * .4 - 40
+
+  componentDidMount: ->
+    $(window).on 'resize', ( => @forceUpdate() )
+
   render: ->
+    loading = @getLoadingState()
+
     div
       id: 'react-body'
       ,
@@ -28,8 +49,10 @@ Body = React.createClass
             ,
             RsvpDisplay
               current: @props.current
-              key: 'current-word'
               status: @props.status
+              words: @props.words
+              key: 'current-word'
+
       div
         className: "container-fluid"
         ,
@@ -42,12 +65,26 @@ Body = React.createClass
               col-md-8 col-md-offset-2
               col-lg-6 col-lg-offset-3"
             ,
-            ArticleViewDisplay
-              article: @props.article
-              current: @props.current
-              status: @props.status
-              words: @props.words
-              page: @props.page
+            div
+              className: "article-main #{ if loading then 'loading' else '' }"
+              style:
+                paddingTop: @getPadding()
+                paddingBottom: @getPadding()
+                # visibility instead of display b/c it retains the scroll position
+                visibility: if @props.status.get('playing') then 'hidden' else 'visible'
+              ,
+              if loading
+                LoadingIcon {}
+              if not @props.article.get('title')
+                HomePage
+                  url: @props.article.get('url') or @props.page.get('url')
+              else
+                ArticleViewDisplay
+                  article: @props.article
+                  current: @props.current
+                  status: @props.status
+                  words: @props.words
+                  page: @props.page
       Topbar
         status: @props.status
         words: @props.words

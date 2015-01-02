@@ -9,9 +9,6 @@ read = require 'node-readability'
 NestedBackbone = require './NestedBackbone'
 OfflineBackbone = require './OfflineBackbone'
 
-WordStore = require './WordStore'
-{ElementModel} = require './ArticleModels'
-
 dispatcher = require '../dispatcher'
 constants = require '../constants'
 htmlToArticle = require '../htmlToArticle'
