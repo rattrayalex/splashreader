@@ -104,3 +104,7 @@ gulp.task "watchify", ->
 
 
 gulp.task "default", ["watchify", "serve", "less", "watch"]
+
+# for conserving battery (apparently gulp uses helza battery)
+gulp.task "lite", ["serve"], ->
+  watchifyFile 'app'
