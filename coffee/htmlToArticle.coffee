@@ -120,7 +120,7 @@ getStartWord = (children) ->
   for child in children.toArray()
     if typeof child is 'number'
       return child
-    else
+    else if child?
       subWord = getStartWord(child.get('children'))
       if subWord?
         return subWord
@@ -131,7 +131,7 @@ getEndWord = (children) ->
   for child in children.toArray().reverse()
     if typeof child is 'number'
       return child
-    else
+    else if child?
       subWord = getEndWord(child.get('children'))
       if subWord?
         return subWord

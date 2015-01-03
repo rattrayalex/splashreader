@@ -78,10 +78,10 @@ class WordStore
       when 'change-word'
         @cursor().update (words) ->
           words.map (word) ->
-            if word.get('current')
-              word.set('current', false)
-            else if word.get('idx') is payload.idx
+            if word.get('idx') is payload.idx
               word.set('current', true)
+            else if word.get('current')
+              word.set('current', false)
             else
               word
         @updateWord(payload.idx)
