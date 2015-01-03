@@ -21,16 +21,19 @@ getTotalTime = (words, status) ->
   getTimeSince words, status, 0
 
 
-getPercentDone = (words, current) ->
+getPercentDone = (words) ->
+  current = getCurrentWord(words)
   current.get('idx') / words.size
 
 
-getTimeLeft = (words, status, current) ->
+getTimeLeft = (words, status) ->
+  current = getCurrentWord(words)
   getTimeSince words, status, current.get('idx')
 
 
-getCurrentWord = (words, current) ->
-  words.get(current.get('idx'))
+getCurrentWord = (words) ->
+  words.find (word) -> word.get('current')
+
 
 isPlaying = (status) ->
   status.get('playing') and not status.get('para_change')

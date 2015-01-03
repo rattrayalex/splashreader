@@ -48,7 +48,6 @@ Body = React.createClass
               col-lg-6 col-lg-offset-3"
             ,
             RsvpDisplay
-              current: @props.current
               status: @props.status
               words: @props.words
               key: 'current-word'
@@ -79,20 +78,17 @@ Body = React.createClass
               else
                 ArticleViewDisplay
                   article: @props.article
-                  current: @props.current
                   status: @props.status
                   words: @props.words
                   page: @props.page
       Topbar
         status: @props.status
         words: @props.words
-        current: @props.current
         article: @props.article
       SideMenu
         status: @props.status
       BottomBar
         status: @props.status
-        current: @props.current
         words: @props.words
 
 module.exports = Body

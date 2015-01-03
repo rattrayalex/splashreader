@@ -1,7 +1,6 @@
 React = require 'react/addons'
 
 dispatcher = require('../dispatcher')
-FluxBone = require('./FluxBone')
 
 WpmWidget = require('./WpmWidget')
 

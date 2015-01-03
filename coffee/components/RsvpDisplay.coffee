@@ -1,6 +1,5 @@
 React = require 'react/addons'
 
-FluxBone = require('./FluxBone')
 {getWordMiddle, getTextWidth} = require '../rsvp_utils'
 {getCurrentWord, isPlaying} = require '../stores/computed'
 
@@ -25,7 +24,7 @@ RsvpDisplay = React.createClass
     @ORP_center = full_width / 3
 
   render: ->
-    currentWord = getCurrentWord @props.words, @props.current
+    currentWord = getCurrentWord @props.words
     if not currentWord
       return div {}
 

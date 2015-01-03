@@ -1,8 +1,4 @@
 React = require 'react/addons'
-
-FluxBone = require('./FluxBone')
-deferUpdateMixin = require('./deferUpdateMixin')
-
 ElemOrWord = require('./ElemOrWord')
 
 computed = require('../stores/computed')
@@ -67,10 +63,6 @@ Masthead = React.createClass
 
 ArticleFooter = React.createClass
 
-  mixins: [
-    deferUpdateMixin
-  ]
-
   render: ->
     total_time = computed.getTotalTime(@props.words, @props.status).toFixed(1)
     if @props.words.size < 2 or isNaN(total_time)
@@ -111,8 +103,7 @@ ArticleViewDisplay = React.createClass
         ElemOrWord
           elem: @props.article.get('elem')
           words: @props.words
-          current: @props.current
-          playing: @props.status.get('playing')
+          status: @props.status
       ArticleFooter
         words: @props.words
         status: @props.status

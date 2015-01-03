@@ -1,10 +1,9 @@
 React = require 'react/addons'
 _ = require 'underscore'
 
-FluxBone = require('./FluxBone')
 dispatcher = require('../dispatcher')
 {scrollToNode} = require('../article_utils.coffee')
-{getCurrentWord} = require('../stores/computed')
+{getCurrentWord, isPlaying} = require('../stores/computed')
 
 {span} = React.DOM
 
@@ -15,13 +14,12 @@ ElemOrWord = React.createClass
     if typeof @props.elem is "number"
       Word
         word: @props.words.get(@props.elem)
-        playing: @props.playing
+        status: @props.status
     else
       Elem
         elem: @props.elem
         words: @props.words
-        current: @props.current
-        playing: @props.playing
+        status: @props.status
 
 
 Word = React.createClass
@@ -40,11 +38,12 @@ Word = React.createClass
 
   shouldComponentUpdate: (nextProps) ->
     changed = (@props.word isnt nextProps.word)
-    paused_here = (nextProps.word.get('current') and not nextProps.playing)
+    paused_here = (nextProps.word.get('current') and
+      not isPlaying(nextProps.status))
     return changed or paused_here
 
   render: ->
-    if @isCurrentWord() and not @props.playing
+    if @isCurrentWord() and not isPlaying(@props.status)
       @scrollToMe() if @isMounted()
 
     space = if @props.word.get('after') is ' ' then ' ' else ''
@@ -58,21 +57,20 @@ Word = React.createClass
 Elem = React.createClass
 
   isCurrentPara: ->
-    getCurrentWord(@props.words, @props.current).get('parent') is
-      @props.elem.get('cid')
+    getCurrentWord(@props.words).get('parent') is @props.elem.get('cid')
 
   shouldComponentUpdate: (nextProps) ->
     this_para = (
       @props.elem.get('start_word') <=
-      @props.current.get('idx') <=
+      getCurrentWord(@props.words).get('idx') <=
       @props.elem.get('end_word')
     )
     next_para = (
       nextProps.elem.get('start_word') <=
-      nextProps.current.get('idx') <=
+      getCurrentWord(nextProps.words).get('idx') <=
       nextProps.elem.get('end_word')
     )
-    paused = (@props.playing and not nextProps.playing)
+    paused = (isPlaying(@props.status) and not isPlaying(nextProps.status))
     return this_para or next_para or paused
 
   render: ->
@@ -84,11 +82,10 @@ Elem = React.createClass
       # TODO: fix that.
       className: if @isCurrentPara() then 'current-para'
 
-    current = @props.current
     words = @props.words
-    playing = @props.playing
+    status = @props.status
     children = [
-      ElemOrWord({elem, current, words, playing}) \
+      ElemOrWord({elem, words, status}) \
       for elem in @props.elem.get('children').toArray()
     ]
 

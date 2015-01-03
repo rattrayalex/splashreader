@@ -6,29 +6,26 @@ Cursor = require('immutable/contrib/cursor')
 
 class Store
   constructor: (data) ->
-    @current = Immutable.fromJS(data or {})
+    @_root = Immutable.fromJS(data or {})
     # TODO: replace with eventemitter3
     _.extend(this, Backbone.Events)
 
   get: (key) ->
-    @current.get(key)
+    @_root.get(key)
 
   getIn: (keys) ->
-    @current.getIn(keys)
+    @_root.getIn(keys)
 
   cursor: (path...) ->
-    Cursor.from(@current, path, @_updateCursor)
+    Cursor.from(@_root, path, @_updateCursor)
 
   _updateCursor: (newRoot, oldRoot, path) =>
-    if oldRoot != @current
-      throw new Error('oldRoot != @current! '
+    if oldRoot != @_root
+      throw new Error('oldRoot != @_root! '
         'need to implement store._updateCursor better')
-    @current = newRoot
-    @trigger('update', @current)
-    @current
-
-
-store = new Store()
+    @_root = newRoot
+    @trigger('update', @_root)
+    @_root
 
 
 module.exports = new Store({})

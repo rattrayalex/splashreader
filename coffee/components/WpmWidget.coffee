@@ -1,6 +1,5 @@
 React = require('react/addons')
 dispatcher = require('../dispatcher')
-FluxBone = require('./FluxBone')
 
 {h1, div, li, p, a, span, button, form, em} = React.DOM
 

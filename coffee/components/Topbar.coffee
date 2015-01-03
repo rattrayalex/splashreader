@@ -1,8 +1,6 @@
 React = require('react/addons')
-{Navbar, Nav, NavItem} = require('react-bootstrap')
 
 dispatcher = require('../dispatcher')
-FluxBone = require('./FluxBone')
 
 {h1, div, li, p, a, span, button, form, em, img} = React.DOM
 
