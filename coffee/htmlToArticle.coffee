@@ -116,6 +116,28 @@ domAttrsToDict = (attributes) ->
   return react_attrs
 
 
+getStartWord = (children) ->
+  for child in children.toArray()
+    if typeof child is 'number'
+      return child
+    else
+      subWord = getStartWord(child.get('children'))
+      if subWord?
+        return subWord
+  return null
+
+
+getEndWord = (children) ->
+  for child in children.toArray().reverse()
+    if typeof child is 'number'
+      return child
+    else
+      subWord = getEndWord(child.get('children'))
+      if subWord?
+        return subWord
+  return null
+
+
 cleanedHtmlToElem = (node, parent) ->
   # recursively turn nodes to React objs.
 
@@ -139,8 +161,10 @@ cleanedHtmlToElem = (node, parent) ->
     cleanedHtmlToElem(child, parent) for child in node.childNodes
   ], null
   children = Immutable.List children_list
+  start_word = getStartWord(children)
+  end_word = getEndWord(children)
 
-  elem = elem.merge {children}
+  elem = elem.merge {children, start_word, end_word}
   return elem
 
 

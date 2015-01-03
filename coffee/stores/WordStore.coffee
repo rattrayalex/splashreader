@@ -18,9 +18,11 @@ class WordStore
 
       when 'wordlist-complete'
         console.log 'wordlist-complete'
+        # set first word to be the current word
+        payload.words[0] = payload.words[0].set 'current', true
         @cursor().update ->
           Immutable.List payload.words
-        console.log 'wordlist processing done'
+        # console.log 'wordlist processing done', @cursor(0).toString()
 
       when 'process-article'
         @cursor().clear()

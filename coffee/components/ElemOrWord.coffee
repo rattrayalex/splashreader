@@ -10,31 +10,21 @@ dispatcher = require('../dispatcher')
 
 
 ElemOrWord = React.createClass
-  mixins: [
-    React.addons.PureRenderMixin
-  ]
 
   render: ->
     if typeof @props.elem is "number"
-      # console.log 'we have a word?', @props
       Word
         word: @props.words.get(@props.elem)
-        # current: @props.current
+        playing: @props.playing
     else
       Elem
         elem: @props.elem
         words: @props.words
         current: @props.current
+        playing: @props.playing
 
 
 Word = React.createClass
-
-  mixins: [
-    React.addons.PureRenderMixin
-  ]
-
-  # shouldComponentUpdate: (nextProps) ->
-  #   @props.word isnt nextProps.word
 
   handleClick: ->
     dispatcher.dispatch
@@ -47,17 +37,16 @@ Word = React.createClass
 
   isCurrentWord: ->
     @props.word.get('current')
-    # @props.current.get('idx') is @props.word.get('idx')
 
-  # componentDidMount: ->
-  #   @props.word.on 'scroll', =>
-  #     @scrollToMe()
-  #   , @
-
-  # componentWillUnmount: ->
-  #   @props.word.off 'scroll', null, @
+  shouldComponentUpdate: (nextProps) ->
+    changed = (@props.word isnt nextProps.word)
+    paused_here = (nextProps.word.get('current') and not nextProps.playing)
+    return changed or paused_here
 
   render: ->
+    if @isCurrentWord() and not @props.playing
+      @scrollToMe() if @isMounted()
+
     space = if @props.word.get('after') is ' ' then ' ' else ''
     span
       onClick: @handleClick
@@ -68,16 +57,23 @@ Word = React.createClass
 
 Elem = React.createClass
 
-  mixins: [
-    React.addons.PureRenderMixin
-  ]
-  # shouldComponentUpdate: (nextProps) ->
-  #   @isCurrentPara() or (nextProps.elem.get('cid') is
-  #     getCurrentWord(nextProps.words, nextProps.current).get('parent'))
-
   isCurrentPara: ->
     getCurrentWord(@props.words, @props.current).get('parent') is
       @props.elem.get('cid')
+
+  shouldComponentUpdate: (nextProps) ->
+    this_para = (
+      @props.elem.get('start_word') <=
+      @props.current.get('idx') <=
+      @props.elem.get('end_word')
+    )
+    next_para = (
+      nextProps.elem.get('start_word') <=
+      nextProps.current.get('idx') <=
+      nextProps.elem.get('end_word')
+    )
+    paused = (@props.playing and not nextProps.playing)
+    return this_para or next_para or paused
 
   render: ->
     ReactElem = React.DOM[@props.elem.get('node_name')]
@@ -90,8 +86,9 @@ Elem = React.createClass
 
     current = @props.current
     words = @props.words
+    playing = @props.playing
     children = [
-      ElemOrWord({elem, current, words}) \
+      ElemOrWord({elem, current, words, playing}) \
       for elem in @props.elem.get('children').toArray()
     ]
 

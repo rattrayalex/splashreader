@@ -93,8 +93,6 @@ class CurrentWordStore
       when 'change-word'
         dispatcher.waitFor([dispatcher.tokens.WordStore])
         @updateWord(payload.idx)
-        # if payload.source is 'click'
-        #   payload.word.trigger 'scroll'
 
       when 'wordlist-complete'
         dispatcher.waitFor [dispatcher.tokens.WordStore]
@@ -108,9 +106,6 @@ class CurrentWordStore
           @updateWord @cursor().get('idx') or 0
         else
           clearTimeout @timeout if @timeout?
-
-        # if payload.actionType is 'pause'
-        #   @store.get('words').get()?.trigger 'scroll'
 
 
 module.exports = CurrentWordStore
