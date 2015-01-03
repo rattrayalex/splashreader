@@ -7,19 +7,17 @@ dispatcher = require('../dispatcher')
 
 {span} = React.DOM
 
-
-ElemOrWord = React.createClass
-
-  render: ->
-    if typeof @props.elem is "number"
-      Word
-        word: @props.words.get(@props.elem)
-        status: @props.status
-    else
-      Elem
-        elem: @props.elem
-        words: @props.words
-        status: @props.status
+# func instead of React b/c too much overhead!
+ElemOrWord = (props) ->
+  if typeof props.elem is "number"
+    Word
+      word: props.words.get(props.elem)
+      status: props.status
+  else
+    Elem
+      elem: props.elem
+      words: props.words
+      status: props.status
 
 
 Word = React.createClass
