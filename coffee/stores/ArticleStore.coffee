@@ -1,13 +1,8 @@
 Immutable = require 'immutable'
-Backbone = require 'backbone'
 validator = require 'validator'
 $ = require 'jQuery'
-_ = require 'underscore'
 
 read = require 'node-readability'
-
-NestedBackbone = require './NestedBackbone'
-OfflineBackbone = require './OfflineBackbone'
 
 dispatcher = require '../dispatcher'
 constants = require '../constants'
@@ -41,8 +36,6 @@ class ArticleStore
         elem = htmlToArticle(raw_html)
         @cursor('elem').update -> elem
 
-        # console.log "article json", @cursor().toString()
-
       when 'page-change'
         dispatcher.waitFor [dispatcher.tokens.CurrentPageStore]
 
@@ -60,7 +53,7 @@ class ArticleStore
 
         # when you change from one page directly to another
         if @cursor().get('url') isnt url
-          console.log 'going to clear Article stuff'
+          console.log 'going to clear Article'
           @cursor().clear()
           @cursor('url').update -> url
 

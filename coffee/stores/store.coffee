@@ -20,6 +20,9 @@ class Store
     Cursor.from(@current, path, @_updateCursor)
 
   _updateCursor: (newRoot, oldRoot, path) =>
+    if oldRoot != @current
+      throw new Error('oldRoot != @current! '
+        'need to implement store._updateCursor better')
     @current = newRoot
     @trigger('update', @current)
     @current

@@ -6,29 +6,11 @@ key = require('keymaster')
 OfflineBackbone = require('./OfflineBackbone')
 
 dispatcher = require('../dispatcher')
+constants = require('../constants')
 
 class RsvpStatusStore
   constructor: (@store) ->
-    # @cursor = @store.cursor('status').cursor
-
     dispatcher.tokens.RsvpStatusStore = dispatcher.register(@dispatchCallback)
-
-    $(window).keydown (e) =>
-      if e.which is 32  # space
-        dispatcher.dispatch
-          actionType: 'play-pause'
-          source: 'space'
-        false
-    $(window).on 'touchend', (e) =>
-      if @get('playing')
-        dispatcher.dispatch
-          actionType: 'pause'
-          source: 'tap'
-        false
-    $(window).blur ->
-      dispatcher.dispatch
-        actionType: 'pause'
-        source: 'window-blur'
 
   cursor: (path...) ->
     @store.cursor('status').cursor(path)
@@ -43,9 +25,6 @@ class RsvpStatusStore
         @cursor('playing').update -> false
 
       when 'play'
-        # # don't play if the trigger was a paragraph change
-        # # but the user has lifted the spacebar in the interim.
-        # unless payload.source is 'para-change' and not @space_is_down
         @cursor('playing').update -> true
         @cursor('menuShown').update -> false
 
@@ -68,6 +47,15 @@ class RsvpStatusStore
         @cursor('playing').update -> false
         @cursor('menuShown').update -> false
 
+      when 'para-change'
+        @cursor('para_change').update -> true
+        setTimeout ->
+          dispatcher.dispatch
+            actionType: 'para-resume'
+        , constants.PARA_CHANGE_TIME
 
-# TODO: move instantiation into app.coffee
+      when 'para-resume'
+        @cursor('para_change').update -> false
+
+
 module.exports = RsvpStatusStore

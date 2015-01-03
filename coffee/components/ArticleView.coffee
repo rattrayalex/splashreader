@@ -96,8 +96,15 @@ ArticleViewDisplay = React.createClass
     React.addons.PureRenderMixin
   ]
 
+  isShown: ->
+    not computed.isPlaying(@props.status)
+
   render: ->
-    div {},
+    div
+      style:
+        # visibility instead of display b/c it retains the scroll position
+        visibility: if @isShown() then 'visible' else 'hidden'
+      ,
       Masthead
         article: @props.article
       if @props.article.get('elem') and @props.words.size

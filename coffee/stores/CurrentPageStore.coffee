@@ -1,4 +1,3 @@
-Backbone = require 'backbone'
 _ = require 'underscore'
 validator = require 'validator'
 
@@ -36,5 +35,5 @@ class CurrentPageStore
         @cursor('url').update -> payload.url
         console.log 'url changed to ', payload.url
 
-# CurrentPageStore = new CurrentPageModel()
+
 module.exports = CurrentPageStore

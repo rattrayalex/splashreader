@@ -32,6 +32,8 @@ getTimeLeft = (words, status, current) ->
 getCurrentWord = (words, current) ->
   words.get(current.get('idx'))
 
+isPlaying = (status) ->
+  status.get('playing') and not status.get('para_change')
 
 module.exports = {
   msPerWord
@@ -40,6 +42,7 @@ module.exports = {
   getPercentDone
   getTimeLeft
   getCurrentWord
+  isPlaying
 }
 
 
