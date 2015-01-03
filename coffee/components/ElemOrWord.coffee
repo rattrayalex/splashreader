@@ -3,7 +3,7 @@ _ = require 'underscore'
 
 dispatcher = require('../dispatcher')
 {scrollToNode} = require('../article_utils.coffee')
-{getCurrentWord, isPlaying} = require('../stores/computed')
+{isPlaying} = require('../stores/computed')
 
 {span} = React.DOM
 
@@ -13,11 +13,12 @@ ElemOrWord = (props) ->
     Word
       word: props.words.get(props.elem)
       status: props.status
-  else
+  else if props.elem?
     Elem
       elem: props.elem
       words: props.words
       status: props.status
+      current: props.current
 
 
 Word = React.createClass
@@ -55,17 +56,17 @@ Word = React.createClass
 Elem = React.createClass
 
   isCurrentPara: ->
-    getCurrentWord(@props.words).get('parent') is @props.elem.get('cid')
+    @props.current.get('parent') is @props.elem.get('cid')
 
   shouldComponentUpdate: (nextProps) ->
     this_para = (
       @props.elem.get('start_word') <=
-      getCurrentWord(@props.words).get('idx') <=
+      @props.current.get('idx') <=
       @props.elem.get('end_word')
     )
     next_para = (
       nextProps.elem.get('start_word') <=
-      getCurrentWord(nextProps.words).get('idx') <=
+      nextProps.current.get('idx') <=
       nextProps.elem.get('end_word')
     )
     paused = (isPlaying(@props.status) and not isPlaying(nextProps.status))
@@ -82,8 +83,9 @@ Elem = React.createClass
 
     words = @props.words
     status = @props.status
+    current = @props.current
     children = [
-      ElemOrWord({elem, words, status}) \
+      ElemOrWord({elem, words, status, current}) \
       for elem in @props.elem.get('children').toArray()
     ]
 

@@ -104,6 +104,7 @@ ArticleViewDisplay = React.createClass
           elem: @props.article.get('elem')
           words: @props.words
           status: @props.status
+          current: @props.current
       ArticleFooter
         words: @props.words
         status: @props.status

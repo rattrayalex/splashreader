@@ -77,6 +77,7 @@ Body = React.createClass
                   url: @props.article.get('url') or @props.page.get('url')
               else
                 ArticleViewDisplay
+                  current: @props.current
                   article: @props.article
                   status: @props.status
                   words: @props.words

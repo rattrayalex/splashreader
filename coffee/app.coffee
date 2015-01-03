@@ -14,6 +14,7 @@ RsvpStatusStore = require('./stores/RsvpStatusStore')
 Body = require('./components/Body')
 
 dispatcher = require('./dispatcher')
+computed = require('./stores/computed')
 
 
 main = ->
@@ -42,6 +43,7 @@ main = ->
       words: store.get('words')
       page: store.get('page')
       status: store.get('status')
+      current: computed.getCurrentWord(store.get('words'))
     document.body
   )
   store.on "update", (updatedStore) ->
@@ -52,6 +54,7 @@ main = ->
       words: updatedStore.get('words')
       page: updatedStore.get('page')
       status: updatedStore.get('status')
+      current: computed.getCurrentWord(updatedStore.get('words'))
 
     console.log 'full render took', new Date() - start, "on word ",
       updatedStore.get('words').find(
