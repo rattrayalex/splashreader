@@ -17,6 +17,7 @@ getCurrentBranch = ->
     .slice(1, 2)
     .pop()
 
+
 checkClean = ->
   out = cmd 'git status'
     .output
@@ -24,17 +25,37 @@ checkClean = ->
     console.log out
     throw new Error "You are dirty!"
 
+
 runGulpOnceThen = (next) ->
   lines = []
-  proc = sh.exec 'gulp', (code, out) ->
+  proc = sh.exec 'NODE_ENV=production gulp', (code, out) ->
     console.log 'process has exited'
     next()
 
   proc.stdout.on 'data', (data) ->
-    if data.match 'app.js was reloaded.'
+    lines.push(data)
+    if gulpIsDone(lines)
       console.log 'exiting process...'
       proc.kill()
 
+
+gulpIsDone = (lines) ->
+  reqs = [
+    'chrome.js was reloaded.'
+    'app.js was reloaded.'
+    # yes, it should happen twice (not sure why...)
+    'chrome.js was reloaded.'
+  ]
+  num_reqs = 0
+  for line in lines
+    for req in reqs
+      if line.match req
+        num_reqs += 1
+
+  if num_reqs > 2
+    true
+  else
+    false
 
 main = ->
   checkClean()
