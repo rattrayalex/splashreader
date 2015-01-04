@@ -1,10 +1,9 @@
 React = require('react/addons')
-{Navbar, Nav, NavItem} = require('react-bootstrap')
+
+WpmWidget = React.createFactory require('./WpmWidget')
 
 dispatcher = require('../dispatcher')
 {getPercentDone, getTimeLeft} = require('../stores/computed')
-
-WpmWidget = require('./WpmWidget')
 
 {h1, div, li, p, a, span, button, form, em} = React.DOM
 
@@ -34,8 +33,8 @@ BottomBar = React.createClass
       div
         className: 'container-fluid'
         ,
-        Nav
-          className: 'navbar-left'
+        div
+          className: 'nav navbar-left'
           ,
           div
             className: 'navbar-form'
@@ -99,7 +98,7 @@ BottomBar = React.createClass
 
 
 
-PlayPauseButton = React.createClass
+PlayPauseButton = React.createFactory React.createClass
 
   mixins: [
     React.addons.PureRenderMixin

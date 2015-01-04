@@ -3,8 +3,9 @@ React = require('react')
 Body = require('./components/Body')
 
 main = ->
-  React.renderComponentToString(
+  React.renderToString(
     Body
+      current: null
       article: null
       words: null
       page: null

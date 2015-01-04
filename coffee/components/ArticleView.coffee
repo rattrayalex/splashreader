@@ -1,12 +1,12 @@
 React = require 'react/addons'
-ElemOrWord = require('./ElemOrWord')
+Elem = React.createFactory require('./Elem')
 
 computed = require('../stores/computed')
 
 {h1, div, span, form, input, button, p, a, em, small, hr} = React.DOM
 
 
-Masthead = React.createClass
+Masthead = React.createFactory React.createClass
 
   render: ->
     if not  @props.article.has('title')
@@ -61,7 +61,7 @@ Masthead = React.createClass
                 className: 'glyphicon glyphicon-share-alt'
 
 
-ArticleFooter = React.createClass
+ArticleFooter = React.createFactory React.createClass
 
   render: ->
     total_time = computed.getTotalTime(@props.words, @props.status).toFixed(1)
@@ -82,7 +82,7 @@ ArticleFooter = React.createClass
              in #{ total_time } minute#{ pluralize }."
 
 
-ArticleViewDisplay = React.createClass
+ArticleView = React.createClass
 
   mixins: [
     React.addons.PureRenderMixin
@@ -100,7 +100,7 @@ ArticleViewDisplay = React.createClass
       Masthead
         article: @props.article
       if @props.article.get('elem') and @props.words.size
-        ElemOrWord
+        Elem
           elem: @props.article.get('elem')
           words: @props.words
           status: @props.status
@@ -110,4 +110,4 @@ ArticleViewDisplay = React.createClass
         status: @props.status
 
 
-module.exports = {ArticleViewDisplay}
+module.exports = ArticleView

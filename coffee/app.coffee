@@ -11,7 +11,7 @@ WordStore = require('./stores/WordStore')
 CurrentPageStore = require('./stores/CurrentPageStore')
 RsvpStatusStore = require('./stores/RsvpStatusStore')
 
-Body = require('./components/Body')
+Body = React.createFactory require('./components/Body')
 
 dispatcher = require('./dispatcher')
 computed = require('./stores/computed')
@@ -37,7 +37,7 @@ main = ->
   new CurrentPageStore(store)
   new RsvpStatusStore(store)
 
-  RenderedBodyComponent = React.renderComponent(
+  RenderedBodyComponent = React.render(
     Body
       article: store.get('article')
       words: store.get('words')

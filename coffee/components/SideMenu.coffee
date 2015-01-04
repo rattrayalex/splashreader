@@ -1,8 +1,8 @@
 React = require 'react/addons'
 
-dispatcher = require('../dispatcher')
+WpmWidget = React.createFactory require('./WpmWidget')
 
-WpmWidget = require('./WpmWidget')
+dispatcher = require('../dispatcher')
 
 {h1, div, span, form, input, button, p, a, em, small, hr} = React.DOM
 

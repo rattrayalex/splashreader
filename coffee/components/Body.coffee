@@ -1,14 +1,13 @@
 React = require('react')
 $ = require 'jQuery'
 
-
-{ArticleViewDisplay} = require('./ArticleView')
-{HomePage} = require('./HomePage')
-RsvpDisplay = require('./RsvpDisplay')
-LoadingIcon = require('./LoadingIcon')
-Topbar = require('./Topbar')
-SideMenu = require('./SideMenu')
-BottomBar = require('./BottomBar')
+ArticleView = React.createFactory require('./ArticleView')
+HomePage    = React.createFactory require('./HomePage')
+RsvpDisplay = React.createFactory require('./RsvpDisplay')
+LoadingIcon = React.createFactory require('./LoadingIcon')
+Topbar      = React.createFactory require('./Topbar')
+SideMenu    = React.createFactory require('./SideMenu')
+BottomBar   = React.createFactory require('./BottomBar')
 
 {div} = React.DOM
 
@@ -77,7 +76,7 @@ Body = React.createClass
                 HomePage
                   url: @props.article.get('url') or @props.page.get('url')
               else
-                ArticleViewDisplay
+                ArticleView
                   current: @props.current
                   article: @props.article
                   status: @props.status

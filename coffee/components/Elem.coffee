@@ -8,17 +8,19 @@ dispatcher = require('../dispatcher')
 {span} = React.DOM
 
 # func instead of React b/c too much overhead!
-ElemOrWord = (props) ->
+getElemOrWord = (props) ->
   if typeof props.elem is "number"
-    Word
+    WordFactory
       word: props.words.get(props.elem)
       status: props.status
   else if props.elem?
-    Elem
+    ElemFactory
       elem: props.elem
       words: props.words
       status: props.status
       current: props.current
+  else
+    span {}
 
 
 Word = React.createClass
@@ -85,11 +87,15 @@ Elem = React.createClass
     status = @props.status
     current = @props.current
     children = [
-      ElemOrWord({elem, words, status, current}) \
+      getElemOrWord({elem, words, status, current}) \
       for elem in @props.elem.get('children').toArray()
     ]
 
     ReactElem(attrs, children)
 
 
-module.exports = ElemOrWord
+WordFactory = React.createFactory Word
+ElemFactory = React.createFactory Elem
+
+
+module.exports = Elem

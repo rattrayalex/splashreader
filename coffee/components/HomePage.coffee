@@ -1,6 +1,6 @@
 React = require 'react/addons'
 
-CollectURL = require('./CollectURL')
+CollectURL = React.createFactory require('./CollectURL')
 
 {div, h1, p} = React.DOM
 
@@ -21,6 +21,5 @@ HomePage = React.createClass
         CollectURL
           url: @props.url
 
-module.exports = {
-  HomePage
-}
+
+module.exports = HomePage
