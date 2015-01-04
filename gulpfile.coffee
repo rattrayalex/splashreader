@@ -6,7 +6,8 @@ watchify = require("watchify")
 browserify = require("browserify")
 coffeeify = require("coffeeify")
 minifyify = require("minifyify")
-# envify = require("envify")
+envify = require("envify")
+uglifyify = require("uglifyify")
 replace = require('gulp-replace')
 
 watch = require("gulp-watch")
@@ -73,6 +74,9 @@ watchifyFile = (filename, cb) ->
   bundler = watchify(browserify("./coffee/#{filename}.coffee", args), args)
   bundler.transform(coffeeify)
   bundler.transform('brfs')
+  bundler.transform('envify')
+  if process.env.NODE_ENV is "production"
+    bundler.transform({global: true}, 'uglifyify')
   # to tell React we're in prod... wasn't working, I gave up
   # bundler.transform envify
   #   _: 'purge'
