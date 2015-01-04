@@ -48,6 +48,7 @@ Body = React.createClass
               col-lg-6 col-lg-offset-3"
             ,
             RsvpDisplay
+              current: @props.current
               status: @props.status
               words: @props.words
               key: 'current-word'
@@ -89,6 +90,7 @@ Body = React.createClass
       SideMenu
         status: @props.status
       BottomBar
+        current: @props.current
         status: @props.status
         words: @props.words
 

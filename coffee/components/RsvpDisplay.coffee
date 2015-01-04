@@ -24,7 +24,7 @@ RsvpDisplay = React.createClass
     @ORP_center = full_width / 3
 
   render: ->
-    currentWord = getCurrentWord @props.words
+    currentWord = @props.current
     if not currentWord
       return div {}
 

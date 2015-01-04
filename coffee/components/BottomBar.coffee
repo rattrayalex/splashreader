@@ -24,9 +24,9 @@ BottomBar = React.createClass
     if not @props.words.size
       return div {}
 
-    percent_done = getPercentDone(@props.words) * 100
-    time_left = Math.round getTimeLeft(@props.words, @props.status)
-
+    percent_done = getPercentDone(@props.words, @props.current) * 100
+    time_left = Math.round getTimeLeft(
+      @props.words, @props.status, @props.current)
 
     div
       className: 'navbar-fluid navbar-default navbar-fixed-bottom'

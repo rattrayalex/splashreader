@@ -21,13 +21,11 @@ getTotalTime = (words, status) ->
   getTimeSince words, status, 0
 
 
-getPercentDone = (words) ->
-  current = getCurrentWord(words)
+getPercentDone = (words, current) ->
   current.get('idx') / words.size
 
 
-getTimeLeft = (words, status) ->
-  current = getCurrentWord(words)
+getTimeLeft = (words, status, current) ->
   getTimeSince words, status, current.get('idx')
 
 
@@ -40,6 +38,7 @@ getCurrentWord = (words) ->
 
 isPlaying = (status) ->
   status.get('playing') and not status.get('para_change')
+
 
 module.exports = {
   msPerWord
