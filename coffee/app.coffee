@@ -56,10 +56,10 @@ main = ->
       status: updatedStore.get('status')
       current: computed.getCurrentWord(updatedStore.get('words'))
 
-    console.log 'full render took', new Date() - start, "on word ",
-      updatedStore.get('words').find(
-        (word) -> word.get('current')
-      )?.toString()
+    # console.log 'full render took', new Date() - start, "on word ",
+    #   updatedStore.get('words').find(
+    #     (word) -> word.get('current')
+    #   )?.toString()
 
 
   # install global event listeners

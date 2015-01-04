@@ -13,6 +13,7 @@ replace = require('gulp-replace')
 watch = require("gulp-watch")
 less = require("gulp-less")
 cssmin = require('gulp-cssmin')
+base64 = require('gulp-base64')
 
 ecstatic = require "ecstatic"
 http = require "http"
@@ -36,6 +37,11 @@ gulp.task "less", ->
   gulp.src "style.less"
     .pipe less()
     .pipe cssmin()
+    .pipe base64
+      baseDir: 'css'
+      maxImageSize: Infinity
+      extensions: ['woff']
+      debug: false
     .pipe gulp.dest('css')
     .pipe livereload()
 
