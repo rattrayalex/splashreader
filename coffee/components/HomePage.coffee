@@ -6,20 +6,18 @@ CollectURL = React.createFactory require('./CollectURL')
 
 
 HomePage = React.createClass
+  displayName: 'HomePage'
+
   render: ->
-    div {}
+    div
+      className: 'text-center'
       ,
-      div
-        className: 'text-center'
-        ,
-        h1 {}
-          ,
-          "SplashReader"
-        p {}
-          ,
-          "A speed reader that lets you come up for air."
-        CollectURL
-          url: @props.url
+      h1 {},
+        "SplashReader"
+      p {},
+        "A speed reader that lets you come up for air."
+      CollectURL
+        url: @props.url
 
 
 module.exports = HomePage

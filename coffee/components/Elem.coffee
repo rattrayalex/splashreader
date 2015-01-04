@@ -24,6 +24,7 @@ getElemOrWord = (props) ->
 
 
 Word = React.createClass
+  displayName: 'Word'
 
   handleClick: ->
     dispatcher.dispatch
@@ -56,6 +57,7 @@ Word = React.createClass
 
 
 Elem = React.createClass
+  displayName: 'Elem'
 
   isCurrentPara: ->
     @props.current.get('parent') is @props.elem.get('cid')

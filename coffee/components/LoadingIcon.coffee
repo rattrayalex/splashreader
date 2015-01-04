@@ -3,6 +3,8 @@ React = require 'react'
 {div, span} = React.DOM
 
 LoadingIcon = React.createClass
+  displayName: 'LoadingIcon'
+
   shouldComponentUpdate: -> false
 
   render: ->

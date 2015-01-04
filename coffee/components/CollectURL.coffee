@@ -6,6 +6,7 @@ dispatcher = require('../dispatcher')
 
 
 CollectURL = React.createClass
+  displayName: 'CollectURL'
 
   handleSubmit: (e) ->
     e.preventDefault()

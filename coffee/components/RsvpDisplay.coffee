@@ -9,9 +9,10 @@ eleven_ems = Array(11).join('m')
 
 
 RsvpDisplay = React.createClass
+  displayName: 'RsvpDisplay'
 
   mixins: [
-    # React.addons.PureRenderMixin
+    React.addons.PureRenderMixin
   ]
 
   isShown: ->

@@ -13,6 +13,7 @@ BottomBar   = React.createFactory require('./BottomBar')
 
 
 Body = React.createClass
+  displayName: 'Body'
 
   getLoadingState: ->
     if @props.page.get('url') and not @props.article.get('elem')

@@ -8,6 +8,8 @@ dispatcher = require('../dispatcher')
 
 
 SideMenu = React.createClass
+  displayName: 'SideMenu'
+
   mixins: [
     React.addons.PureRenderMixin
   ]
