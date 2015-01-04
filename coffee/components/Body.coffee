@@ -43,7 +43,7 @@ Body = React.createClass
           ,
           div
             className: "
-              col-sm-9 col-sm-offset-1
+              col-sm-10 col-sm-offset-1
               col-md-8 col-md-offset-2
               col-lg-6 col-lg-offset-3"
             ,
@@ -61,7 +61,7 @@ Body = React.createClass
           ,
           div
             className: "
-              col-sm-9 col-sm-offset-1
+              col-sm-10 col-sm-offset-1
               col-md-8 col-md-offset-2
               col-lg-6 col-lg-offset-3"
             ,
