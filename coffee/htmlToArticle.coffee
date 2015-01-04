@@ -17,7 +17,7 @@ isBlock = (node_name) ->
 
 
 handlePre = (text, parent) ->
-  # handle `pre` elements, aka blocks of code.
+  # handle `pre` (and also table) elements, aka blocks of code.
   # put multiple words, no trimming, into "word"
   word = text
   parent = parent.get('cid')
@@ -26,23 +26,19 @@ handlePre = (text, parent) ->
   return [saveWord(word, parent, after, display)]
 
 
-# pretty meh algo to split words longer than 14 chars,
-# preferring to split on - and otherwise being super naive.
-shortenLongWord = (word) ->
+# sometimes-people-do-this, which should appear as:
+# sometimes- -people- -do- -this (in the RSVPDisplay)
+shortenHyphenatedWord = (word) ->
   if word.length < 14
     after = ' '
     return [{word, after}]
 
-  # first, try to split on hyphens...
+  #split on hyphens...
   parts = word.split(/(?=-)/).filter (part) ->
-    # getting rid of blanks...
-      part.length > 0
-    # then split greedily on strings longer than 13 chars if needed.
-    .map (part) ->
-      part.split(/(.{1,13})/).filter (subpart) ->
-        subpart.length > 0
+    # getting rid of blanks
+    part.length > 0
 
-  _.flatten(parts).map (part, i, parts) ->
+  parts.map (part, i, parts) ->
     if i < (parts.length - 1)
       word: part
       after: '-'
@@ -71,7 +67,7 @@ textToWords = (textNode, parent) ->
   if not text.trim()
     return null
 
-  # code blocks get special treatment
+  # code blocks and others get special treatment
   if parent.get('node_name') in ['pre', 'td', 'th']
     return handlePre(text, parent)
 
@@ -79,7 +75,7 @@ textToWords = (textNode, parent) ->
   parent = parent.get('cid')
   word_idxs = []
   for full_word, i in words
-    parts = shortenLongWord(full_word)
+    parts = shortenHyphenatedWord(full_word)
     for {word, after}, j in parts
       # last word in textNode doesn't get space after.
       if j == (parts.length - 1) and i == (words.length - 1)
@@ -135,24 +131,25 @@ getEndWord = (children) ->
   return null
 
 
-cleanedHtmlToElem = (node, parent) ->
-  # recursively turn nodes to React objs.
-
-  # if its text, return the text as list of WordModels.
-  if node.nodeName is "#text" or typeof node is String
-    return textToWords(node, parent)
-
+createElem = (node) ->
   node_name = node.nodeName.toLowerCase()
   attrs = domAttrsToDict(node.attributes)
   cid = _.uniqueId('p')
 
-  elem = Immutable.fromJS {node_name, attrs, cid}
+  Immutable.fromJS {node_name, attrs, cid}
+
+# recursively turn nodes to React objs.
+cleanedHtmlToElem = (node, parent) ->
+
+  # if its text, return the text as list of WordStore indexes.
+  if node.nodeName is "#text" or typeof node is String
+    return textToWords(node, parent)
+
+  elem = createElem(node)
 
   # `parent` is stored on Words, representing their nearest Block parent.
-  if isBlock(node_name)
-    # `pre` elems should always be the parent, they're special.
-    unless parent?.get('node_name') is 'pre'
-      parent = elem
+  if isBlock(elem.get('node_name'))
+    parent = elem
 
   children_list = _.without _.flatten [  # unpacks text words, removes nulls
     cleanedHtmlToElem(child, parent) for child in node.childNodes
@@ -166,7 +163,7 @@ cleanedHtmlToElem = (node, parent) ->
 
 
 saveWordListToWordStore = () ->
-  setTimeout =>
+  setTimeout ->
     dispatcher.dispatch
       actionType: 'wordlist-complete'
       words: WordList.words
@@ -188,12 +185,10 @@ rawHtmlToArticle = (raw_html) ->
   # stackoverflow.com/a/494348
   wrapper_elem = document.createElement('div')
   wrapper_elem.innerHTML = sanitized
-  post_wrapper_elem = new Date()
-  console.log 'setting wrapper_elem took', post_wrapper_elem - post_sanitize
 
   elem = cleanedHtmlToElem(wrapper_elem)
   post_elem = new Date()
-  console.log 'cleanedHtmlToElem took', post_elem - post_wrapper_elem
+  console.log 'cleanedHtmlToElem took', post_elem - post_sanitize
 
   saveWordListToWordStore()
 
