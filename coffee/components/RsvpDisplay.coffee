@@ -1,7 +1,7 @@
 React = require 'react/addons'
 
-FluxBone = require('./FluxBone')
 {getWordMiddle, getTextWidth} = require '../rsvp_utils'
+{getCurrentWord, isPlaying} = require '../stores/computed'
 
 {div, span} = React.DOM
 eleven_dots = Array(11).join('.')
@@ -11,10 +11,11 @@ eleven_ems = Array(11).join('m')
 RsvpDisplay = React.createClass
 
   mixins: [
-    FluxBone.ModelMixin('current', 'change:idx')
-    FluxBone.ModelMixin('status', 'change')
-    React.addons.PureRenderMixin
+    # React.addons.PureRenderMixin
   ]
+
+  isShown: ->
+    isPlaying(@props.status)
 
   componentDidMount: ->
     @font = '32pt libre_baskervilleregular, Georgia'
@@ -23,10 +24,11 @@ RsvpDisplay = React.createClass
     @ORP_center = full_width / 3
 
   render: ->
-    if not @props.current.getWord()?.get('word')?
+    currentWord = @props.current
+    if not currentWord
       return div {}
 
-    word = @props.current.getWord().get('word') or " "
+    word = currentWord.get('word') or " "
     word = word.trim()
     word = word or " "
 
@@ -34,7 +36,7 @@ RsvpDisplay = React.createClass
     if word.length is 1
       word = ' ' + word
 
-    if @props.current.getWord().get('after') is '-'
+    if currentWord.get('after') is '-'
       word += '-'
 
     middle = getWordMiddle word.length
@@ -51,7 +53,7 @@ RsvpDisplay = React.createClass
     div
       className: 'rsvp-wrapper'
       style:
-        display: if @props.status.get('playing') then 'block' else 'none'
+        display: if @isShown() then 'block' else 'none'
       ,
       div
         className: 'rsvp-notch-top'

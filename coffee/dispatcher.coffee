@@ -1,3 +1,6 @@
 Dispatcher = require('flux').Dispatcher
 
-module.exports = new Dispatcher()
+dispatcher = new Dispatcher()
+dispatcher.tokens = {}
+
+module.exports = dispatcher

@@ -1,60 +1,62 @@
-
+Immutable = require('immutable')
 sanitize = require('sanitize-html')
 _ = require('underscore')
 
 dispatcher = require('./dispatcher')
 constants = require('./constants')
-WordStore = require './stores/WordStore'
-{
-  ChildrenCollection,
-  WordModel,
-  ElementModel
-} = require('./stores/ArticleModels')
-
+{getDisplayMultiplier} = require './rsvp_utils'
 
 # evil global.
 # TODO: rethink this
-WordList = []
+WordList = {
+  words: []
+}
 
 isBlock = (node_name) ->
   node_name not in constants.INLINE_ELEMENTS
 
 
 handlePre = (text, parent) ->
-  # handle `pre` elements, aka blocks of code.
+  # handle `pre` (and also table) elements, aka blocks of code.
   # put multiple words, no trimming, into "word"
   word = text
+  parent = parent.get('cid')
   after = ''
-  word_model = new WordModel {word, parent, after}
-
-  # don't add it to WordStore,
-  # dont want to speedread this shit
-  return word_model
+  display = 0
+  return [saveWord(word, parent, after, display)]
 
 
-# pretty meh algo to split words longer than 14 chars,
-# preferring to split on - and otherwise being super naive.
-shortenLongWord = (word) ->
+# sometimes-people-do-this, which should appear as:
+# sometimes- -people- -do- -this (in the RSVPDisplay)
+shortenHyphenatedWord = (word) ->
   if word.length < 14
     after = ' '
     return [{word, after}]
 
-  # first, try to split on hyphens...
+  #split on hyphens...
   parts = word.split(/(?=-)/).filter (part) ->
-    # getting rid of blanks...
-      part.length > 0
-    # then split greedily on strings longer than 13 chars if needed.
-    .map (part) ->
-      part.split(/(.{1,13})/).filter (subpart) ->
-        subpart.length > 0
+    # getting rid of blanks
+    part.length > 0
 
-  _.flatten(parts).map (part, i, parts) ->
+  parts.map (part, i, parts) ->
     if i < (parts.length - 1)
       word: part
       after: '-'
     else
       word: part
       after: ' '
+
+
+saveWord = (word, parent, after, display=null) ->
+  display ?= getDisplayMultiplier(word)
+  cid = _.uniqueId('w')
+  current = false
+  idx = WordList.words.length
+
+  word_model = Immutable.Map {word, parent, after, display, cid, current, idx}
+  WordList.words.push(word_model)
+
+  return idx
 
 
 textToWords = (textNode, parent) ->
@@ -65,28 +67,24 @@ textToWords = (textNode, parent) ->
   if not text.trim()
     return null
 
-  # code blocks get special treatment
+  # code blocks and others get special treatment
   if parent.get('node_name') in ['pre', 'td', 'th']
     return handlePre(text, parent)
 
-  # split_words = splitHyphens(words)
-
   # turns the words into an array of Elements
-  word_models = []
+  parent = parent.get('cid')
+  word_idxs = []
   for full_word, i in words
-    parts = shortenLongWord(full_word)
+    parts = shortenHyphenatedWord(full_word)
     for {word, after}, j in parts
       # last word in textNode doesn't get space after.
       if j == (parts.length - 1) and i == (words.length - 1)
         after = ''
 
-      word_model = new WordModel {word, parent, after}
-      word_models.push word_model
+      idx = saveWord(word, parent, after)
+      word_idxs.push idx
 
-      # also add it to list of words
-      WordList.push(word_model)
-
-  return word_models
+  return word_idxs
 
 
 domAttrsToDict = (attributes) ->
@@ -111,37 +109,66 @@ domAttrsToDict = (attributes) ->
   return react_attrs
 
 
-cleanedHtmlToElem = (node, parent) ->
-  # recursively turn nodes to React objs.
+getStartWord = (children) ->
+  for child in children.toArray()
+    if typeof child is 'number'
+      return child
+    else if child?
+      subWord = getStartWord(child.get('children'))
+      if subWord?
+        return subWord
+  return null
 
-  # if its text, return the text as list of WordModels.
+
+getEndWord = (children) ->
+  for child in children.toArray().reverse()
+    if typeof child is 'number'
+      return child
+    else if child?
+      subWord = getEndWord(child.get('children'))
+      if subWord?
+        return subWord
+  return null
+
+
+createElem = (node) ->
+  node_name = node.nodeName.toLowerCase()
+  attrs = domAttrsToDict(node.attributes)
+  cid = _.uniqueId('p')
+
+  Immutable.fromJS {node_name, attrs, cid}
+
+# recursively turn nodes to React objs.
+cleanedHtmlToElem = (node, parent) ->
+
+  # if its text, return the text as list of WordStore indexes.
   if node.nodeName is "#text" or typeof node is String
     return textToWords(node, parent)
 
-  node_name = node.nodeName.toLowerCase()
-  attrs = domAttrsToDict(node.attributes)
-
-  elem = new ElementModel {node_name, attrs}
+  elem = createElem(node)
 
   # `parent` is stored on Words, representing their nearest Block parent.
-  if isBlock(node_name)
-    # `pre` elems should always be the parent, they're special.
-    unless parent?.get('node_name') is 'pre'
-      parent = elem
+  if isBlock(elem.get('node_name'))
+    parent = elem
 
-  children_list = _.compact _.flatten [  # unpacks text words, removes nulls
+  children_list = _.without _.flatten [  # unpacks text words, removes nulls
     cleanedHtmlToElem(child, parent) for child in node.childNodes
-  ]
-  children = new ChildrenCollection children_list
+  ], null
+  children = Immutable.List children_list
+  start_word = getStartWord(children)
+  end_word = getEndWord(children)
 
-  elem.set {children}, {silent: true}
+  elem = elem.merge {children, start_word, end_word}
   return elem
 
 
 saveWordListToWordStore = () ->
-  WordStore.reset(WordList)
-  # I know, I know... evil globals...
-  WordList = []
+  setTimeout ->
+    dispatcher.dispatch
+      actionType: 'wordlist-complete'
+      words: WordList.words
+    WordList.words = []
+  , 0
 
 
 rawHtmlToArticle = (raw_html) ->
@@ -158,16 +185,12 @@ rawHtmlToArticle = (raw_html) ->
   # stackoverflow.com/a/494348
   wrapper_elem = document.createElement('div')
   wrapper_elem.innerHTML = sanitized
-  post_wrapper_elem = new Date()
-  console.log 'setting wrapper_elem took', post_wrapper_elem - post_sanitize
 
   elem = cleanedHtmlToElem(wrapper_elem)
   post_elem = new Date()
-  console.log 'cleanedHtmlToElem took', post_elem - post_wrapper_elem
+  console.log 'cleanedHtmlToElem took', post_elem - post_sanitize
 
   saveWordListToWordStore()
-  post_wordlist = new Date()
-  console.log 'saveWordListToWordStore took', post_wordlist - post_elem
 
   return elem
 

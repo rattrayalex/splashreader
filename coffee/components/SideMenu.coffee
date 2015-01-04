@@ -1,17 +1,15 @@
 React = require 'react/addons'
 
-dispatcher = require('../dispatcher')
-FluxBone = require('./FluxBone')
+WpmWidget = React.createFactory require('./WpmWidget')
 
-WpmWidget = require('./WpmWidget')
+dispatcher = require('../dispatcher')
 
 {h1, div, span, form, input, button, p, a, em, small, hr} = React.DOM
 
 
 SideMenu = React.createClass
   mixins: [
-    FluxBone.ModelMixin('status', 'change')
-    FluxBone.ModelMixin('status', 'change', 'detectMenuEverShown')
+    React.addons.PureRenderMixin
   ]
 
   getInitialState: ->
@@ -31,7 +29,15 @@ SideMenu = React.createClass
         menuEverShown: true
 
   render: ->
+    if not @state.menuEverShown
+      # async b/c can't setState w/in render.
+      # TODO: think of a better way to trigger this.
+      setTimeout =>
+        @detectMenuEverShown()
+      , 0
+
     anim = if @props.status.get('menuShown') then 'fadeInLeft' else 'fadeOutLeft'
+
     div
       className: 'animated side-menu ' + anim
       style:

@@ -1,11 +1,9 @@
 React = require('react/addons')
-{Navbar, Nav, NavItem} = require('react-bootstrap')
+
+WpmWidget = React.createFactory require('./WpmWidget')
 
 dispatcher = require('../dispatcher')
-FluxBone = require('./FluxBone')
-deferUpdateMixin = require('./deferUpdateMixin')
-
-WpmWidget = require('./WpmWidget')
+{getPercentDone, getTimeLeft} = require('../stores/computed')
 
 {h1, div, li, p, a, span, button, form, em} = React.DOM
 
@@ -13,10 +11,6 @@ WpmWidget = require('./WpmWidget')
 BottomBar = React.createClass
 
   mixins: [
-    deferUpdateMixin
-    FluxBone.ModelMixin('status', 'change')
-    FluxBone.ModelMixin('current', 'change')
-    FluxBone.CollectionMixin('words', 'add remove reset', 'deferUpdate')
     React.addons.PureRenderMixin
   ]
 
@@ -26,12 +20,12 @@ BottomBar = React.createClass
 
   render: ->
 
-    if not @props.words.length
+    if not @props.words.size
       return div {}
 
-    percent_done = @props.current.getPercentDone() * 100
-    time_left = Math.round @props.current.getTimeLeft()
-
+    percent_done = getPercentDone(@props.words, @props.current) * 100
+    time_left = Math.round getTimeLeft(
+      @props.words, @props.status, @props.current)
 
     div
       className: 'navbar-fluid navbar-default navbar-fixed-bottom'
@@ -39,8 +33,8 @@ BottomBar = React.createClass
       div
         className: 'container-fluid'
         ,
-        Nav
-          className: 'navbar-left'
+        div
+          className: 'nav navbar-left'
           ,
           div
             className: 'navbar-form'
@@ -73,7 +67,7 @@ BottomBar = React.createClass
           em
             className: 'text-muted'
             ,
-            if @props.words.length and !isNaN(time_left)
+            if @props.words.size and !isNaN(time_left)
               pluralize = unless time_left is 1 then "s" else ""
               "#{ time_left } minute#{ pluralize } left"
             else
@@ -97,18 +91,16 @@ BottomBar = React.createClass
             role: 'progressbar'
             style:
               width: "#{percent_done}%"
-      if @props.words.length
+      if @props.words.size
         PlayPauseButton
           status: @props.status
           words: @props.words
 
 
 
-PlayPauseButton = React.createClass
+PlayPauseButton = React.createFactory React.createClass
 
   mixins: [
-    FluxBone.ModelMixin('status', 'change')
-    FluxBone.CollectionMixin('words', 'add remove reset')
     React.addons.PureRenderMixin
   ]
 
@@ -130,7 +122,7 @@ PlayPauseButton = React.createClass
       'glyphicon-play': not @props.status.get('playing')
       'glyphicon-pause': @props.status.get('playing')
       'active': @props.status.get('playing')
-      'disabled': not @props.words.length
+      'disabled': not @props.words.size
 
     div
       style:

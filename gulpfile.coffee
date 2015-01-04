@@ -6,6 +6,8 @@ watchify = require("watchify")
 browserify = require("browserify")
 coffeeify = require("coffeeify")
 minifyify = require("minifyify")
+# envify = require("envify")
+replace = require('gulp-replace')
 
 watch = require("gulp-watch")
 less = require("gulp-less")
@@ -64,22 +66,32 @@ gulp.task "sourcemap", ['serve'], ->
     .pipe source("app.js")
     .pipe gulp.dest("js")
 
-watchifyFile = (filename) ->
+
+watchifyFile = (filename, cb) ->
   args = watchify.args
   args.extensions = ['.coffee']
   bundler = watchify(browserify("./coffee/#{filename}.coffee", args), args)
   bundler.transform(coffeeify)
+  bundler.transform('brfs')
+  # to tell React we're in prod... wasn't working, I gave up
+  # bundler.transform envify
+  #   _: 'purge'
+  #   NODE_ENV: 'production'
+  #   # NODE_ENV: 'development'
   bundler.ignore('iconv')
 
   rebundle = ->
     gutil.log gutil.colors.green 'rebundling...'
     bundler.bundle()
-      # log errors if they happen
       .on "error", gutil.log.bind(gutil, "Browserify Error")
       # I'm not really sure what this line is all about?
       .pipe source("#{filename}.js")
       .pipe gulp.dest("js")
       .pipe livereload()
+
+    if cb
+      cb()
+
     gutil.log gutil.colors.green 'rebundled.'
 
   bundler.on "update", rebundle
@@ -87,9 +99,18 @@ watchifyFile = (filename) ->
 
 
 gulp.task "watchify", ->
+  # watchifyFile 'static', ->
+  #   reactHtml = require('./coffee/static')
+  #   gulp.src "index.html"
+  #     .pipe replace /\<body\>[\s\S]*\<\/body\>/, "<body>#{ reactHtml() }</body>"
+  #     .pipe gulp.dest("index2.html")
   watchifyFile 'app'
   watchifyFile 'chrome'
   watchifyFile 'chromeBrowserAction'
 
 
 gulp.task "default", ["watchify", "serve", "less", "watch"]
+
+# for conserving battery (apparently gulp uses helza battery)
+gulp.task "lite", ["serve"], ->
+  watchifyFile 'app'

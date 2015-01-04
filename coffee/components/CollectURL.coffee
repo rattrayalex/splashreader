@@ -5,7 +5,6 @@ dispatcher = require('../dispatcher')
 {div, span, h1, p, form, input, button} = React.DOM
 
 
-
 CollectURL = React.createClass
 
   handleSubmit: (e) ->
