@@ -47,10 +47,11 @@ gulpIsDone = (lines) ->
     'chrome.js was reloaded.'
   ]
   num_reqs = 0
-  for req in reqs
-    for line in lines
+  for line in lines
+    for req in reqs
       if line.match req
         num_reqs += 1
+        reqs.shift()
         break
 
   if num_reqs > 2
