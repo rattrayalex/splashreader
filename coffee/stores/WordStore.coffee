@@ -26,7 +26,7 @@ class WordStore
     # trigger the next word to update.
     if isPlaying(@store.get('status'))
       next_word = @store.get('words').get(idx + 1)
-      para_change = next_word.get('parent') isnt word.get('parent')
+      para_change = next_word?.get('parent') isnt word.get('parent')
       time_to_display = word.get('display') *
         msPerWord @store.getIn(['status', 'wpm'])
 
@@ -76,6 +76,18 @@ class WordStore
           @cursor().clear()
 
       when 'change-word'
+        # ignore `pre`, `td`, etc...
+        if @store.getIn(['words', payload.idx, 'display']) is 0
+          console.log 'changing to display0 word!'
+          if payload.source is 'click'
+            return
+          else
+            return setTimeout ->
+              dispatcher.dispatch
+                actionType: 'change-word'
+                idx: payload.idx + 1
+                source: 'display0'
+
         @cursor().update (words) ->
           words.map (word) ->
             if word.get('idx') is payload.idx

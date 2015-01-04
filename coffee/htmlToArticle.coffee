@@ -23,13 +23,7 @@ handlePre = (text, parent) ->
   parent = parent.get('cid')
   after = ''
   display = 0
-  cid = _.uniqueId('w')
-  current = false
-  word_model = Immutable.Map {word, parent, after, display, cid, current}
-
-  # don't add it to WordStore,
-  # dont want to speedread this shit
-  return word_model
+  return [saveWord(word, parent, after, display)]
 
 
 # pretty meh algo to split words longer than 14 chars,
@@ -57,6 +51,18 @@ shortenLongWord = (word) ->
       after: ' '
 
 
+saveWord = (word, parent, after, display=null) ->
+  display ?= getDisplayMultiplier(word)
+  cid = _.uniqueId('w')
+  current = false
+  idx = WordList.words.length
+
+  word_model = Immutable.Map {word, parent, after, display, cid, current, idx}
+  WordList.words.push(word_model)
+
+  return idx
+
+
 textToWords = (textNode, parent) ->
   text = textNode.nodeValue
   words = text.replace(/(–|—)/g, ' $1 ').split /\s+/
@@ -69,10 +75,9 @@ textToWords = (textNode, parent) ->
   if parent.get('node_name') in ['pre', 'td', 'th']
     return handlePre(text, parent)
 
-
   # turns the words into an array of Elements
   parent = parent.get('cid')
-  word_models = []
+  word_idxs = []
   for full_word, i in words
     parts = shortenLongWord(full_word)
     for {word, after}, j in parts
@@ -80,18 +85,10 @@ textToWords = (textNode, parent) ->
       if j == (parts.length - 1) and i == (words.length - 1)
         after = ''
 
-      display = getDisplayMultiplier(word)
-      cid = _.uniqueId('w')
-      current = false
-      idx = WordList.words.length
+      idx = saveWord(word, parent, after)
+      word_idxs.push idx
 
-      word_model = Immutable.Map {word, parent, after, display, cid, current, idx}
-      word_models.push idx
-
-      # also add it to list of words
-      WordList.words.push(word_model)
-
-  return word_models
+  return word_idxs
 
 
 domAttrsToDict = (attributes) ->

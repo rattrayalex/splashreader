@@ -3,10 +3,9 @@ $ = require('jquery')
 _ = require('underscore')
 key = require('keymaster')
 
-OfflineBackbone = require('./OfflineBackbone')
-
 dispatcher = require('../dispatcher')
 constants = require('../constants')
+
 
 class RsvpStatusStore
   constructor: (@store) ->
