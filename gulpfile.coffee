@@ -15,6 +15,8 @@ less = require("gulp-less")
 cssmin = require('gulp-cssmin')
 base64 = require('gulp-base64')
 
+zip = require('gulp-zip')
+
 ecstatic = require "ecstatic"
 http = require "http"
 livereload = require "gulp-livereload"
@@ -54,6 +56,19 @@ gulp.task "html", ->
 gulp.task "watch", ->
   gulp.watch "style.less", ["less"]
   gulp.watch "index.html", ["html"]
+
+
+gulp.task "chrome", ->
+  gulp.src [
+      'manifest.json'
+      'images/icon*.png'
+      'js/chrome.js'
+      'js/chromeBrowserAction.js'
+      'css/style.css'
+    ], base: '.'
+    .pipe zip 'splashreader_chrome_ext.zip'
+    .pipe gulp.dest('.')
+
 
 
 gulp.task "sourcemap", ['serve'], ->
