@@ -91,8 +91,7 @@ textToWords = (textNode, parent) ->
   return word_idxs
 
 
-domAttrsToDict = (attributes) ->
-  # TODO: this... at all correctly (camelCase etc)
+domAttrsToDict = (attributes, style) ->
   if not attributes?
     return {}
   if attributes.length is 0
@@ -106,9 +105,16 @@ domAttrsToDict = (attributes) ->
     if name is 'class'
       name = 'className'
 
-    # TODO: handle style (needs to be )
-    if name not in ['style'] and name in constants.ALLOWED_REACT_ATTRIBUTES
+    if name in constants.ALLOWED_REACT_ATTRIBUTES
       react_attrs[name] = val
+
+    # style is current cleaned by `sanitize`, so this does nothing.
+    if name is 'style'
+      react_attrs[name] = {}
+      for j in [0 .. style.length - 1]
+        style_name = style[j]
+        style_val = style[style_name]
+        react_attrs[name][style_name] = style_val
 
   return react_attrs
 
@@ -137,7 +143,7 @@ getEndWord = (children) ->
 
 createElem = (node) ->
   node_name = node.nodeName.toLowerCase()
-  attrs = domAttrsToDict(node.attributes)
+  attrs = domAttrsToDict(node.attributes, node.style)
   cid = _.uniqueId('p')
 
   # add attrs for `a` and `table`
@@ -192,6 +198,8 @@ rawHtmlToArticle = (raw_html) ->
     # remove empty elements.
     # exclusiveFilter: (frame) -> !frame.text.trim()
     allowedTags: constants.ALLOWED_REACT_NODES
+    # uncomment to enable style:
+    # allowedAttributes: false
   post_sanitize = new Date()
   console.log 'sanitize took', post_sanitize - start
 
