@@ -4,8 +4,33 @@ fs = require('fs')
 APP_CSS = fs.readFileSync(__dirname + '/../css/style.css', 'utf8')
 APP_JS = fs.readFileSync(__dirname + '/../js/app.js', 'utf8')
 
+
 getCurrentUrl = () ->
   document.URL
+
+
+getPageHtml = () ->
+  document.body.innerHTML
+
+
+getSelectionHtml = () ->
+  # http://stackoverflow.com/a/6668159/1048433
+  html = ""
+  unless typeof window.getSelection is "undefined"
+    sel = window.getSelection()
+    if sel.rangeCount
+      container = document.createElement("div")
+      i = 0
+      len = sel.rangeCount
+      while i < len
+        container.appendChild sel.getRangeAt(i).cloneContents()
+        ++i
+      html = container.innerHTML
+  else
+    unless typeof document.selection is "undefined"
+      if document.selection.type is "Text"
+        html = document.selection.createRange().htmlText
+  html
 
 
 insertCSS = (iframe, css) ->
@@ -22,7 +47,7 @@ insertScript = (iframe, js) ->
   script
 
 
-insertIframe = (url) ->
+insertIframe = (url, html) ->
   iframe = document.createElement('iframe')
 
   iframe.style.position = 'fixed'
@@ -42,10 +67,6 @@ insertIframe = (url) ->
   iframe.style.transition = "all .5s"
   iframe.setAttribute 'id', 'splashreader'
 
-  # target_url = 'http://www.splashreaderapp.com/?view=chrome#' + url
-  # target_url = '#' + url
-  # iframe.setAttribute 'src', target_url
-
   iframe.onload = () ->
     console.log 'iframe loaded just fiiine'
     listenForEsc(iframe.contentWindow)
@@ -63,10 +84,10 @@ insertIframe = (url) ->
   insertScript iframe, "
     window.SplashReaderExt = {};
     window.SplashReaderExt.url = decodeURIComponent(
-      \"#{ encodeURIComponent(window.location.href) }\"
+      \"#{ encodeURIComponent(url) }\"
     );
     window.SplashReaderExt.html = decodeURIComponent(
-      \"#{ encodeURIComponent(document.body.innerHTML) }\"
+      \"#{ encodeURIComponent(html) }\"
     );
     "
   insertScript iframe, APP_JS
@@ -90,16 +111,26 @@ listenForEsc = (env) ->
       toggleIframe(window.SplashReader.iframe)
 
 
-main = ->
+main = (url, html) ->
   window.SplashReader ?=
     iframe: null
 
   if not window.SplashReader.iframe
-    url = getCurrentUrl()
-    window.SplashReader.iframe = insertIframe(url)
+    window.SplashReader.iframe = insertIframe(url, html)
     toggleIframe(window.SplashReader.iframe)
     listenForEsc(window)
 
   toggleIframe(window.SplashReader.iframe)
 
-main()
+
+chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
+  console.log "content script received request", request, sender
+  switch request.actionType
+    when "page"
+      main getCurrentUrl(), getPageHtml()
+    when "selection"
+      main "selection", getSelectionHtml()
+
+  sendResponse reply: "thanks!"
+
+

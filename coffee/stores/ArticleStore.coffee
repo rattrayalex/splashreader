@@ -46,6 +46,19 @@ class ArticleStore
           if not url
             console.log 'back to home page'
             @cursor().clear()
+          else if url is "selection"
+            console.log "url is selection, html is", window.SplashReaderExt.html
+            setTimeout ->
+              dispatcher.dispatch
+                actionType: 'process-article'
+                raw_html: window.SplashReaderExt.html
+                title: "[Selected Text]"
+                author: null
+                url: null
+                domain: null
+                date: null
+            , 0
+
           return
 
         # remove hashtag and thereafter, can't have two titles
