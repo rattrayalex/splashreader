@@ -4,7 +4,7 @@ Backbone = require('backbone')
 $ = Backbone.$ = require('jquery')  # so Backbone.Router doesnt die
 Hammer = require('hammerjs')
 
-store = require('./stores/store')
+window.store = store = require('./stores/store')
 
 ArticleStore = require('./stores/ArticleStore')
 WordStore = require('./stores/WordStore')
@@ -49,18 +49,19 @@ main = ->
   store.on "update", (updatedStore) ->
     start = new Date()
 
+    current = computed.getCurrentWord(updatedStore.get('words'))
     RenderedBodyComponent.setProps
       article: updatedStore.get('article')
       words: updatedStore.get('words')
       page: updatedStore.get('page')
       status: updatedStore.get('status')
-      current: computed.getCurrentWord(updatedStore.get('words'))
+      current: current
 
-    console.log 'full render took', new Date() - start, "on word ",
-      updatedStore.get('words').find(
-        (word) -> word.get('current')
-      )?.toString()
-
+    # perf debugging
+    console.log 'full render took',
+      new Date() - start
+      "on word "
+      current?.toString()
 
   # install global event listeners
   $(window).keydown (e) ->

@@ -9,6 +9,7 @@ dispatcher = require('../dispatcher')
 
 
 BottomBar = React.createClass
+  displayName: 'BottomBar'
 
   mixins: [
     React.addons.PureRenderMixin
@@ -99,6 +100,7 @@ BottomBar = React.createClass
 
 
 PlayPauseButton = React.createFactory React.createClass
+  displayName: 'PlayPauseButton'
 
   mixins: [
     React.addons.PureRenderMixin

@@ -13,6 +13,7 @@ BottomBar   = React.createFactory require('./BottomBar')
 
 
 Body = React.createClass
+  displayName: 'Body'
 
   getLoadingState: ->
     if @props.page.get('url') and not @props.article.get('elem')
@@ -42,7 +43,7 @@ Body = React.createClass
           ,
           div
             className: "
-              col-sm-9 col-sm-offset-1
+              col-sm-10 col-sm-offset-1
               col-md-8 col-md-offset-2
               col-lg-6 col-lg-offset-3"
             ,
@@ -60,7 +61,7 @@ Body = React.createClass
           ,
           div
             className: "
-              col-sm-9 col-sm-offset-1
+              col-sm-10 col-sm-offset-1
               col-md-8 col-md-offset-2
               col-lg-6 col-lg-offset-3"
             ,

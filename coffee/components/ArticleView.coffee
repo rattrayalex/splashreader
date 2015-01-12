@@ -7,6 +7,7 @@ computed = require('../stores/computed')
 
 
 Masthead = React.createFactory React.createClass
+  displayName: 'Masthead'
 
   render: ->
     if not  @props.article.has('title')
@@ -19,8 +20,7 @@ Masthead = React.createFactory React.createClass
       style:
         paddingBottom: 60
       ,
-      h1 {}
-        ,
+      h1 {},
         @props.article.get('title')
       hr {}
       div
@@ -33,24 +33,20 @@ Masthead = React.createFactory React.createClass
             className: 'text-muted'
             ,
             "By " if @props.article.get('author')
-          small {}
-            ,
+          small {},
             @props.article.get('author')
-          div {}
-            ,
+          div {},
             small
               className: 'text-muted'
               ,
               "on " if date
-            small {}
-              ,
+            small {},
               new Date(date).toDateString() if date
 
         div
           className: 'col-sm-6'
           ,
-          small {}
-            ,
+          small {},
             a
               className: 'pull-right text-muted'
               href: @props.article.get('url')
@@ -62,6 +58,7 @@ Masthead = React.createFactory React.createClass
 
 
 ArticleFooter = React.createFactory React.createClass
+  displayName: 'ArticleFooter'
 
   render: ->
     total_time = computed.getTotalTime(@props.words, @props.status).toFixed(1)
@@ -70,19 +67,18 @@ ArticleFooter = React.createFactory React.createClass
     else
       pluralize = unless total_time is 1 then "s" else ""
 
-      div {}
-        ,
+      div {},
         hr {}
         small
           className: 'text-muted pull-right'
           ,
-          em {}
-            ,
+          em {},
             "You just read #{ @props.words.size } words
              in #{ total_time } minute#{ pluralize }."
 
 
 ArticleView = React.createClass
+  displayName: 'ArticleView'
 
   mixins: [
     React.addons.PureRenderMixin

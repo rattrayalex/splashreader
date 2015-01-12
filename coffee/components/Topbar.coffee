@@ -6,6 +6,7 @@ dispatcher = require('../dispatcher')
 
 
 Topbar = React.createClass
+  displayName: 'Topbar'
 
   mixins: [
     React.addons.PureRenderMixin
@@ -24,21 +25,6 @@ Topbar = React.createClass
         div
           className: 'row'
           ,
-          # div
-          #   className: 'col-xs-1'
-          #   ,
-          #   p
-          #     className: 'navbar-text'
-          #     style:
-          #       marginTop: 10
-          #       marginBottom: 10
-          #     ,
-          #     a
-          #       href: '#'
-          #       ,
-          #       img
-          #         src: '/images/icon32.png'
-
           div
             className: 'col-xs-12'
             ,

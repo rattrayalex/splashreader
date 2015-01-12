@@ -61,6 +61,13 @@ class WordStore
 
       when 'wordlist-complete'
         console.log 'wordlist-complete'
+        if not payload.words.length
+          console.log 'no words in this homepage'
+          return setTimeout ->
+            window.location = '#'
+          , 1000
+
+
         # set first word to be the current word
         payload.words[0] = payload.words[0].set 'current', true
         @cursor().update ->

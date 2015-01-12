@@ -1,6 +1,9 @@
 # ignore compiled js.
 # except in gh-pages! js
 
+# ignore built chrome ext
+splashreader_chrome_ext.zip
+
 # Logs
 logs
 *.log

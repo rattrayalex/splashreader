@@ -1,13 +1,8 @@
 {
-  // ref: https://developer.chrome.com/extensions/manifest
-
-  // Required
   "manifest_version": 2,
-  "name": "SplashReader",
+  "name": "SplashReader: Speed Reading with Breaks",
+  "short_name": "SplashReader",
   "version": "0.1.0",
-
-  // Recommended
-  // "default_locale": "en",
   "description": "A speed reader that lets you come up for air.",
   "icons": {
     "16": "images/icon16.png",
@@ -16,76 +11,22 @@
     "128": "images/icon128.png"
   },
 
-  // Pick one (or none)
   "browser_action": {
     "default_icon": {
       "19": "images/icon19.png",
       "38": "images/icon38.png"
     },
     "default_title": "Splash!"
-    // "default_popup": "popup.html"
   },
-  // "page_action": {...},
-
-  // Optional
   "author": "Alex Rattray",
-  // "automation": ...,
   "background": {
-    // Recommended
     "persistent": false,
     "scripts": ["js/chromeBrowserAction.js"]
   },
-  // "background_page": ...,
-  // "chrome_settings_overrides": {...},
-  // "chrome_ui_overrides": {
-  //   "bookmarks_ui": {
-  //     "remove_bookmark_shortcut": true,
-  //     "remove_button": true
-  //   }
-  // },
-  // "chrome_url_overrides": {...},
-  // "commands": ...,
-  // "content_pack": ...,
-  // "content_scripts": [{...}],
-  // "content_security_policy": "policyString",
-  // "converted_from_user_script": ...,
-  // "current_locale": ...,
-  // "devtools_page": ...,
-  // "externally_connectable": {
-  //   "matches": ["*://*.example.com/*"]
-  // },
-  // "file_browser_handlers": [...],
-  // "homepage_url": "http://path/to/homepage",
-  // "import": ...,
-  // "incognito": "spanning or split",
-  // "input_components": ...,
-  // "key": "publicKey",
-  // "minimum_chrome_version": "versionString",
-  // "nacl_modules": [...],
-  // "oauth2": ...,
+  "homepage_url": "http://splashreaderapp.com",
   "offline_enabled": true,
-  // "omnibox": {
-  //   "keyword": "aString"
-  // },
-  // "optional_permissions": ...,
-  // "options_page": "aFile.html",
-  // "options_ui": ...,
   "permissions": [
-    "activeTab"
-  ],
-  // "platforms": ...,
-  // "plugins": [...],
-  // "requirements": {...},
-  // "sandbox": [...],
-  // "script_badge": ...,
-  // "short_name": "Short Name",
-  // "signature": ...,
-  // "spellcheck": ...,
-  // "storage": {
-  //   "managed_schema": "schema.json"
-  // },
-  // "system_indicator": ...,
-  // "tts_engine": ...,
-  // "update_url": "http://path/to/updateInfo.xml",
-  "web_accessible_resources": []
+    "activeTab",
+    "contextMenus"
+  ]
 }

@@ -5,10 +5,12 @@ if not sh.which 'git'
   sh.echo 'Sorry, this script requires git'
   sh.exit 1
 
+
 cmd = (cmd, opts={}) ->
   console.log ''
   console.log "-> #{cmd}"
   sh.exec cmd, opts
+
 
 getCurrentBranch = ->
   cmd 'git branch', silent: true
@@ -75,6 +77,9 @@ main = ->
     checkClean()
     cmd "git push"
     cmd "git checkout master"
+
+    # gulp freaks out when this disappears, which happens during checkout
+    cmd "touch js/app.js"
 
     console.log "all done!"
 

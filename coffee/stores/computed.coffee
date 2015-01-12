@@ -30,10 +30,7 @@ getTimeLeft = (words, status, current) ->
 
 
 getCurrentWord = (words) ->
-  start = new Date()
-  res = words.find (word) -> word.get('current')
-  console.log 'getCurrentWord took', new Date() - start
-  res
+  words.find (word) -> word.get('current')
 
 
 isPlaying = (status) ->

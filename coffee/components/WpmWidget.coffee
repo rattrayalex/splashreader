@@ -5,6 +5,7 @@ dispatcher = require('../dispatcher')
 
 
 WpmWidget = React.createClass
+  displayName: 'WpmWidget'
 
   mixins: [
     React.addons.PureRenderMixin
