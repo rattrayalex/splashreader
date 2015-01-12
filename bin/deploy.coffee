@@ -61,6 +61,7 @@ gulpIsDone = (lines) ->
   else
     false
 
+
 main = ->
   checkClean()
   if getCurrentBranch() isnt 'master'

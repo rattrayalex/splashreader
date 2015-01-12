@@ -14,7 +14,6 @@
     + (tell people about them)
 - look into react-styles
 - look into reflux or bacon.js
-- splash page html / a selection
 - edit the html.
 - mobile app
     + 

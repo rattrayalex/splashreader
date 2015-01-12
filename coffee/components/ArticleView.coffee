@@ -46,15 +46,16 @@ Masthead = React.createFactory React.createClass
         div
           className: 'col-sm-6'
           ,
-          small {},
-            a
-              className: 'pull-right text-muted'
-              href: @props.article.get('url')
-              target: '_blank'
-              ,
-              "from #{ @props.article.get('domain') } "
-              span
-                className: 'glyphicon glyphicon-share-alt'
+          if @props.article.get('url') and @props.article.get('domain')
+            small {},
+              a
+                className: 'pull-right text-muted'
+                href: @props.article.get('url')
+                target: '_blank'
+                ,
+                "from #{ @props.article.get('domain') } "
+                span
+                  className: 'glyphicon glyphicon-share-alt'
 
 
 ArticleFooter = React.createFactory React.createClass
