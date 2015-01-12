@@ -26,6 +26,7 @@
   "homepage_url": "http://splashreaderapp.com",
   "offline_enabled": true,
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "contextMenus"
   ]
 }
