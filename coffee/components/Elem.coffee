@@ -63,6 +63,9 @@ Elem = React.createClass
     @props.current.get('parent') is @props.elem.get('cid')
 
   shouldComponentUpdate: (nextProps) ->
+    if isPlaying(nextProps.status)
+      return false
+
     this_para = (
       @props.elem.get('start_word') <=
       @props.current.get('idx') <=
@@ -73,17 +76,16 @@ Elem = React.createClass
       nextProps.current.get('idx') <=
       nextProps.elem.get('end_word')
     )
-    paused = (isPlaying(@props.status) and not isPlaying(nextProps.status))
-    return this_para or next_para or paused
+    just_paused = (isPlaying(@props.status) and not isPlaying(nextProps.status))
+    return this_para or next_para or just_paused
 
   render: ->
     ReactElem = React.DOM[@props.elem.get('node_name')]
 
-    attrs = _.extend @props.elem.get('attrs'),
-      # NOTE: this will override any existing className.
-      # (which currently doesn't matter since `sanitize` cleans them out)
-      # TODO: fix that.
-      className: if @isCurrentPara() then 'current-para'
+    attrs = @props.elem.get('attrs').toJS()
+    if @isCurrentPara()
+      attrs.className ?= ''
+      attrs.className += ' current-para'
 
     words = @props.words
     status = @props.status

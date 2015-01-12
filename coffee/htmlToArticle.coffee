@@ -48,6 +48,9 @@ shortenHyphenatedWord = (word) ->
 
 
 saveWord = (word, parent, after, display=null) ->
+  if not word.trim()
+    return null
+
   display ?= getDisplayMultiplier(word)
   cid = _.uniqueId('w')
   current = false
@@ -64,11 +67,12 @@ textToWords = (textNode, parent) ->
   words = text.replace(/(–|—)/g, ' $1 ').split /\s+/
 
   # remove blanks
+  # (doesn't catch all for reasons that escape me; duplicated in saveWord)
   if not text.trim()
     return null
 
   # code blocks and others get special treatment
-  if parent.get('node_name') in ['pre', 'td', 'th']
+  if parent.get('node_name') in ['pre', 'table']
     return handlePre(text, parent)
 
   # turns the words into an array of Elements
@@ -136,6 +140,14 @@ createElem = (node) ->
   attrs = domAttrsToDict(node.attributes)
   cid = _.uniqueId('p')
 
+  # add attrs for `a` and `table`
+  switch node_name
+    when 'a'
+      attrs.target = '_blank'
+    when 'table'
+      attrs.className ?= ''
+      attrs.className += ' table table-bordered '
+
   Immutable.fromJS {node_name, attrs, cid}
 
 # recursively turn nodes to React objs.
@@ -149,7 +161,9 @@ cleanedHtmlToElem = (node, parent) ->
 
   # `parent` is stored on Words, representing their nearest Block parent.
   if isBlock(elem.get('node_name'))
-    parent = elem
+    # pre and table elements are special, their kids aren't real 0.0
+    unless parent?.get('node_name') in ['pre', 'table']
+      parent = elem
 
   children_list = _.without _.flatten [  # unpacks text words, removes nulls
     cleanedHtmlToElem(child, parent) for child in node.childNodes
