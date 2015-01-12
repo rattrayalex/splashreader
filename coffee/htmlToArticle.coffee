@@ -48,8 +48,9 @@ shortenHyphenatedWord = (word) ->
 
 
 saveWord = (word, parent, after, display=null) ->
-  if not word.trim()
-    return null
+  # turns out this is important in some places to separate eg; links from text
+  # if not word.trim()
+  #   return null
 
   display ?= getDisplayMultiplier(word)
   cid = _.uniqueId('w')

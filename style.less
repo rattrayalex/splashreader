@@ -176,6 +176,13 @@ body {
     margin: 0;
   }
 }
+sub, sup {
+  // bootstrap makes it relative/baseline,
+  // which results in scrolling to top of page.
+  // this is a hack that overwrites their shit.
+  position: null;
+  vertical-align: null;
+}
 
 .icon-bar {
   background-color: @navbar-inverse-toggle-icon-bar-bg;
