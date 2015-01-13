@@ -13,6 +13,7 @@ getElemOrWord = (props) ->
     WordFactory
       word: props.words.get(props.elem)
       status: props.status
+      parent: props.parent
   else if props.elem?
     ElemFactory
       elem: props.elem
@@ -33,20 +34,26 @@ Word = React.createClass
       source: 'click'
 
   scrollToMe: ->
-    scrollToNode @getDOMNode()
+    if @isMounted()
+      scrollToNode @getDOMNode()
 
   isCurrentWord: ->
     @props.word.get('current')
 
+  isLastWordInPara: ->
+    @props.parent.get('end_word') is @props.word.get('idx')
+
   shouldComponentUpdate: (nextProps) ->
     changed = (@props.word isnt nextProps.word)
     paused_here = (nextProps.word.get('current') and
+      isPlaying(@props.status) and
       not isPlaying(nextProps.status))
     return changed or paused_here
 
   render: ->
     if @isCurrentWord() and not isPlaying(@props.status)
-      @scrollToMe() if @isMounted()
+      unless @isLastWordInPara() and @props.status.get('para_change')
+        @scrollToMe()
 
     space = if @props.word.get('after') is ' ' then ' ' else ''
     span
@@ -90,8 +97,9 @@ Elem = React.createClass
     words = @props.words
     status = @props.status
     current = @props.current
+    parent = @props.elem
     children = [
-      getElemOrWord({elem, words, status, current}) \
+      getElemOrWord({elem, words, status, current, parent}) \
       for elem in @props.elem.get('children').toArray()
     ]
 

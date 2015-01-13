@@ -1,6 +1,8 @@
 React = require('react')
 $ = require 'jQuery'
 
+dispatcher = require('../dispatcher')
+
 ArticleView = React.createFactory require('./ArticleView')
 HomePage    = React.createFactory require('./HomePage')
 RsvpDisplay = React.createFactory require('./RsvpDisplay')
@@ -14,6 +16,15 @@ BottomBar   = React.createFactory require('./BottomBar')
 
 Body = React.createClass
   displayName: 'Body'
+
+  _handleRsvpClick: (e) ->
+    console.log 'rsvp-display clicked!'
+    e.preventDefault()
+    e.stopPropagation()
+    dispatcher.dispatch
+      actionType: 'pause'
+      source: 'rsvp-display'
+
 
   getLoadingState: ->
     if @props.page.get('url') and not @props.article.get('elem')
@@ -37,6 +48,7 @@ Body = React.createClass
       ,
       div
         className: "rsvp-outer-wrapper"
+        onClick: @_handleRsvpClick
         ,
         div
           className: "row"
