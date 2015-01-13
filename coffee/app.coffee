@@ -2,7 +2,6 @@ window.React = React = require('react')  # for ReactDevTools
 Immutable = require('immutable')
 Backbone = require('backbone')
 $ = Backbone.$ = require('jquery')  # so Backbone.Router doesnt die
-Hammer = require('hammerjs')
 
 window.store = store = require('./stores/store')
 
@@ -70,11 +69,6 @@ main = ->
         actionType: 'play-pause'
         source: 'space'
       false
-  hammer = new Hammer(document.body)
-  hammer.on 'tap', ->
-    dispatcher.dispatch
-      actionType: 'pause'
-      source: 'tap'
   $(window).blur ->
     dispatcher.dispatch
       actionType: 'pause'
