@@ -1,5 +1,4 @@
 - automatic chrome ext deploy
-- fix mobile play button click
 - investigate mobile WPM (perf?)
 - multiple color schemes
 - prettier sidebar
