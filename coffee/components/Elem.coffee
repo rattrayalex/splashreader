@@ -1,5 +1,5 @@
 React = require 'react/addons'
-_ = require 'underscore'
+_ = require 'lodash'
 
 dispatcher = require('../dispatcher')
 {scrollToNode} = require('../article_utils.coffee')

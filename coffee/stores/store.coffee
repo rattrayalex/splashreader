@@ -1,5 +1,5 @@
 Backbone = require('backbone')
-_ = require('underscore')
+_ = require('lodash')
 Immutable = require('immutable')
 Cursor = require('immutable/contrib/cursor')
 

@@ -1,6 +1,6 @@
 Immutable = require('immutable')
 sanitize = require('sanitize-html')
-_ = require('underscore')
+_ = require('lodash')
 
 dispatcher = require('./dispatcher')
 constants = require('./constants')

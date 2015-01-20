@@ -1,7 +1,8 @@
 window.React = React = require('react')  # for ReactDevTools
 Immutable = require('immutable')
 Backbone = require('backbone')
-$ = Backbone.$ = require('jquery')  # so Backbone.Router doesnt die
+window.$ = $ = Backbone.$ = require('jquery')  # so Backbone.Router doesnt die
+window._ = require('lodash')  # for convenience
 
 window.store = store = require('./stores/store')
 
