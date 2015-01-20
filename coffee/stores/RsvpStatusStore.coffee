@@ -3,6 +3,7 @@ $ = require('jquery')
 _ = require('lodash')
 key = require('keymaster')
 
+Actions = require('../Actions')
 dispatcher = require('../dispatcher')
 constants = require('../constants')
 
@@ -10,6 +11,10 @@ constants = require('../constants')
 class RsvpStatusStore
   constructor: (@store) ->
     dispatcher.tokens.RsvpStatusStore = dispatcher.register(@dispatchCallback)
+
+    Actions.changePage.onValue (url) =>
+      @cursor('playing').update -> false
+      @cursor('menuShown').update -> false
 
   cursor: (path...) ->
     @store.cursor('status').cursor(path)
@@ -41,10 +46,6 @@ class RsvpStatusStore
       when 'toggle-side-menu'
         @cursor('menuShown').update (x) -> !x
         @cursor('playing').update -> false
-
-      when 'page-change'
-        @cursor('playing').update -> false
-        @cursor('menuShown').update -> false
 
       when 'para-change'
         @cursor('para_change').update -> true

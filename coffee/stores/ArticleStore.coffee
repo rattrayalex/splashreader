@@ -5,6 +5,7 @@ $ = require 'jQuery'
 read = require 'node-readability'
 
 dispatcher = require '../dispatcher'
+Actions = require '../Actions'
 constants = require '../constants'
 htmlToArticle = require '../htmlToArticle'
 
@@ -21,6 +22,73 @@ class ArticleStore
   constructor: (@store) ->
     dispatcher.tokens.ArticleStore = dispatcher.register @dispatcherCallback
 
+    Actions.changePage.onValue (url) =>
+      # going back to the home page, or ignoring if invalid URL.
+      if not validator.isURL(url)
+        if not url
+          console.log 'back to home page'
+          @cursor().clear()
+        else if url is "selection"
+          console.log "url is selection, html is", window.SplashReaderExt.html
+          setTimeout ->
+            dispatcher.dispatch
+              actionType: 'process-article'
+              raw_html: window.SplashReaderExt.html
+              title: "[Selected Text]"
+              author: null
+              url: null
+              domain: null
+              date: null
+          , 0
+
+        return
+
+      # remove hashtag and thereafter, can't have two titles
+      url = url.split('#')[0]
+
+      # when you change from one page directly to another
+      if @cursor().get('url') isnt url
+        console.log 'going to clear Article'
+        @cursor().clear()
+        @cursor('url').update -> url
+
+      req_url = "https://readability.com/api/content/v1/parser" +
+        '?token=' + constants.READABILITY_TOKEN +
+        '&url=' + url +
+        '&callback=?' # for JSONP, which allows cross-domain ajax.
+
+      $.getJSON req_url
+        .then (data, status, jqXHR) ->
+          console.log 'got response', data
+          dispatcher.dispatch
+            actionType: 'process-article'
+            raw_html: data.content
+            title: data.title
+            author: data.author
+            url: data.url
+            domain: data.domain
+            date: data.date_published
+
+        .fail (err) ->
+          console.log 'Readability failed, will try read lib:'
+
+          read url, {withCredentials: false}, (error, article, data) ->
+            console.log 'got readability', error, article, data
+
+            if error
+              console.log 'READ FAILED USING TEST DATA', data
+              data = article = require('../example_data')
+
+            dispatcher.dispatch
+              actionType: 'process-article'
+              raw_html: article.content
+              title: article.title
+              author: null
+              url: url
+              domain: data.domain or getUrlDomain(url)
+              date: null
+
+
   cursor: (path...) ->
     @store.cursor('article').cursor(path)
 
@@ -35,75 +103,5 @@ class ArticleStore
 
         elem = htmlToArticle(raw_html)
         @cursor('elem').update -> elem
-
-      when 'page-change'
-        dispatcher.waitFor [dispatcher.tokens.CurrentPageStore]
-
-        url = payload.url
-
-        # going back to the home page, or ignoring if invalid URL.
-        if not validator.isURL(url)
-          if not url
-            console.log 'back to home page'
-            @cursor().clear()
-          else if url is "selection"
-            console.log "url is selection, html is", window.SplashReaderExt.html
-            setTimeout ->
-              dispatcher.dispatch
-                actionType: 'process-article'
-                raw_html: window.SplashReaderExt.html
-                title: "[Selected Text]"
-                author: null
-                url: null
-                domain: null
-                date: null
-            , 0
-
-          return
-
-        # remove hashtag and thereafter, can't have two titles
-        url = url.split('#')[0]
-
-        # when you change from one page directly to another
-        if @cursor().get('url') isnt url
-          console.log 'going to clear Article'
-          @cursor().clear()
-          @cursor('url').update -> url
-
-        req_url = "https://readability.com/api/content/v1/parser" +
-          '?token=' + constants.READABILITY_TOKEN +
-          '&url=' + url +
-          '&callback=?' # for JSONP, which allows cross-domain ajax.
-
-        $.getJSON req_url
-          .then (data, status, jqXHR) ->
-            console.log 'got response', data
-            dispatcher.dispatch
-              actionType: 'process-article'
-              raw_html: data.content
-              title: data.title
-              author: data.author
-              url: data.url
-              domain: data.domain
-              date: data.date_published
-
-          .fail (err) ->
-            console.log 'Readability failed, will try read lib:'
-
-            read url, {withCredentials: false}, (error, article, data) ->
-              console.log 'got readability', error, article, data
-
-              if error
-                console.log 'READ FAILED USING TEST DATA', data
-                data = article = require('../example_data')
-
-              dispatcher.dispatch
-                actionType: 'process-article'
-                raw_html: article.content
-                title: article.title
-                author: null
-                url: url
-                domain: data.domain or getUrlDomain(url)
-                date: null
 
 module.exports = ArticleStore

@@ -1,6 +1,6 @@
 React = require 'react/addons'
 
-dispatcher = require('../dispatcher')
+Actions = require('../Actions')
 
 {div, span, h1, p, form, input, button} = React.DOM
 
@@ -11,10 +11,7 @@ CollectURL = React.createClass
   handleSubmit: (e) ->
     e.preventDefault()
     url = @refs.url.getDOMNode().value
-    dispatcher.dispatch
-      actionType: 'url-requested'
-      url: url
-    false
+    Actions.requestUrl.push url
 
   render: ->
     form

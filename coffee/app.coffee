@@ -10,6 +10,7 @@ ArticleStore = require('./stores/ArticleStore')
 WordStore = require('./stores/WordStore')
 CurrentPageStore = require('./stores/CurrentPageStore')
 RsvpStatusStore = require('./stores/RsvpStatusStore')
+defaults = require('./stores/defaults')
 
 Body = React.createFactory require('./components/Body')
 
@@ -24,8 +25,6 @@ main = ->
     Immutable.fromJS
       article: {}
       words: []
-      page:
-        url: window.location.hash.split('#')[1]
       status:
         playing: false
         para_change: false
@@ -34,14 +33,13 @@ main = ->
 
   new ArticleStore(store)
   new WordStore(store)
-  new CurrentPageStore(store)
   new RsvpStatusStore(store)
 
   RenderedBodyComponent = React.render(
     Body
       article: store.get('article')
       words: store.get('words')
-      page: store.get('page')
+      page: defaults.page
       status: store.get('status')
       current: computed.getCurrentWord(store.get('words'))
     document.body
@@ -53,7 +51,6 @@ main = ->
     RenderedBodyComponent.setProps
       article: updatedStore.get('article')
       words: updatedStore.get('words')
-      page: updatedStore.get('page')
       status: updatedStore.get('status')
       current: current
 
@@ -62,6 +59,9 @@ main = ->
       new Date() - start
       "on word "
       current?.toString()
+
+  CurrentPageStore.onValue (page) ->
+    RenderedBodyComponent.setProps {page}
 
   # install global event listeners
   $(window).keydown (e) ->

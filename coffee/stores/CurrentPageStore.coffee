@@ -1,39 +1,31 @@
+Bacon = require 'baconjs'
 _ = require 'lodash'
 validator = require 'validator'
 
 router = require '../router'
-dispatcher = require '../dispatcher'
+Actions = require '../Actions'
+defaultPage = require('./defaults').page
 
 
-class CurrentPageStore
-  constructor: (@store) ->
-    dispatcher.tokens.CurrentPageStore = dispatcher.register @dispatcherCallback
+CurrentPageStore = Bacon.update defaultPage,
 
-  cursor: (path...) ->
-    @store.cursor('page').cursor(path)
+  Actions.requestUrl, (store, url) ->
+    if not _.contains ['http://', 'https:/'], url[0..6]
+      console.log 'prepending http://'
+      url = 'http://' + url
+    if not validator.isURL(url)
+      console.log 'isnt url', url
+      return store.set 'error', 'Invalid URL'
+    else
+      url = '/' + url
+      router.navigate url,
+        trigger: true
+      return store
 
-  dispatcherCallback: (payload) =>
-    switch payload.actionType
-      when 'url-requested'
-        url = payload.url
-        if not _.contains ['http://', 'https:/'], url[0..6]
-          console.log 'prepending http://'
-          url = 'http://' + url
-        if not validator.isURL(url)
-          console.log 'isnt url', url
-          @cursor('error').update ->
-            'Invalid URL'
-        else
-          url = '/' + url
-          # perform asyncronously b/c dispatch w/in dispatch
-          setTimeout ->
-            router.navigate url,
-              trigger: true
-          , 0
+  Actions.changePage, (store, url) ->
+    console.log 'page changing to', url
+    store.set 'url', url
 
-      when 'page-change'
-        @cursor('url').update -> payload.url
-        console.log 'url changed to ', payload.url
 
 
 module.exports = CurrentPageStore

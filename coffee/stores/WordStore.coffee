@@ -2,6 +2,7 @@ Immutable = require 'immutable'
 Backbone = require 'backbone'
 RsvpStatusStore = require './RsvpStatusStore'
 
+Actions = require '../Actions'
 dispatcher = require '../dispatcher'
 {msPerWord, isPlaying, getCurrentWord} = require './computed'
 
@@ -10,6 +11,10 @@ dispatcher = require '../dispatcher'
 class WordStore
   constructor: (@store) ->
     dispatcher.tokens.WordStore = dispatcher.register @dispatcherCallback
+
+    Actions.changePage.onValue (url) =>
+      if not url
+        @cursor().clear()
 
   cursor: (path...) ->
     @store.cursor('words').cursor(path)
@@ -67,7 +72,6 @@ class WordStore
             window.location = '#'
           , 1000
 
-
         # set first word to be the current word
         payload.words[0] = payload.words[0].set 'current', true
         @cursor().update ->
@@ -76,11 +80,6 @@ class WordStore
 
       when 'process-article'
         @cursor().clear()
-
-      when 'page-change'
-        dispatcher.waitFor [dispatcher.tokens.CurrentPageStore]
-        if not payload.url
-          @cursor().clear()
 
       when 'change-word'
         # ignore `pre`, `td`, etc...
