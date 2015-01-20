@@ -172,9 +172,12 @@ cleanedHtmlToElem = (node, parent) ->
     unless parent?.get('node_name') in ['pre', 'table']
       parent = elem
 
-  children_list = _.without _.flatten [  # unpacks text words, removes nulls
-    cleanedHtmlToElem(child, parent) for child in node.childNodes
-  ], null
+  children_list = _.chain(node.childNodes)
+    .map (child) -> cleanedHtmlToElem(child, parent)
+    .flatten()
+    .without null
+    .value()
+
   children = Immutable.List children_list
   start_word = getStartWord(children)
   end_word = getEndWord(children)
