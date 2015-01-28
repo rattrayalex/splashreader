@@ -1,4 +1,5 @@
 Immutable = require 'immutable'
+Bacon = require 'baconjs'
 validator = require 'validator'
 $ = require 'jQuery'
 
@@ -8,6 +9,7 @@ dispatcher = require '../dispatcher'
 Actions = require '../Actions'
 constants = require '../constants'
 htmlToArticle = require '../htmlToArticle'
+defaultArticle = require('./defaults').article
 
 
 getUrlDomain = (url) ->
@@ -16,92 +18,85 @@ getUrlDomain = (url) ->
   a.href = url
   a.hostname
 
+_sendReadabilityRequests = (url) ->
+  req_url = "https://readability.com/api/content/v1/parser" +
+    '?token=' + constants.READABILITY_TOKEN +
+    '&url=' + url +
+    '&callback=?' # for JSONP, which allows cross-domain ajax.
 
-class ArticleStore
+  $.getJSON req_url
+    .then (data, status, jqXHR) ->
+      console.log 'got response', data
+      Actions.processArticle.push
+        raw_html: data.content
+        title: data.title
+        author: data.author
+        url: data.url
+        domain: data.domain
+        date: data.date_published
 
-  constructor: (@store) ->
-    dispatcher.tokens.ArticleStore = dispatcher.register @dispatcherCallback
+    .fail (err) ->
+      console.log 'Readability failed, will try read lib:'
 
-    Actions.changePage.onValue (url) =>
-      # going back to the home page, or ignoring if invalid URL.
-      if not validator.isURL(url)
-        if not url
-          console.log 'back to home page'
-          @cursor().clear()
-        else if url is "selection"
-          console.log "url is selection, html is", window.SplashReaderExt.html
-          setTimeout ->
-            dispatcher.dispatch
-              actionType: 'process-article'
-              raw_html: window.SplashReaderExt.html
-              title: "[Selected Text]"
-              author: null
-              url: null
-              domain: null
-              date: null
-          , 0
+      read url, {withCredentials: false}, (error, article, data) ->
+        console.log 'got readability', error, article, data
 
-        return
+        if error
+          console.log 'READ FAILED USING TEST DATA', data
+          data = article = require('../example_data')
 
-      # remove hashtag and thereafter, can't have two titles
-      url = url.split('#')[0]
-
-      # when you change from one page directly to another
-      if @cursor().get('url') isnt url
-        console.log 'going to clear Article'
-        @cursor().clear()
-        @cursor('url').update -> url
-
-      req_url = "https://readability.com/api/content/v1/parser" +
-        '?token=' + constants.READABILITY_TOKEN +
-        '&url=' + url +
-        '&callback=?' # for JSONP, which allows cross-domain ajax.
-
-      $.getJSON req_url
-        .then (data, status, jqXHR) ->
-          console.log 'got response', data
-          dispatcher.dispatch
-            actionType: 'process-article'
-            raw_html: data.content
-            title: data.title
-            author: data.author
-            url: data.url
-            domain: data.domain
-            date: data.date_published
-
-        .fail (err) ->
-          console.log 'Readability failed, will try read lib:'
-
-          read url, {withCredentials: false}, (error, article, data) ->
-            console.log 'got readability', error, article, data
-
-            if error
-              console.log 'READ FAILED USING TEST DATA', data
-              data = article = require('../example_data')
-
-            dispatcher.dispatch
-              actionType: 'process-article'
-              raw_html: article.content
-              title: article.title
-              author: null
-              url: url
-              domain: data.domain or getUrlDomain(url)
-              date: null
+        Actions.processArticle.push
+          raw_html: article.content
+          title: article.title
+          author: null
+          url: url
+          domain: data.domain or getUrlDomain(url)
+          date: null
 
 
-  cursor: (path...) ->
-    @store.cursor('article').cursor(path)
+ArticleStore = Bacon.update defaultArticle,
 
-  dispatcherCallback: (payload) =>
-    switch payload.actionType
-      when 'process-article'
-        dispatcher.waitFor([dispatcher.tokens.WordStore])
+  Actions.processArticle, (store, payload) ->
+    {title, author, url, date, domain, raw_html} = payload
+    res = Immutable.fromJS {title, author, url, date, domain, raw_html}
+    Actions.postProcessArticle.push(raw_html)
+    return res
 
-        {title, author, url, date, domain, raw_html} = payload
-        @cursor().update ->
-          Immutable.fromJS {title, author, url, date, domain, raw_html}
+  Actions.changePage, (store, url) ->
+    # going back to the home page, or ignoring if invalid URL.
+    if not validator.isURL(url)
+      if not url
+        console.log 'back to home page'
+        return Immutable.Map()
 
-        elem = htmlToArticle(raw_html)
-        @cursor('elem').update -> elem
+      else if url is "selection"
+        console.log "url is selection, html is", window.SplashReaderExt.html
+        Actions.processArticle.push
+          raw_html: window.SplashReaderExt.html
+          title: "[Selected Text]"
+          author: null
+          url: null
+          domain: null
+          date: null
+
+      return store
+
+    # remove hashtag and thereafter, can't have two titles
+    url = url.split('#')[0]
+
+    # when you change from one page directly to another
+    if store.get('url') isnt url
+      console.log 'going to clear Article'
+      res = store.update -> Immutable.Map()
+      res = res.set 'url', url
+
+      _sendReadabilityRequests(url)
+
+    return res
+
+  Actions.postProcessArticle, (store, raw_html) ->
+    elem = htmlToArticle(raw_html)
+    store.updateIn ['elem'], -> elem
+
 
 module.exports = ArticleStore

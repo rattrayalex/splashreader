@@ -23,24 +23,22 @@ main = ->
   # initial data
   store.cursor().update ->
     Immutable.fromJS
-      article: {}
+      # article: {}
       words: []
-      status:
-        playing: false
-        para_change: false
-        wpm: 500
-        menuShown: false
+      # status:
+      #   playing: false
+      #   para_change: false
+      #   wpm: 500
+      #   menuShown: false
 
-  new ArticleStore(store)
   new WordStore(store)
-  new RsvpStatusStore(store)
 
   RenderedBodyComponent = React.render(
     Body
-      article: store.get('article')
+      article: defaults.article
       words: store.get('words')
       page: defaults.page
-      status: store.get('status')
+      status: defaults.status
       current: computed.getCurrentWord(store.get('words'))
     document.body
   )
@@ -49,9 +47,9 @@ main = ->
 
     current = computed.getCurrentWord(updatedStore.get('words'))
     RenderedBodyComponent.setProps
-      article: updatedStore.get('article')
+      # article: updatedStore.get('article')
       words: updatedStore.get('words')
-      status: updatedStore.get('status')
+      # status: updatedStore.get('status')
       current: current
 
     # perf debugging
@@ -61,7 +59,14 @@ main = ->
       current?.toString()
 
   CurrentPageStore.onValue (page) ->
+    window.page = page
     RenderedBodyComponent.setProps {page}
+  ArticleStore.onValue (article) ->
+    window.article = article
+    RenderedBodyComponent.setProps {article}
+  RsvpStatusStore.onValue (status) ->
+    window.status = status
+    RenderedBodyComponent.setProps {status}
 
   # install global event listeners
   $(window).keydown (e) ->

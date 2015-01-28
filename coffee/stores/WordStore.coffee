@@ -12,6 +12,9 @@ class WordStore
   constructor: (@store) ->
     dispatcher.tokens.WordStore = dispatcher.register @dispatcherCallback
 
+    Actions.processArticle.onValue () =>
+      @cursor().clear()
+
     Actions.changePage.onValue (url) =>
       if not url
         @cursor().clear()
@@ -77,9 +80,6 @@ class WordStore
         @cursor().update ->
           Immutable.List payload.words
         @updateWord 0
-
-      when 'process-article'
-        @cursor().clear()
 
       when 'change-word'
         # ignore `pre`, `td`, etc...
