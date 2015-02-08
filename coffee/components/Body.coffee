@@ -1,7 +1,7 @@
 React = require('react')
 $ = require 'jQuery'
 
-dispatcher = require('../dispatcher')
+Actions = require('../Actions')
 
 ArticleView = React.createFactory require('./ArticleView')
 HomePage    = React.createFactory require('./HomePage')
@@ -21,9 +21,7 @@ Body = React.createClass
     console.log 'rsvp-display clicked!'
     e.preventDefault()
     e.stopPropagation()
-    dispatcher.dispatch
-      actionType: 'pause'
-      source: 'rsvp-display'
+    Actions.pause.push('rsvp-display')
 
 
   getLoadingState: ->

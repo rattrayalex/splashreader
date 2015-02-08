@@ -5,7 +5,6 @@ $ = require 'jQuery'
 
 read = require 'node-readability'
 
-dispatcher = require '../dispatcher'
 Actions = require '../Actions'
 constants = require '../constants'
 htmlToArticle = require '../htmlToArticle'
@@ -62,7 +61,7 @@ ArticleStore = Bacon.update defaultArticle,
     Actions.postProcessArticle.push(raw_html)
     return res
 
-  Actions.changePage, (store, url) ->
+  Actions.pageChange, (store, url) ->
     # going back to the home page, or ignoring if invalid URL.
     if not validator.isURL(url)
       if not url

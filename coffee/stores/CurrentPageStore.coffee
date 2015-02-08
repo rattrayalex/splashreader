@@ -22,7 +22,7 @@ CurrentPageStore = Bacon.update defaultPage,
         trigger: true
       return store
 
-  Actions.changePage, (store, url) ->
+  Actions.pageChange, (store, url) ->
     console.log 'page changing to', url
     store.set 'url', url
 

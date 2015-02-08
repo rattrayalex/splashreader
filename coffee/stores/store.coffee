@@ -28,4 +28,5 @@ class Store
     @_root
 
 
+
 module.exports = new Store({})

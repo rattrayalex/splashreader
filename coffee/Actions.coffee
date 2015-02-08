@@ -12,25 +12,39 @@ Actions =
   ###
   @param [String] url
   ###
-  changePage: new Bacon.Bus()
+  pageChange: new Bacon.Bus()
 
   ###
-  @param [String] raw_html
-  @param [String] title
-  @param [String] author
-  @param [String] url
-  @param [String] domain
-  @param [String] date
+  @param [Object] payload:
+    [String] raw_html
+    [String] title
+    [String] author
+    [String] url
+    [String] domain
+    [String] date
   ###
   processArticle: new Bacon.Bus()
+  ###
+  @param [Immutable.List[Int]] words
+  ###
+  wordlistComplete: new Bacon.Bus()
 
   ###
   @param [String] raw_html
   ###
   postProcessArticle: new Bacon.Bus()
 
+  ###
+  @param [String] source
+  ###
   play: new Bacon.Bus()
+  ###
+  @param [String] source
+  ###
   pause: new Bacon.Bus()
+  ###
+  @param [String] source
+  ###
   togglePlayPause: new Bacon.Bus()
   paraChange: new Bacon.Bus()
   # paraResume: new Bacon.Bus()
@@ -50,10 +64,24 @@ Actions =
 
   toggleSideMenu: new Bacon.Bus()
 
+  ###
+  @param [Int] idx
+  @param [String] source
+  ###
+  wordChange: new Bacon.Bus()
 
 
 Actions.Derived = {}
-Actions.Derived.paraResume = Actions
-  .paraChange.delay(constants.PARA_CHANGE_TIME)
+
+Actions.Derived.play2 = Bacon.merge Actions.play,
+  Actions.togglePlayPause.filter ->
+    !window.store.getIn(['store', 'playing'])
+
+Actions.Derived.pause2 = Bacon.merge Actions.pause,
+  Actions.togglePlayPause.filter ->
+    window.store.getIn(['store', 'playing'])
+
+Actions.Derived.paraResume = Actions.paraChange
+  .delay(constants.PARA_CHANGE_TIME)
 
 module.exports = Actions

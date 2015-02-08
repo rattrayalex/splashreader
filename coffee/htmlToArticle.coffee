@@ -2,7 +2,7 @@ Immutable = require('immutable')
 sanitize = require('sanitize-html')
 _ = require('lodash')
 
-dispatcher = require('./dispatcher')
+Actions = require('./Actions')
 constants = require('./constants')
 {getDisplayMultiplier} = require './rsvp_utils'
 
@@ -188,9 +188,7 @@ cleanedHtmlToElem = (node, parent) ->
 
 saveWordListToWordStore = () ->
   setTimeout ->
-    dispatcher.dispatch
-      actionType: 'wordlist-complete'
-      words: WordList.words
+    Actions.wordlistComplete.push WordList.words
     WordList.words = []
   , 0
 

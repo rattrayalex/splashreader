@@ -5,25 +5,20 @@ _ = require('lodash')
 key = require('keymaster')
 
 Actions = require('../Actions')
-dispatcher = require('../dispatcher')
 constants = require('../constants')
 defaults = require('./defaults')
 
 
 RsvpStatusStore = Bacon.update defaults.status,
 
-  Actions.changePage, (store, url) ->
+  Actions.pageChange, (store, url) ->
     store = store.set 'playing', false
     store.set 'menuShown', false
 
-  Actions.togglePlayPause, (store) ->
-    store = store.updateIn ['playing'], (x) -> !x
-    store.set 'menuShown', false
-
-  Actions.pause, (store) ->
+  Actions.pause2, (store) ->
     store.set 'playing', false
 
-  Actions.play, (store) ->
+  Actions.play2, (store) ->
     store = store.set 'playing', true
     store.set 'menuShown', false
 

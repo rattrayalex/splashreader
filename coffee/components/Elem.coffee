@@ -1,7 +1,7 @@
 React = require 'react/addons'
 _ = require 'lodash'
 
-dispatcher = require('../dispatcher')
+Actions = require('../Actions')
 {scrollToNode} = require('../article_utils.coffee')
 {isPlaying} = require('../stores/computed')
 
@@ -28,10 +28,7 @@ Word = React.createClass
   displayName: 'Word'
 
   handleClick: ->
-    dispatcher.dispatch
-      actionType: 'change-word'
-      idx: @props.word.get('idx')
-      source: 'click'
+    Actions.wordChange.push @props.word.get('idx'), 'click'
 
   scrollToMe: ->
     if @isMounted()

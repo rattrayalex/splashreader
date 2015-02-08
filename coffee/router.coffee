@@ -8,10 +8,10 @@ class SplashRouter extends Backbone.Router
     @route /(.+)/, "url"
 
   home: ->
-    Actions.changePage.push null
+    Actions.pageChange.push null
 
   url: (url) ->
-    Actions.changePage.push url
+    Actions.pageChange.push url
 
 
 module.exports = new SplashRouter()

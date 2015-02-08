@@ -1,5 +1,5 @@
 React = require('react/addons')
-dispatcher = require('../dispatcher')
+Actions = require('../Actions')
 
 {h1, div, li, p, a, span, button, form, em} = React.DOM
 
@@ -12,14 +12,10 @@ WpmWidget = React.createClass
   ]
 
   handleIncreaseWpmClick: ->
-    dispatcher.dispatch
-      actionType: 'increase-wpm'
-      amount: 50
+    Actions.increaseWpm.push 50
 
   handleDecreaseWpmClick: ->
-    dispatcher.dispatch
-      actionType: 'decrease-wpm'
-      amount: 50
+    Actions.decreaseWpm.push 50
 
   render: ->
     div

@@ -2,7 +2,7 @@ React = require('react/addons')
 
 WpmWidget = React.createFactory require('./WpmWidget')
 
-dispatcher = require('../dispatcher')
+Actions = require('../Actions')
 {getPercentDone, getTimeLeft} = require('../stores/computed')
 
 {h1, div, li, p, a, span, button, form, em} = React.DOM
@@ -16,8 +16,7 @@ BottomBar = React.createClass
   ]
 
   handleToggleMenuClick: ->
-    dispatcher.dispatch
-      actionType: 'toggle-side-menu'
+    Actions.toggleSideMenu.push()
 
   render: ->
 
@@ -109,11 +108,7 @@ PlayPauseButton = React.createFactory React.createClass
   handlePlayPauseClick: (e) ->
     e.preventDefault()
     e.stopPropagation()
-
-    dispatcher.dispatch
-      actionType: 'play-pause'
-
-    false
+    Actions.togglePlayPause.push('button-click')
 
   render: ->
 
