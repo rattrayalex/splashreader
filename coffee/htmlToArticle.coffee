@@ -25,9 +25,10 @@ handlePre = (text, parent) ->
   display = 0
   return [saveWord(word, parent, after, display)]
 
-
-# sometimes-people-do-this, which should appear as:
-# sometimes- -people- -do- -this (in the RSVPDisplay)
+###
+sometimes-people-do-this, which should appear as:
+sometimes- -people- -do- -this (in the RSVPDisplay)
+###
 shortenHyphenatedWord = (word) ->
   if word.length < 14
     after = ' '
@@ -157,7 +158,9 @@ createElem = (node) ->
 
   Immutable.fromJS {node_name, attrs, cid}
 
-# recursively turn nodes to React objs.
+###
+recursively turn nodes to React objs.
+###
 cleanedHtmlToElem = (node, parent) ->
 
   # if its text, return the text as list of WordStore indexes.
