@@ -16,15 +16,19 @@ as well as paraChange and end-of-article pause.
 @param [Immutable.List] words the `store` variable in the Bacon.update here...
 @param [Integer] idx the index of the current word.
 ###
-_enqueueWordAfter = (words, idx) ->
-  if not isPlaying(window.store.get('status'))
+_enqueueWordAfter = (words, status, idx) ->
+  if not words.count() or words.count() < idx
+    console.log 'idx is out of bounds.'
+    return
+  if not isPlaying(status)
+    console.log "not playing, wont _enqueueWordAfter"
     return
 
   word = words.get(idx)
   next_word = words.get(idx + 1)
   para_change = next_word?.get('parent') isnt word.get('parent')
   time_to_display = word.get('display') *
-    msPerWord window.store.getIn(['status', 'wpm'])
+    msPerWord status.get('wpm')
 
   if not next_word
     # end of article, just pause.
@@ -41,11 +45,13 @@ _enqueueWordAfter = (words, idx) ->
     if para_change
       Actions.paraChange.push()
 
-    Actions.wordChange.push next_word.get('idx'), 'WordStore._enqueueWordAfter'
+    Actions.wordChange.push
+      idx: next_word.get('idx')
+      source: '_enqueueWordAfter'
   , time_to_display
 
 
-WordStore = Bacon.update defaults.words,
+WordStore = Bacon.update defaults.get('words'),
 
   Actions.wordlistComplete, (store, words) ->
     console.log 'wordlist-complete'
@@ -57,14 +63,16 @@ WordStore = Bacon.update defaults.words,
       return store
 
     # TODO: check if this is needed here.
-    _enqueueWordAfter store, 0
+    # _enqueueWordAfter store, 0
 
     # set first word to be the current word
     words[0] = words[0].set 'current', true
     store.update ->
       Immutable.List words
 
-  Actions.wordChange, (store, idx, source) ->
+  [Actions.wordChange, RsvpStatusStore], (store, payload, status) ->
+    {idx, source} = payload
+
     # ignore `pre`, `td`, etc...
     if store.getIn([idx, 'display']) is 0
       console.log 'changing to display0 word!'
@@ -72,10 +80,12 @@ WordStore = Bacon.update defaults.words,
         return store
       else
         setTimeout ->
-          Actions.wordChange.push idx + 1, 'display0'
+          Actions.wordChange.push
+            idx: idx + 1
+            source: 'display0'
         return store
 
-    _enqueueWordAfter(store, idx)
+    _enqueueWordAfter(store, status, idx)
     store.update (words) ->
       words.map (word) ->
         if word.get('idx') is idx
@@ -85,15 +95,15 @@ WordStore = Bacon.update defaults.words,
         else
           word
 
-  Actions.paraResume, (store) ->
-    _enqueueWordAfter store, getCurrentWord(store).get('idx')
+  [Actions.Derived.paraResume, RsvpStatusStore], (store, source, status) ->
+    _enqueueWordAfter store, status, getCurrentWord(store).get('idx')
     store
 
-  Actions.play2, (store) ->
-    _enqueueWordAfter store, getCurrentWord(store).get('idx') or 0
+  [Actions.play, RsvpStatusStore], (store, source, status) ->
+    _enqueueWordAfter store, status, getCurrentWord(store).get('idx') or 0
     store
 
-  Actions.pause2, (store) ->
+  Actions.pause, (store) ->
     clearTimeout _timeout if _timeout?
     store
 

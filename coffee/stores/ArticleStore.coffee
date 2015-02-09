@@ -8,7 +8,7 @@ read = require 'node-readability'
 Actions = require '../Actions'
 constants = require '../constants'
 htmlToArticle = require '../htmlToArticle'
-defaultArticle = require('./defaults').article
+defaults = require('./defaults')
 
 
 getUrlDomain = (url) ->
@@ -53,7 +53,7 @@ _sendReadabilityRequests = (url) ->
           date: null
 
 
-ArticleStore = Bacon.update defaultArticle,
+ArticleStore = Bacon.update defaults.get('article'),
 
   Actions.processArticle, (store, payload) ->
     {title, author, url, date, domain, raw_html} = payload

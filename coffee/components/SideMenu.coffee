@@ -20,7 +20,7 @@ SideMenu = React.createClass
   handleUrlSubmitted: (e) ->
     e.preventDefault()
     url = @refs.url.getDOMNode().value
-    Actions.urlRequested.push url
+    Actions.requestUrl.push url
 
   detectMenuEverShown: ->
     if @props.status.get('menuShown')

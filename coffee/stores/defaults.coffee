@@ -1,11 +1,11 @@
 Imm = require 'immutable'
 
-module.exports =
-  page: Imm.fromJS
+module.exports = Imm.fromJS
+  page:
     url: window.location.hash.split('#')[1]
-  article: Imm.Map()
-  words: Imm.List()
-  status: Imm.fromJS
+  article: {}
+  words: []
+  status:
     playing: false
     para_change: false
     wpm: 500

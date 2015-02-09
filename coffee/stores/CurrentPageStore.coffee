@@ -4,10 +4,10 @@ validator = require 'validator'
 
 router = require '../router'
 Actions = require '../Actions'
-defaultPage = require('./defaults').page
+defaults = require('./defaults')
 
 
-CurrentPageStore = Bacon.update defaultPage,
+CurrentPageStore = Bacon.update defaults.get('page'),
 
   Actions.requestUrl, (store, url) ->
     if not _.contains ['http://', 'https:/'], url[0..6]
@@ -25,7 +25,6 @@ CurrentPageStore = Bacon.update defaultPage,
   Actions.pageChange, (store, url) ->
     console.log 'page changing to', url
     store.set 'url', url
-
 
 
 module.exports = CurrentPageStore

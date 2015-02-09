@@ -28,7 +28,14 @@ Word = React.createClass
   displayName: 'Word'
 
   handleClick: ->
-    Actions.wordChange.push @props.word.get('idx'), 'click'
+    Actions.wordChange.push
+      idx: @props.word.get('idx')
+      source: 'click'
+
+  maybeScrollToMe: ->
+    if @isCurrentWord() and not isPlaying(@props.status)
+      unless @isLastWordInPara() and @props.status.get('para_change')
+        @scrollToMe()
 
   scrollToMe: ->
     if @isMounted()
@@ -48,9 +55,10 @@ Word = React.createClass
     return changed or paused_here
 
   render: ->
-    if @isCurrentWord() and not isPlaying(@props.status)
-      unless @isLastWordInPara() and @props.status.get('para_change')
-        @scrollToMe()
+    if not @props.word?
+      return span {}
+
+    @maybeScrollToMe()
 
     space = if @props.word.get('after') is ' ' then ' ' else ''
     span

@@ -9,29 +9,37 @@ constants = require('../constants')
 defaults = require('./defaults')
 
 
-RsvpStatusStore = Bacon.update defaults.status,
+RsvpStatusStore = Bacon.update defaults.get('status'),
 
   Actions.pageChange, (store, url) ->
     store = store.set 'playing', false
     store.set 'menuShown', false
 
-  Actions.pause2, (store) ->
+  Actions.pause, (store) ->
     store.set 'playing', false
 
-  Actions.play2, (store) ->
+  Actions.play, (store) ->
     store = store.set 'playing', true
     store.set 'menuShown', false
 
+  # HACK: this should be done with stream composition or w/e
+  Actions.togglePlayPause, (store, source) ->
+    if store.get('playing')
+      Actions.pause.push(source)
+    else
+      Actions.play.push(source)
+    store
+
   Actions.setWpm, (store, wpm) ->
-    store.set 'wpm', payload.wpm
+    store.set 'wpm', wpm
 
-  Actions.increaseWpm, (store, wpm) ->
+  Actions.increaseWpm, (store, amount) ->
     store.updateIn ['wpm'], (x) ->
-      x + payload.amount
+      x + amount
 
-  Actions.decreaseWpm, (store, wpm) ->
+  Actions.decreaseWpm, (store, amount) ->
     store.updateIn ['wpm'], (x) ->
-      x - payload.amount
+      x - amount
 
   Actions.toggleSideMenu, (store) ->
     store = store.updateIn ['menuShown'], (x) -> !x

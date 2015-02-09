@@ -73,14 +73,6 @@ Actions =
 
 Actions.Derived = {}
 
-Actions.Derived.play2 = Bacon.merge Actions.play,
-  Actions.togglePlayPause.filter ->
-    !window.store.getIn(['store', 'playing'])
-
-Actions.Derived.pause2 = Bacon.merge Actions.pause,
-  Actions.togglePlayPause.filter ->
-    window.store.getIn(['store', 'playing'])
-
 Actions.Derived.paraResume = Actions.paraChange
   .delay(constants.PARA_CHANGE_TIME)
 
