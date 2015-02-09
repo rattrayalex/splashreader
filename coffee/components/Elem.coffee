@@ -1,7 +1,7 @@
 React = require 'react/addons'
-_ = require 'underscore'
+_ = require 'lodash'
 
-dispatcher = require('../dispatcher')
+Actions = require('../Actions')
 {scrollToNode} = require('../article_utils.coffee')
 {isPlaying} = require('../stores/computed')
 
@@ -28,10 +28,14 @@ Word = React.createClass
   displayName: 'Word'
 
   handleClick: ->
-    dispatcher.dispatch
-      actionType: 'change-word'
+    Actions.wordChange.push
       idx: @props.word.get('idx')
       source: 'click'
+
+  maybeScrollToMe: ->
+    if @isCurrentWord() and not isPlaying(@props.status)
+      unless @isLastWordInPara() and @props.status.get('para_change')
+        @scrollToMe()
 
   scrollToMe: ->
     if @isMounted()
@@ -51,9 +55,10 @@ Word = React.createClass
     return changed or paused_here
 
   render: ->
-    if @isCurrentWord() and not isPlaying(@props.status)
-      unless @isLastWordInPara() and @props.status.get('para_change')
-        @scrollToMe()
+    if not @props.word?
+      return span {}
+
+    @maybeScrollToMe()
 
     space = if @props.word.get('after') is ' ' then ' ' else ''
     span

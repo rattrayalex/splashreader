@@ -1,124 +1,120 @@
+Bacon = require 'baconjs'
 Immutable = require 'immutable'
 Backbone = require 'backbone'
 RsvpStatusStore = require './RsvpStatusStore'
 
-dispatcher = require '../dispatcher'
+Actions = require '../Actions'
+defaults = require './defaults'
 {msPerWord, isPlaying, getCurrentWord} = require './computed'
 
 
+_timeout = 0
+###
+This sets a timeout to display the next word,
+as well as paraChange and end-of-article pause.
 
-class WordStore
-  constructor: (@store) ->
-    dispatcher.tokens.WordStore = dispatcher.register @dispatcherCallback
+@param [Immutable.List] words the `store` variable in the Bacon.update here...
+@param [Integer] idx the index of the current word.
+###
+_enqueueWordAfter = (words, status, idx) ->
+  if not words.count() or words.count() < idx
+    console.log 'idx is out of bounds.'
+    return
+  if not isPlaying(status)
+    console.log "not playing, wont _enqueueWordAfter"
+    return
 
-  cursor: (path...) ->
-    @store.cursor('words').cursor(path)
+  word = words.get(idx)
+  next_word = words.get(idx + 1)
+  para_change = next_word?.get('parent') isnt word.get('parent')
+  time_to_display = word.get('display') *
+    msPerWord status.get('wpm')
 
-  updateWord: (idx) ->
+  if not next_word
+    # end of article, just pause.
+    return setTimeout ->
+      Actions.pause.push('end-of-article')
+    , time_to_display
 
-    # # code blocks (in `pre`) aren't in WordStore, don't go to them.
-    # if WordStore.indexOfWord(word) < 0
-    #   console.log 'word not in WordStore, ignore', word
-    #   return
+  # HACK: janky prevention of rare double-display bug.
+  clearTimeout _timeout
 
-    word = @store.get('words').get(idx)
+  # display the next word in a bit
+  _timeout = setTimeout ->
+    # change para before next updateWord so it pauses.
+    if para_change
+      Actions.paraChange.push()
 
-    # trigger the next word to update.
-    if isPlaying(@store.get('status'))
-      next_word = @store.get('words').get(idx + 1)
-      para_change = next_word?.get('parent') isnt word.get('parent')
-      time_to_display = word.get('display') *
-        msPerWord @store.getIn(['status', 'wpm'])
-
-      if not next_word
-        # end of article, just pause.
-        return setTimeout ->
-          dispatcher.dispatch
-            actionType: 'pause'
-            source: 'article-end'
-        , time_to_display
-
-      # janky prevention of rare double-display bug.
-      # TODO: prevent that from happening in the first place.
-      clearTimeout @timeout if @timeout?
-
-      # display the next word in a bit
-      @timeout = setTimeout ->
-        # change para before next updateWord so it pauses.
-        if para_change
-          dispatcher.dispatch
-            actionType: 'para-change'
-
-        dispatcher.dispatch
-          actionType: 'change-word'
-          idx: next_word.get('idx')
-          source: 'updateWord'
-
-      , time_to_display
-
-  dispatcherCallback: (payload) =>
-    switch payload.actionType
-
-      when 'wordlist-complete'
-        console.log 'wordlist-complete'
-        if not payload.words.length
-          console.log 'no words in this homepage'
-          return setTimeout ->
-            window.location = '#'
-          , 1000
+    Actions.wordChange.push
+      idx: next_word.get('idx')
+      source: '_enqueueWordAfter'
+  , time_to_display
 
 
-        # set first word to be the current word
-        payload.words[0] = payload.words[0].set 'current', true
-        @cursor().update ->
-          Immutable.List payload.words
-        @updateWord 0
+WordStore = Bacon.update defaults.get('words'),
 
-      when 'process-article'
-        @cursor().clear()
+  Actions.wordlistComplete, (store, words) ->
+    console.log 'wordlist-complete'
+    if not words.length
+      console.log 'no words in this homepage'
+      setTimeout ->
+        window.location = '#'
+      , 1000
+      return store
 
-      when 'page-change'
-        dispatcher.waitFor [dispatcher.tokens.CurrentPageStore]
-        if not payload.url
-          @cursor().clear()
+    # TODO: check if this is needed here.
+    # _enqueueWordAfter store, 0
 
-      when 'change-word'
-        # ignore `pre`, `td`, etc...
-        if @store.getIn(['words', payload.idx, 'display']) is 0
-          console.log 'changing to display0 word!'
-          if payload.source is 'click'
-            return
-          else
-            return setTimeout ->
-              dispatcher.dispatch
-                actionType: 'change-word'
-                idx: payload.idx + 1
-                source: 'display0'
+    # set first word to be the current word
+    words[0] = words[0].set 'current', true
+    store.update ->
+      Immutable.List words
 
-        @cursor().update (words) ->
-          words.map (word) ->
-            if word.get('idx') is payload.idx
-              word.set('current', true)
-            else if word.get('current')
-              word.set('current', false)
-            else
-              word
-        @updateWord(payload.idx)
+  [Actions.wordChange, RsvpStatusStore], (store, payload, status) ->
+    {idx, source} = payload
 
-      when 'para-resume'
-        dispatcher.waitFor [dispatcher.tokens.RsvpStatusStore]
-        @updateWord getCurrentWord(@store.get('words')).get('idx')
+    # ignore `pre`, `td`, etc...
+    if store.getIn([idx, 'display']) is 0
+      console.log 'changing to display0 word!'
+      if source is 'click'
+        return store
+      else
+        setTimeout ->
+          Actions.wordChange.push
+            idx: idx + 1
+            source: 'display0'
+        return store
 
-      when 'play-pause', 'play', 'pause'
-        dispatcher.waitFor [dispatcher.tokens.RsvpStatusStore]
-
-        if @store.get('status').get('playing')
-          @updateWord getCurrentWord(@store.get('words')).get('idx') or 0
+    _enqueueWordAfter(store, status, idx)
+    store.update (words) ->
+      words.map (word) ->
+        if word.get('idx') is idx
+          word.set('current', true)
+        else if word.get('current')
+          word.set('current', false)
         else
-          clearTimeout @timeout if @timeout?
+          word
 
+  [Actions.Derived.paraResume, RsvpStatusStore], (store, source, status) ->
+    _enqueueWordAfter store, status, getCurrentWord(store).get('idx')
+    store
+
+  [Actions.play, RsvpStatusStore], (store, source, status) ->
+    _enqueueWordAfter store, status, getCurrentWord(store).get('idx') or 0
+    store
+
+  Actions.pause, (store) ->
+    clearTimeout _timeout if _timeout?
+    store
+
+  Actions.processArticle, (store) ->
+    store.clear()
+
+  Actions.pageChange, (store, url) ->
+    if not url
+      store.clear()
+    else
+      store
 
 
 module.exports = WordStore
-
-

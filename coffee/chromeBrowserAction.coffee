@@ -43,13 +43,37 @@ chrome.runtime.onInstalled.addListener ->
           chrome.tabs.sendMessage tab.id,
             actionType: "page"
       when SELECTION_MENU_ID
-        console.log "about to insertSplash..."
         insertSplash ->
           chrome.tabs.sendMessage tab.id,
             actionType: "selection"
             selection: info.selectionText
-            , (response) ->
-              console.log "received response in chrome event page: ", response
+
+  chrome.browserAction.onClicked.addListener (tab) ->
+    console.log "browserAction clicked on ", tab
+    insertSplash ->
+      chrome.tabs.sendMessage tab.id,
+        actionType: "page"
+
+  chrome.commands.onCommand.addListener (command) ->
+    console.log "command received", command
+    chrome.tabs.query {active: true, currentWindow: true}, (tabs) ->
+      tab = tabs[0]
+      console.log "using tab", tab, " of tabs", tabs
+
+      switch command
+
+        when "splash_page"
+          console.log "splash_page command"
+          insertSplash ->
+            chrome.tabs.sendMessage tab.id,
+              actionType: "page"
+
+        when "splash_selection"
+          console.log "splash_selection command"
+          insertSplash ->
+            chrome.tabs.sendMessage tab.id,
+              actionType: "selection"
+              selection: "unknown..."
 
 
 # currently unused
@@ -64,14 +88,3 @@ listenForSignal = ->
         insertSplash()
     return
   , false
-
-
-chrome.browserAction.onClicked.addListener ->
-  console.log "browserAction clicked"
-  chrome.tabs.query
-    active: true
-    , (tabs) ->
-      console.log "got tabs", tabs, tabs[0], tabs[0].id
-      insertSplash ->
-        chrome.tabs.sendMessage tabs[0].id,
-          actionType: "page"

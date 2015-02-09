@@ -2,7 +2,7 @@ React = require 'react/addons'
 
 WpmWidget = React.createFactory require('./WpmWidget')
 
-dispatcher = require('../dispatcher')
+Actions = require('../Actions')
 
 {h1, div, span, form, input, button, p, a, em, small, hr} = React.DOM
 
@@ -20,10 +20,7 @@ SideMenu = React.createClass
   handleUrlSubmitted: (e) ->
     e.preventDefault()
     url = @refs.url.getDOMNode().value
-    dispatcher.dispatch
-      actionType: 'url-requested'
-      url: url
-    false
+    Actions.requestUrl.push url
 
   detectMenuEverShown: ->
     if @props.status.get('menuShown')

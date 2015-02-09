@@ -1,8 +1,8 @@
 Immutable = require('immutable')
 sanitize = require('sanitize-html')
-_ = require('underscore')
+_ = require('lodash')
 
-dispatcher = require('./dispatcher')
+Actions = require('./Actions')
 constants = require('./constants')
 {getDisplayMultiplier} = require './rsvp_utils'
 
@@ -25,9 +25,10 @@ handlePre = (text, parent) ->
   display = 0
   return [saveWord(word, parent, after, display)]
 
-
-# sometimes-people-do-this, which should appear as:
-# sometimes- -people- -do- -this (in the RSVPDisplay)
+###
+sometimes-people-do-this, which should appear as:
+sometimes- -people- -do- -this (in the RSVPDisplay)
+###
 shortenHyphenatedWord = (word) ->
   if word.length < 14
     after = ' '
@@ -157,7 +158,9 @@ createElem = (node) ->
 
   Immutable.fromJS {node_name, attrs, cid}
 
-# recursively turn nodes to React objs.
+###
+recursively turn nodes to React objs.
+###
 cleanedHtmlToElem = (node, parent) ->
 
   # if its text, return the text as list of WordStore indexes.
@@ -172,9 +175,12 @@ cleanedHtmlToElem = (node, parent) ->
     unless parent?.get('node_name') in ['pre', 'table']
       parent = elem
 
-  children_list = _.without _.flatten [  # unpacks text words, removes nulls
-    cleanedHtmlToElem(child, parent) for child in node.childNodes
-  ], null
+  children_list = _.chain(node.childNodes)
+    .map (child) -> cleanedHtmlToElem(child, parent)
+    .flatten()
+    .without null
+    .value()
+
   children = Immutable.List children_list
   start_word = getStartWord(children)
   end_word = getEndWord(children)
@@ -185,9 +191,7 @@ cleanedHtmlToElem = (node, parent) ->
 
 saveWordListToWordStore = () ->
   setTimeout ->
-    dispatcher.dispatch
-      actionType: 'wordlist-complete'
-      words: WordList.words
+    Actions.wordlistComplete.push WordList.words
     WordList.words = []
   , 0
 

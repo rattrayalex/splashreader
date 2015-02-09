@@ -1,22 +1,17 @@
 Backbone = require 'backbone'
-dispatcher = require './dispatcher'
+Actions = require './Actions'
 
 class SplashRouter extends Backbone.Router
-
 
   initialize: ->
     @route "", "home"
     @route /(.+)/, "url"
 
   home: ->
-    dispatcher.dispatch
-      actionType: 'page-change'
-      url: null
+    Actions.pageChange.push null
 
   url: (url) ->
-    dispatcher.dispatch
-      actionType: 'page-change'
-      url: url
+    Actions.pageChange.push url
 
 
 module.exports = new SplashRouter()

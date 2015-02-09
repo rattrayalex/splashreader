@@ -1,60 +1,55 @@
 Backbone = require 'backbone'
+Bacon = require 'baconjs'
 $ = require('jquery')
-_ = require('underscore')
+_ = require('lodash')
 key = require('keymaster')
 
-dispatcher = require('../dispatcher')
+Actions = require('../Actions')
 constants = require('../constants')
+defaults = require('./defaults')
 
 
-class RsvpStatusStore
-  constructor: (@store) ->
-    dispatcher.tokens.RsvpStatusStore = dispatcher.register(@dispatchCallback)
+RsvpStatusStore = Bacon.update defaults.get('status'),
 
-  cursor: (path...) ->
-    @store.cursor('status').cursor(path)
+  Actions.pageChange, (store, url) ->
+    store = store.set 'playing', false
+    store.set 'menuShown', false
 
-  dispatchCallback: (payload) =>
-    switch payload.actionType
-      when 'play-pause'
-        @cursor('playing').update (x) -> !x
-        @cursor('menuShown').update -> false
+  Actions.pause, (store) ->
+    store.set 'playing', false
 
-      when 'pause'
-        @cursor('playing').update -> false
+  Actions.play, (store) ->
+    store = store.set 'playing', true
+    store.set 'menuShown', false
 
-      when 'play'
-        @cursor('playing').update -> true
-        @cursor('menuShown').update -> false
+  # HACK: this should be done with stream composition or w/e
+  Actions.togglePlayPause, (store, source) ->
+    if store.get('playing')
+      Actions.pause.push(source)
+    else
+      Actions.play.push(source)
+    store
 
-      when 'set-wpm'
-        @cursor('wpm').update -> payload.wpm
+  Actions.setWpm, (store, wpm) ->
+    store.set 'wpm', wpm
 
-      when 'increase-wpm'
-        @cursor('wpm').update (x) ->
-          x + payload.amount
+  Actions.increaseWpm, (store, amount) ->
+    store.updateIn ['wpm'], (x) ->
+      x + amount
 
-      when 'decrease-wpm'
-        @cursor('wpm').update (x) ->
-          x - payload.amount
+  Actions.decreaseWpm, (store, amount) ->
+    store.updateIn ['wpm'], (x) ->
+      x - amount
 
-      when 'toggle-side-menu'
-        @cursor('menuShown').update (x) -> !x
-        @cursor('playing').update -> false
+  Actions.toggleSideMenu, (store) ->
+    store = store.updateIn ['menuShown'], (x) -> !x
+    store.set 'playing', false
 
-      when 'page-change'
-        @cursor('playing').update -> false
-        @cursor('menuShown').update -> false
+  Actions.paraChange, (store) ->
+    store.set 'para_change', true
 
-      when 'para-change'
-        @cursor('para_change').update -> true
-        setTimeout ->
-          dispatcher.dispatch
-            actionType: 'para-resume'
-        , constants.PARA_CHANGE_TIME
-
-      when 'para-resume'
-        @cursor('para_change').update -> false
+  Actions.Derived.paraResume, (store) ->
+    store.set 'para_change', false
 
 
 module.exports = RsvpStatusStore

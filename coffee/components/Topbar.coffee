@@ -1,7 +1,5 @@
 React = require('react/addons')
 
-dispatcher = require('../dispatcher')
-
 {h1, div, li, p, a, span, button, form, em, img} = React.DOM
 
 

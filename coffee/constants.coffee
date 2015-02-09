@@ -56,6 +56,7 @@ module.exports =
 
   INLINE_ELEMENTS: [
     # from https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elemente
+    'u', # MDN scolds you for using this, but it should be inline.
     'b', 'big', 'i', 'small', 'tt', 'abbr', 'acronym', 'cite', 'code', 'dfn',
     'em', 'kbd', 'strong', 'samp', 'var', 'a', 'bdo', 'br', 'img', 'map',
     'object', 'q', 'script', 'span', 'sub', 'sup', 'button', 'input', 'label',
