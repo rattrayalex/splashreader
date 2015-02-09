@@ -1,15 +1,26 @@
 Bacon = require('baconjs')
-Actions = require('./Actions')
+Actions = require('../Actions')
 defaults = require('./defaults')
 
+ArticleStore = require('./ArticleStore')
+CurrentPageStore = require('./CurrentPageStore')
+RsvpStatusStore = require('./RsvpStatusStore')
+WordStore = require('./WordStore')
+
+
 RootStore = Bacon.update defaults,
-  require('./ArticleStore').skipDuplicates(), (store, article) ->
+
+  ArticleStore.changes(), (store, article) ->
     store.set 'article', article
-  require('./CurrentPageStore').skipDuplicates(), (store, current) ->
-    store.set 'current', current
-  require('./RsvpStatusStore').skipDuplicates(), (store, status) ->
+
+  CurrentPageStore.changes(), (store, page) ->
+    store.set 'page', page
+
+  RsvpStatusStore.changes(), (store, status) ->
     store.set 'status', status
-  require('./WordStore').skipDuplicates(), (store, wordStore) ->
+
+  WordStore.changes(), (store, words) ->
     store.set 'words', words
+
 
 module.exports = RootStore

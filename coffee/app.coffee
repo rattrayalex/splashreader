@@ -13,13 +13,17 @@ computed = require('./stores/computed')
 
 main = ->
 
-  RootStore.onValue (updatedStore) ->
+  RootStore.skipDuplicates().debounce(10).onValue (updatedStore) ->
     start = new Date()
 
     window.store = updatedStore
-    updatedStore.current = computed.getCurrentWord(updatedStore.get('words'))
     React.render(
-      Body(updatedStore)
+      Body
+        article: updatedStore.get('article')
+        words: updatedStore.get('words')
+        page: updatedStore.get('page')
+        status: updatedStore.get('status')
+        current: computed.getCurrentWord(updatedStore.get('words'))
       document.body
     )
 
