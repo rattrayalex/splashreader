@@ -100,8 +100,10 @@ insertIframe = (url, html) ->
 toggleIframe = (iframe) ->
   if iframe.className is 'splashreader-out'
     iframe.className = ''
+    iframe.focus()
   else
     iframe.className = 'splashreader-out'
+    window.focus()
 
 
 listenForEsc = (env) ->
@@ -132,5 +134,3 @@ chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
       main "selection", getSelectionHtml()
 
   sendResponse reply: "thanks!"
-
-
