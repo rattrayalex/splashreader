@@ -16,7 +16,7 @@ main = ->
   RootStore.skipDuplicates().debounce(10).onValue (updatedStore) ->
     start = new Date()
 
-    window.store = updatedStore
+    # window.store = updatedStore
     React.render(
       Body
         article: updatedStore.get('article')
@@ -37,15 +37,18 @@ main = ->
   # install global event listeners
   $(window).keydown (e) ->
     if e.which is 32  # space
-      Actions.togglePlayPause.push('space')
+      Actions.togglePlayPause.push
+        source: 'space'
       false
   $(window).blur ->
-    Actions.pause.push('window-blur')
+    Actions.pause.push
+      source: 'window-blur'
 
   # in chrome ext, no url; instead, use ext-planted vars.
   if window.location.origin is "null"
     console.log 'in Ext, going to go to ', window.SplashReaderExt.url
-    Actions.pageChange.push window.SplashReaderExt.url
+    Actions.pageChange.push
+      url: window.SplashReaderExt.url
   else
     Backbone.history.start
       pushState: false

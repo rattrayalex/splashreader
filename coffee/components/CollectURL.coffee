@@ -11,7 +11,8 @@ CollectURL = React.createClass
   handleSubmit: (e) ->
     e.preventDefault()
     url = @refs.url.getDOMNode().value
-    Actions.requestUrl.push url
+    Actions.requestUrl.push
+      url: url
 
   render: ->
     form

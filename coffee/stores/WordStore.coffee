@@ -8,7 +8,8 @@ defaults = require './defaults'
 {msPerWord, isPlaying, getCurrentWord} = require './computed'
 
 
-_timeout = 0
+_timeout = null
+
 ###
 This sets a timeout to display the next word,
 as well as paraChange and end-of-article pause.
@@ -33,7 +34,8 @@ _enqueueWordAfter = (words, status, idx) ->
   if not next_word
     # end of article, just pause.
     return setTimeout ->
-      Actions.pause.push('end-of-article')
+      Actions.pause.push
+        source: 'end-of-article'
     , time_to_display
 
   # HACK: janky prevention of rare double-display bug.
@@ -53,7 +55,7 @@ _enqueueWordAfter = (words, status, idx) ->
 
 WordStore = Bacon.update defaults.get('words'),
 
-  Actions.wordlistComplete, (store, words) ->
+  Actions.wordlistComplete, (store, {words}) ->
     console.log 'wordlist-complete'
     if not words.length
       console.log 'no words in this homepage'
@@ -70,16 +72,17 @@ WordStore = Bacon.update defaults.get('words'),
     store.update ->
       Immutable.List words
 
-  [Actions.wordChange, RsvpStatusStore], (store, payload, status) ->
-    {idx, source} = payload
+  [Actions.wordChange, RsvpStatusStore], (store, {idx, source}, status) ->
 
     # ignore `pre`, `td`, etc...
     if store.getIn([idx, 'display']) is 0
       console.log 'changing to display0 word!'
       if source is 'click'
         return store
+      # recursively show the first word after this `pre`,
+      # unless its the end of the article.
       else
-        setTimeout ->
+        unless idx >= store.count()
           Actions.wordChange.push
             idx: idx + 1
             source: 'display0'
@@ -95,11 +98,11 @@ WordStore = Bacon.update defaults.get('words'),
         else
           word
 
-  [Actions.Derived.paraResume, RsvpStatusStore], (store, source, status) ->
+  [Actions.Derived.paraResume, RsvpStatusStore], (store, {}, status) ->
     _enqueueWordAfter store, status, getCurrentWord(store).get('idx')
     store
 
-  [Actions.play, RsvpStatusStore], (store, source, status) ->
+  [Actions.play, RsvpStatusStore], (store, {source}, status) ->
     _enqueueWordAfter store, status, getCurrentWord(store).get('idx') or 0
     store
 
@@ -110,7 +113,7 @@ WordStore = Bacon.update defaults.get('words'),
   Actions.processArticle, (store) ->
     store.clear()
 
-  Actions.pageChange, (store, url) ->
+  Actions.pageChange, (store, {url}) ->
     if not url
       store.clear()
     else

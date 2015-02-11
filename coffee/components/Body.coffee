@@ -21,7 +21,8 @@ Body = React.createClass
     console.log 'rsvp-display clicked!'
     e.preventDefault()
     e.stopPropagation()
-    Actions.pause.push('rsvp-display')
+    Actions.pause.push
+      source: 'rsvp-display'
 
 
   getLoadingState: ->

@@ -58,10 +58,11 @@ ArticleStore = Bacon.update defaults.get('article'),
   Actions.processArticle, (store, payload) ->
     {title, author, url, date, domain, raw_html} = payload
     res = Immutable.fromJS {title, author, url, date, domain, raw_html}
-    Actions.postProcessArticle.push(raw_html)
+    Actions.postProcessArticle.push
+      raw_html: raw_html
     return res
 
-  Actions.pageChange, (store, url) ->
+  Actions.pageChange, (store, {url}) ->
     # going back to the home page, or ignoring if invalid URL.
     if not validator.isURL(url)
       if not url
@@ -93,7 +94,7 @@ ArticleStore = Bacon.update defaults.get('article'),
 
     return res
 
-  Actions.postProcessArticle, (store, raw_html) ->
+  Actions.postProcessArticle, (store, {raw_html}) ->
     elem = htmlToArticle(raw_html)
     store.updateIn ['elem'], -> elem
 

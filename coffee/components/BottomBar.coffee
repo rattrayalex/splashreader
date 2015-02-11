@@ -108,7 +108,8 @@ PlayPauseButton = React.createFactory React.createClass
   handlePlayPauseClick: (e) ->
     e.preventDefault()
     e.stopPropagation()
-    Actions.togglePlayPause.push('button-click')
+    Actions.togglePlayPause.push
+      source: 'button-click'
 
   render: ->
 
