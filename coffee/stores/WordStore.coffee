@@ -7,8 +7,8 @@ Actions = require '../Actions'
 defaults = require './defaults'
 {msPerWord, isPlaying, getCurrentWord} = require './computed'
 
-
-_timeout = null
+# evil? global
+_enqueueWordTimeout = null
 
 ###
 This sets a timeout to display the next word,
@@ -39,10 +39,10 @@ _enqueueWordAfter = (words, status, idx) ->
     , time_to_display
 
   # HACK: janky prevention of rare double-display bug.
-  clearTimeout _timeout
+  clearTimeout _enqueueWordTimeout
 
   # display the next word in a bit
-  _timeout = setTimeout ->
+  _enqueueWordTimeout = setTimeout ->
     # change para before next updateWord so it pauses.
     if para_change
       Actions.paraChange.push()
