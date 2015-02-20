@@ -200,6 +200,9 @@ saveWordListToWordStore = () ->
 rawHtmlToArticle = (raw_html) ->
   start = new Date()
 
+  if WordList.words.length
+    throw new Error "Already processing an article."
+
   sanitized = sanitize raw_html,
     # remove empty elements.
     # exclusiveFilter: (frame) -> !frame.text.trim()

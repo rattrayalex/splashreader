@@ -96,7 +96,7 @@ ArticleStore = Bacon.update defaults.get('article'),
 
   Actions.postProcessArticle, (store, {raw_html}) ->
     elem = htmlToArticle(raw_html)
-    store.updateIn ['elem'], -> elem
+    store.set 'elem', elem
 
 
 module.exports = ArticleStore

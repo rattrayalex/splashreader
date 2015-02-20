@@ -1,6 +1,5 @@
 Bacon = require 'baconjs'
 Immutable = require 'immutable'
-Backbone = require 'backbone'
 RsvpStatusStore = require './RsvpStatusStore'
 
 Actions = require '../Actions'

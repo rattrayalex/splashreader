@@ -1,8 +1,4 @@
-Backbone = require 'backbone'
 Bacon = require 'baconjs'
-$ = require('jquery')
-_ = require('lodash')
-key = require('keymaster')
 
 Actions = require('../Actions')
 constants = require('../constants')
