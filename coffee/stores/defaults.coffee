@@ -16,3 +16,4 @@ module.exports = Imm.fromJS
     para_change: false
     wpm: 500
     menuShown: false
+    rsvp_mode: false

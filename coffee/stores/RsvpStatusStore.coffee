@@ -39,6 +39,9 @@ RsvpStatusStore = Bacon.update defaults.get('status'),
     store.updateIn ['wpm'], (x) ->
       x - amount
 
+  Actions.toggleRsvpMode, (store) ->
+    store.updateIn ['rsvp_mode'], (x) -> !x
+
   Actions.toggleSideMenu, (store) ->
     store = store.updateIn ['menuShown'], (x) -> !x
     store.set 'playing', false

@@ -86,6 +86,8 @@ ArticleView = React.createClass
   ]
 
   isShown: ->
+    if not @props.status.get('rsvp_mode')
+      return true
     not computed.isPlaying(@props.status)
 
   render: ->

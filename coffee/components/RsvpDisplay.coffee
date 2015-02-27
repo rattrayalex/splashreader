@@ -16,6 +16,8 @@ RsvpDisplay = React.createClass
   ]
 
   isShown: ->
+    if not @props.status.get('rsvp_mode')
+      return false
     isPlaying(@props.status)
 
   componentDidMount: ->
