@@ -2,7 +2,7 @@ React = require 'react/addons'
 _ = require 'lodash'
 
 Actions = require('../Actions')
-{scrollToNode} = require('../article_utils.coffee')
+{scrollToNodeOnce} = require('../article_utils.coffee')
 {isPlaying} = require('../stores/computed')
 
 {span} = React.DOM
@@ -33,13 +33,16 @@ Word = React.createClass
       source: 'click'
 
   maybeScrollToMe: ->
+    if not @props.status.get('rsvp_mode')
+      return @scrollToMe() if @isCurrentWord()
+
     if @isCurrentWord() and not isPlaying(@props.status)
-      unless @isLastWordInPara() and @props.status.get('para_change')
+      unless @props.status.get('para_change') and @isLastWordInPara()
         @scrollToMe()
 
   scrollToMe: ->
     if @isMounted()
-      scrollToNode @getDOMNode()
+      scrollToNodeOnce @getDOMNode()
 
   isCurrentWord: ->
     @props.word.get('current')
@@ -49,9 +52,11 @@ Word = React.createClass
 
   shouldComponentUpdate: (nextProps) ->
     changed = (@props.word isnt nextProps.word)
-    paused_here = (nextProps.word.get('current') and
+    paused_here = (
+      nextProps.word.get('current') and
       isPlaying(@props.status) and
-      not isPlaying(nextProps.status))
+      not isPlaying(nextProps.status)
+    )
     return changed or paused_here
 
   render: ->
@@ -60,10 +65,14 @@ Word = React.createClass
 
     @maybeScrollToMe()
 
+    className = React.addons.classSet
+      'current-word': @isCurrentWord()
+      'bounceIn': @isCurrentWord() and @props.status.get('rsvp_mode')
+
     space = if @props.word.get('after') is ' ' then ' ' else ''
     span
       onClick: @handleClick
-      className: 'current-word' if @isCurrentWord()
+      className: className
       ,
       @props.word.get('word') + space
 
@@ -75,8 +84,9 @@ Elem = React.createClass
     @props.current.get('parent') is @props.elem.get('cid')
 
   shouldComponentUpdate: (nextProps) ->
-    if isPlaying(nextProps.status)
-      return false
+    if nextProps.status.get('rsvp_mode')
+      if isPlaying(nextProps.status)
+        return false
 
     this_para = (
       @props.elem.get('start_word') <=

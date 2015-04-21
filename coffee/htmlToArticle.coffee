@@ -191,13 +191,17 @@ cleanedHtmlToElem = (node, parent) ->
 
 saveWordListToWordStore = () ->
   setTimeout ->
-    Actions.wordlistComplete.push WordList.words
+    Actions.wordlistComplete.push
+      words: WordList.words
     WordList.words = []
   , 0
 
 
 rawHtmlToArticle = (raw_html) ->
   start = new Date()
+
+  if WordList.words.length
+    throw new Error "Already processing an article."
 
   sanitized = sanitize raw_html,
     # remove empty elements.

@@ -5,21 +5,29 @@ isAnimating = false
 scrollToNodeOnce = (node) ->
   if isAnimating
     return
-  isAnimating = true
 
   offset = (window.innerHeight * .32) + 40
-  # document.body.scrollTop = @getDOMNode().offsetTop - offset
-  $('html,body').animate
-    scrollTop: node.offsetTop - offset
-  , 500, -> isAnimating = false
+  target = Math.round(node.offsetTop - offset)
+  current = $('body').scrollTop() or $('html').scrollTop()  # x-browser
+
+  unless target is current
+    console.log "target isnt current", target, current
+    isAnimating = true
+    $('html,body').animate
+      scrollTop: target
+    , 500, -> isAnimating = false
 
 scrollToNode = (node) ->
   offset = (window.innerHeight * .32) + 40
-  # document.body.scrollTop = @getDOMNode().offsetTop - offset
-  $('html,body').animate
-    scrollTop: node.offsetTop - offset
-  , 500
+  target = node.offsetTop - offset
+  current = $('body').scrollTop() or $('html').scrollTop()  # x-browser
+
+  unless target is current
+    $('html,body').animate
+      scrollTop: target
+    , 500
 
 module.exports = {
-  scrollToNode
+  scrollToNode,
+  scrollToNodeOnce
 }

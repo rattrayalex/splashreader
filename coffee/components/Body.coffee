@@ -21,7 +21,8 @@ Body = React.createClass
     console.log 'rsvp-display clicked!'
     e.preventDefault()
     e.stopPropagation()
-    Actions.pause.push('rsvp-display')
+    Actions.pause.push
+      source: 'rsvp-display'
 
 
   getLoadingState: ->
@@ -33,7 +34,10 @@ Body = React.createClass
       false
 
   getPadding: ->
-    window.innerHeight * .4 - 40
+    if typeof window isnt 'undefined'
+      window.innerHeight * .4 - 40
+    else
+      200
 
   componentDidMount: ->
     $(window).on 'resize', ( => @forceUpdate() )

@@ -4,7 +4,7 @@ WpmWidget = React.createFactory require('./WpmWidget')
 
 Actions = require('../Actions')
 
-{h1, div, span, form, input, button, p, a, em, small, hr} = React.DOM
+{h1, div, span, form, label, input, button, p, a, em, small, hr} = React.DOM
 
 
 SideMenu = React.createClass
@@ -17,10 +17,16 @@ SideMenu = React.createClass
   getInitialState: ->
     menuEverShown: false
 
+  toggleRsvpMode: (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    Actions.toggleRsvpMode.push {}
+
   handleUrlSubmitted: (e) ->
     e.preventDefault()
     url = @refs.url.getDOMNode().value
-    Actions.requestUrl.push url
+    Actions.requestUrl.push
+      url: url
 
   detectMenuEverShown: ->
     if @props.status.get('menuShown')
@@ -79,12 +85,26 @@ SideMenu = React.createClass
           ,
           WpmWidget
             status: @props.status
+        a
+          className: 'list-group-item'
+          onClick: @toggleRsvpMode
+          href: '#'
+          ,
+          input
+            name: 'rsvp-mode-checkbox'
+            id: 'rsvp-mode-checkbox'
+            type: 'checkbox'
+            readOnly: true
+            checked: @props.status.get('rsvp_mode')
+          ' RSVP Mode'
 
         a
           className: 'list-group-item'
           href: '#'
           ,
-          "SplashReader Home"
+          span
+            className: 'glyphicon glyphicon-home'
+          " SplashReader Home"
         div
           className: 'list-group-item'
           ,

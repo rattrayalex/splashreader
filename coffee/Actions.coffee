@@ -62,6 +62,7 @@ Actions =
   ###
   decreaseWpm: new Bacon.Bus()
 
+  toggleRsvpMode: new Bacon.Bus()
   toggleSideMenu: new Bacon.Bus()
 
   ###

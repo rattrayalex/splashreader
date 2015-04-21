@@ -12,10 +12,12 @@ WpmWidget = React.createClass
   ]
 
   handleIncreaseWpmClick: ->
-    Actions.increaseWpm.push 50
+    Actions.increaseWpm.push
+      amount: 50
 
   handleDecreaseWpmClick: ->
-    Actions.decreaseWpm.push 50
+    Actions.decreaseWpm.push
+      amount: 50
 
   render: ->
     div

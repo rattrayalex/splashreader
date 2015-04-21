@@ -9,7 +9,7 @@ defaults = require('./defaults')
 
 CurrentPageStore = Bacon.update defaults.get('page'),
 
-  Actions.requestUrl, (store, url) ->
+  Actions.requestUrl, (store, {url}) ->
     if not _.contains ['http://', 'https:/'], url[0..6]
       console.log 'prepending http://'
       url = 'http://' + url
@@ -22,7 +22,7 @@ CurrentPageStore = Bacon.update defaults.get('page'),
         trigger: true
       return store
 
-  Actions.pageChange, (store, url) ->
+  Actions.pageChange, (store, {url}) ->
     console.log 'page changing to', url
     store.set 'url', url
 
