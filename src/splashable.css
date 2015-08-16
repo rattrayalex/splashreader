@@ -1,0 +1,51 @@
+
+/* TODO: webpack/postcss autoprefixer */
+.splashreader--splashable {
+
+  display: block;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+
+  padding: 10px;
+
+  color: black;
+  font-size: 13px;
+  background: gold;
+
+  border-radius: 3px;
+  border: 1px solid rgba(0,0,0,.2);
+  border-top-color: rgba(0,0,0,.1);
+  border-bottom-color: rgba(0,0,0,.3);
+
+  box-shadow: 0 1px 3px rgba(0,0,0,.1);
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  cursor: pointer;
+}
+
+.splashreader--splashable:hover {
+  border-bottom-width: 2px;
+
+}
+
+.splashreader--splashable:active,
+.splashreader--splashable:visited,
+.splashreader--splashable:focus {
+  outline: none;
+  underline: none;
+  color: black;
+}
+
+.splashreader--splashable:active {
+  border-bottom: none;
+  border-top-color: rgba(0,0,0,.3);
+  box-shadow: 0 1px 4px rgba(0,0,0,.3) inset;
+}
+
+.splashreader--splashable img {
+  display: inline-block;
+}

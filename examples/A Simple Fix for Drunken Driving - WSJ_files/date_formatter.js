@@ -1,0 +1,4 @@
+/**
+ * Copyright 2014-2015 Evernote Corporation. All rights reserved.
+ */
+var EvernoteClipper=function(e){return e.formatDate=function(e){var a=navigator.language||navigator.browserLanguage,t=["Jan","Feb","March","April","May","June","July","Aug","Sept","Oct","Nov","Dec"],r="%day %monthName %year",n="%monthName %day, %year",o="%year年%month月%day日",m="%year年%monthName%day日",h=r,c=e.getDate();return a.match(/en-us/i)?h=n:a.match(/^zh/i)?h=o:a.match(/^ja/i)&&(h=m),h=h.replace(/%day/,c),h=h.replace(/%year/,e.getFullYear()),h=h.replace(/%monthName/,t[e.getMonth()]),h=h.replace(/%month/,e.getMonth()+1)},e}(EvernoteClipper||{});
