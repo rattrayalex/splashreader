@@ -34,10 +34,4 @@ module.exports = {
     return [autoprefixer, csswring]
   },
 
-  resolve: {
-    alias: {
-      'immutable-js': '../node_modules/immutable-js/dist/browser/Immutable.js',
-    },
-  },
-
 }

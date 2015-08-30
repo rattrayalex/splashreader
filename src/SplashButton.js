@@ -8,18 +8,18 @@ import {} from './splashable.css'
 
 // TODO: use ES7
 // @connect(paraSelected)
-class Splashable extends React.Component {
+class SplashButton extends React.Component {
   _handleClick(e) {
     console.log('TODO: implement')
   }
 
   render() {
-    let { paraSelected } = this.props
-    if ( !paraSelected )
+    let { buttonShown } = this.props
+    if ( !buttonShown )
       return null
 
     return (
-      <button className='splashreader--splashable'
+      <button className='SplashButton'
         onClick={this._handleClick}
         >
         <img src={require('../images/icon16.png')} />
@@ -30,10 +30,10 @@ class Splashable extends React.Component {
   }
 }
 
-Splashable.propTypes = {
-  paraSelected: PropTypes.bool.isRequired,
+SplashButton.propTypes = {
+  buttonShown: PropTypes.bool.isRequired,
 }
 
 // TODO: use as decorator in ES7
-export default connect(paraSelected)(Splashable)
+export default connect(paraSelected)(SplashButton)
 

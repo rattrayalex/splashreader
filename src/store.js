@@ -1,16 +1,25 @@
 import { createStore } from 'redux'
-import Immutable from 'immutable-js'
+import Immutable from 'immutable'
+
+import actions from './actions'
 
 const initialState = Immutable.Map({
-  paraSelected: false,
+  buttonShown: true,
+  isPlaying: false,
 })
+
 
 const store = createStore( (state=initialState, action) => {
   switch (action.type) {
-    case 'PARA_SELECTED':
-      return state.set('paraSelected', true)
-    case 'PARA_DESELECTED':
-      return state.set('paraSelected', false)
+
+    case actions.WORD_SELECTED:
+      return state.set('buttonShown', true)
+    case actions.WORD_DESELECTED:
+      return state.set('buttonShown', false)
+
+    case actions.PLAY_PAUSE:
+      return state.update('isPlaying', (isPlaying) => !isPlaying )
+
     default:
       return state
   }

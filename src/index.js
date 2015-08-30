@@ -1,90 +1,84 @@
+import "babel-core/polyfill" // for Object.assign
 import key from 'keymaster'
 import React from 'react'
 import { Provider } from 'react-redux'
 
+import rangy from 'rangy/lib/rangy-textrange'
+
 import store from './store'
-import Splashable from './Splashable'
-import { getSelectedPara } from './selection'
+import actions from './actions'
+import SplashButton from './SplashButton'
 
-
-console.log('Hello from SplashReader')
+// TODO: move elsewhere...
+// const word_regex = /[a-z0-9]+('[a-z0-9]+)*/gi
+const word_options = {
+  wordOptions: {
+    wordRegex: /[^–—\s]+/gi
+    // this is really a phrase...
+    // TODO: investigate this idea...
+    // wordRegex: /.+(?:\s+['"“\[(]|[.,!?'"”:;\])]\s+|–|—|\r|\n)/gi
+  }
+}
 
 
 class SplashReader {
-  init() {
-    const splashable_wrapper = document.createElement('div')
-    splashable_wrapper.setAttribute('id', 'splashreader--splashable-wrapper')
-    document.body.appendChild(splashable_wrapper)
+  constructor() {
+    this.wrapper = this.insertWrapper()
 
-    console.log('store is', store, store.getState())
+    this.listenForSpace()
+    this.listenForPlay()
+
     React.render(
       <Provider store={store}>
-        {() => <Splashable />}
+        {() => <SplashButton />}
       </Provider>,
-      splashable_wrapper
+      this.wrapper
     )
-
-    // unsupported in Firefox etc
-    // ref: http://stackoverflow.com/a/9035122/1048433
-    document.addEventListener('selectionchange', this.handleSelection)
+    return this
   }
-
-  handleSelection(e) {
-    key.unbind('space') // stop listening to old events
-
-    let sel = window.getSelection()
-    let para = getSelectedPara(sel)
-    if ( para ) {
-      store.dispatch({type: 'PARA_SELECTED'})
-      key('space', (e, handler) => {
-        e.preventDefault()
-        splashPara(para)
-        return false
-      })
-    } else {
-      store.dispatch({type: 'PARA_DESELECTED'})
-    }
+  insertWrapper() {
+    const wrapper = document.createElement('div')
+    wrapper.setAttribute('id', 'splashreader-wrapper')
+    document.body.appendChild(wrapper)
+    return wrapper
   }
-
-}
-
-const splashReader = new SplashReader()
-splashReader.init()
-
-
-function splashPara(para) {
-  if ( !para )
-    return
-
-  // TODO: actually the stuff
-  para.style.backgroundColor = 'gold'
-
-  let next_para = getNextSimilarSibling(para)
-  console.log('got next para', next_para)
-  setTimeout(splashPara.bind(null, next_para), 1000)
-}
-
-
-
-// null when last elem
-function getNextSimilarSibling(para) {
-
-  let next_elem = para
-  while (true) {
-    next_elem = next_elem.nextElementSibling
-    if ( !next_elem ) {
-      // end of the line; null
-      break
-    }
-    if ( elemsAreSimilar(next_elem, para) ) {
-      break
-    }
+  listenForSpace() {
+    key('space', (e) => {
+      e.preventDefault()
+      store.dispatch({ type: actions.PLAY_PAUSE })
+      return false
+    })
   }
+  listenForPlay() {
+    store.subscribe(this.splash.bind(this, null))
+  }
+  // TODO: move elsewhere
+  splash(range=null) {
+    if ( !store.getState().get('isPlaying') ) {
+      return
+    }
 
-  return next_elem
+    let sel = rangy.getSelection()
+
+    // initialize
+    if ( !range ) {
+      range = sel.getRangeAt(0)
+      range.move("word", -1, word_options)
+    }
+
+    // set range to next word
+    range.moveStart("word", 1, word_options)
+    range.moveEnd("word", 1, word_options)
+    range.expand('word', Object.assign(word_options, {
+      trim: true
+    }))
+
+    // highlight it
+    sel.setSingleRange(range)
+
+    setTimeout(this.splash.bind(this, range), 500)
+  }
 }
 
-function elemsAreSimilar(elemA, elemB) {
-  // TODO: be fancier
-  return ( elemA.nodeName === elemB.nodeName )
-}
+
+const Reader = new SplashReader()

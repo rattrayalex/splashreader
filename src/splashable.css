@@ -1,6 +1,6 @@
 
 /* TODO: webpack/postcss autoprefixer */
-.splashreader--splashable {
+.SplashButton {
 
   display: block;
   position: fixed;
@@ -27,25 +27,25 @@
   cursor: pointer;
 }
 
-.splashreader--splashable:hover {
+.SplashButton:hover {
   border-bottom-width: 2px;
 
 }
 
-.splashreader--splashable:active,
-.splashreader--splashable:visited,
-.splashreader--splashable:focus {
+.SplashButton:active,
+.SplashButton:visited,
+.SplashButton:focus {
   outline: none;
   underline: none;
   color: black;
 }
 
-.splashreader--splashable:active {
+.SplashButton:active {
   border-bottom: none;
   border-top-color: rgba(0,0,0,.3);
   box-shadow: 0 1px 4px rgba(0,0,0,.3) inset;
 }
 
-.splashreader--splashable img {
+.SplashButton img {
   display: inline-block;
 }
