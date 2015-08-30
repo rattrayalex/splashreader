@@ -35,6 +35,7 @@
     "react": "^0.13.3",
     "react-redux": "^0.8.2",
     "redux": "^1.0.1",
+    "redux-actions": "^0.8.0",
     "reselect": "0.0.2",
     "seamless-immutable": "^3.0.0"
   }

@@ -6,7 +6,6 @@ import { Provider } from 'react-redux'
 import rangy from 'rangy/lib/rangy-textrange'
 
 import store from './store'
-import actions from './actions'
 import SplashButton from './SplashButton'
 
 // TODO: move elsewhere...
@@ -45,7 +44,7 @@ class SplashReader {
   listenForSpace() {
     key('space', (e) => {
       e.preventDefault()
-      store.dispatch({ type: actions.PLAY_PAUSE })
+      store.actions.playPause()
       return false
     })
   }
