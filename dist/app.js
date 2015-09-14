@@ -38522,64 +38522,18 @@
 
 	var _store2 = _interopRequireDefault(_store);
 
-	__webpack_require__(363);
+	var _FloatingHoverButtons = __webpack_require__(363);
 
-	var DEFAULT_WPM_STEP = 50;
+	var _FloatingHoverButtons2 = _interopRequireDefault(_FloatingHoverButtons);
 
-	var FloatingHoverButtons = (function (_React$Component) {
-	  _inherits(FloatingHoverButtons, _React$Component);
+	var _WpmButtons = __webpack_require__(373);
 
-	  function FloatingHoverButtons() {
-	    _classCallCheck(this, FloatingHoverButtons);
+	var _WpmButtons2 = _interopRequireDefault(_WpmButtons);
 
-	    _get(Object.getPrototypeOf(FloatingHoverButtons.prototype), 'constructor', this).call(this);
-	    this.state = {
-	      hovered: false
-	    };
-	  }
+	__webpack_require__(364);
 
-	  _createClass(FloatingHoverButtons, [{
-	    key: '_handleMouseEnter',
-	    value: function _handleMouseEnter(e) {
-	      this.setState({ hovered: true });
-	    }
-	  }, {
-	    key: '_handleMouseLeave',
-	    value: function _handleMouseLeave(e) {
-	      this.setState({ hovered: false });
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var primary = _props.primary;
-	      var children = _props.children;
-	      var shown = _props.shown;
-	      var hovered = this.state.hovered;
-
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'floating-hover-buttons-container',
-	          onMouseEnter: this._handleMouseEnter.bind(this),
-	          onMouseLeave: this._handleMouseLeave.bind(this)
-	        },
-	        hovered || shown ? { children: children } : null,
-	        primary
-	      );
-	    }
-	  }]);
-
-	  return FloatingHoverButtons;
-	})(_react2['default'].Component);
-
-	FloatingHoverButtons.propTypes = {
-	  children: _react.PropTypes.array.isRequired,
-	  primary: _react.PropTypes.element.isRequired,
-	  shown: _react.PropTypes.bool
-	};
-
-	var SplashButton = (function (_React$Component2) {
-	  _inherits(SplashButton, _React$Component2);
+	var SplashButton = (function (_React$Component) {
+	  _inherits(SplashButton, _React$Component);
 
 	  function SplashButton() {
 	    _classCallCheck(this, SplashButton);
@@ -38588,87 +38542,45 @@
 	  }
 
 	  _createClass(SplashButton, [{
-	    key: '_handleHover',
-	    value: function _handleHover(e) {
-	      this.setState({ hovered: true });
-	    }
-	  }, {
 	    key: '_handleClick',
 	    value: function _handleClick(e) {
 	      _store2['default'].actions.playPause();
 	    }
 	  }, {
-	    key: '_decreaseWpm',
-	    value: function _decreaseWpm(e) {
-	      _store2['default'].actions.decreaseWpm({ amount: DEFAULT_WPM_STEP });
-	    }
-	  }, {
-	    key: '_increaseWpm',
-	    value: function _increaseWpm(e) {
-	      _store2['default'].actions.increaseWpm({ amount: DEFAULT_WPM_STEP });
-	    }
-	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _props2 = this.props;
-	      var buttonShown = _props2.buttonShown;
-	      var isPlaying = _props2.isPlaying;
-	      var wpm = _props2.wpm;
+	      var _props = this.props;
+	      var buttonShown = _props.buttonShown;
+	      var isPlaying = _props.isPlaying;
+	      var wpm = _props.wpm;
 
-	      if (!buttonShown) return null;
+	      if (!buttonShown) {
+	        return null;
+	      }
 
-	      return _react2['default'].createElement(
-	        FloatingHoverButtons,
-	        { shown: isPlaying,
-	          primary: _react2['default'].createElement(
-	            'button',
-	            { className: (0, _classnames2['default'])('SplashButton', {
-	                'active': isPlaying
-	              }),
-	              onClick: this._handleClick,
-	              title: 'SplashRead (spacebar)'
-	            },
-	            _react2['default'].createElement(
-	              'span',
-	              { className: 'play-button' },
-	              '▶'
-	            )
-	          )
+	      var play_pause_class = (0, _classnames2['default'])({
+	        'SplashButton': true,
+	        'active': isPlaying
+	      });
+	      var play_pause_button = _react2['default'].createElement(
+	        'button',
+	        { className: play_pause_class,
+	          onClick: this._handleClick,
+	          title: 'SplashRead (spacebar)'
 	        },
 	        _react2['default'].createElement(
-	          'button',
-	          { className: 'smaller-hover-button',
-	            onClick: this._increaseWpm,
-	            title: 'Increase Reading Speed',
-	            style: { marginBottom: 10 },
-	            key: 'increase-button'
-	          },
-	          _react2['default'].createElement(
-	            'span',
-	            null,
-	            '▲'
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'small',
-	          { style: { marginBottom: 10 }, key: 'wpm' },
-	          wpm,
-	          ' wpm'
-	        ),
-	        _react2['default'].createElement(
-	          'button',
-	          { className: 'smaller-hover-button',
-	            onClick: this._decreaseWpm,
-	            title: 'Decrease Reading Speed',
-	            style: { marginBottom: 20 },
-	            key: 'decrease-button'
-	          },
-	          _react2['default'].createElement(
-	            'span',
-	            null,
-	            '▼'
-	          )
+	          'span',
+	          { className: 'play-button' },
+	          '▶'
 	        )
+	      );
+
+	      return _react2['default'].createElement(
+	        _FloatingHoverButtons2['default'],
+	        { shown: isPlaying,
+	          primary: play_pause_button
+	        },
+	        _react2['default'].createElement(_WpmButtons2['default'], { wpm: wpm })
 	      );
 	    }
 	  }]);
@@ -38744,13 +38656,92 @@
 /* 363 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(169);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var FloatingHoverButtons = (function (_React$Component) {
+	  _inherits(FloatingHoverButtons, _React$Component);
+
+	  function FloatingHoverButtons() {
+	    _classCallCheck(this, FloatingHoverButtons);
+
+	    _get(Object.getPrototypeOf(FloatingHoverButtons.prototype), 'constructor', this).call(this);
+	    this.state = {
+	      hovered: false
+	    };
+	  }
+
+	  _createClass(FloatingHoverButtons, [{
+	    key: '_handleMouseEnter',
+	    value: function _handleMouseEnter(e) {
+	      this.setState({ hovered: true });
+	    }
+	  }, {
+	    key: '_handleMouseLeave',
+	    value: function _handleMouseLeave(e) {
+	      this.setState({ hovered: false });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var primary = _props.primary;
+	      var children = _props.children;
+	      var shown = _props.shown;
+	      var hovered = this.state.hovered;
+
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'floating-hover-buttons-container',
+	          onMouseEnter: this._handleMouseEnter.bind(this),
+	          onMouseLeave: this._handleMouseLeave.bind(this)
+	        },
+	        hovered || shown ? { children: children } : null,
+	        primary
+	      );
+	    }
+	  }]);
+
+	  return FloatingHoverButtons;
+	})(_react2['default'].Component);
+
+	FloatingHoverButtons.propTypes = {
+	  children: _react.PropTypes.array.isRequired,
+	  primary: _react.PropTypes.element.isRequired,
+	  shown: _react.PropTypes.bool
+	};
+
+	exports['default'] = FloatingHoverButtons;
+	module.exports = exports['default'];
+
+/***/ },
+/* 364 */
+/***/ function(module, exports, __webpack_require__) {
+
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(364);
+	var content = __webpack_require__(365);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(366)(content, {});
+	var update = __webpack_require__(367)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -38767,10 +38758,10 @@
 	}
 
 /***/ },
-/* 364 */
+/* 365 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(365)();
+	exports = module.exports = __webpack_require__(366)();
 	// imports
 
 
@@ -38781,7 +38772,7 @@
 
 
 /***/ },
-/* 365 */
+/* 366 */
 /***/ function(module, exports) {
 
 	/*
@@ -38837,7 +38828,7 @@
 
 
 /***/ },
-/* 366 */
+/* 367 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -39062,7 +39053,6 @@
 
 
 /***/ },
-/* 367 */,
 /* 368 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -39417,7 +39407,7 @@
 	var content = __webpack_require__(372);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(366)(content, {});
+	var update = __webpack_require__(367)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -39437,7 +39427,7 @@
 /* 372 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(365)();
+	exports = module.exports = __webpack_require__(366)();
 	// imports
 
 
@@ -39446,6 +39436,107 @@
 
 	// exports
 
+
+/***/ },
+/* 373 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(169);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var DEFAULT_WPM_STEP = 50;
+
+	var WpmButtons = (function (_React$Component) {
+	  _inherits(WpmButtons, _React$Component);
+
+	  function WpmButtons() {
+	    _classCallCheck(this, WpmButtons);
+
+	    _get(Object.getPrototypeOf(WpmButtons.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(WpmButtons, [{
+	    key: '_decreaseWpm',
+	    value: function _decreaseWpm(e) {
+	      store.actions.decreaseWpm({ amount: DEFAULT_WPM_STEP });
+	    }
+	  }, {
+	    key: '_increaseWpm',
+	    value: function _increaseWpm(e) {
+	      store.actions.increaseWpm({ amount: DEFAULT_WPM_STEP });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var wpm = this.props.wpm;
+
+	      return _react2['default'].createElement(
+	        'center',
+	        null,
+	        _react2['default'].createElement(
+	          'button',
+	          { className: 'smaller-hover-button',
+	            onClick: this._increaseWpm,
+	            title: 'Increase Reading Speed'
+	          },
+	          _react2['default'].createElement(
+	            'span',
+	            null,
+	            '▲'
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { style: { marginBottom: 10, marginTop: -10 } },
+	          _react2['default'].createElement(
+	            'small',
+	            null,
+	            wpm,
+	            ' wpm'
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'button',
+	          { className: 'smaller-hover-button',
+	            onClick: this._decreaseWpm,
+	            title: 'Decrease Reading Speed'
+	          },
+	          _react2['default'].createElement(
+	            'span',
+	            null,
+	            '▼'
+	          )
+	        )
+	      );
+	    }
+	  }]);
+
+	  return WpmButtons;
+	})(_react2['default'].Component);
+
+	exports['default'] = WpmButtons;
+
+	WpmButtons.propTypes = {
+	  wpm: _react2['default'].PropTypes.number.isRequired
+	};
+	module.exports = exports['default'];
 
 /***/ }
 /******/ ]);
