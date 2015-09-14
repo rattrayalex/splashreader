@@ -15,7 +15,37 @@
 }
 
 .Rsvp .word {
-  font-size: 28px;
+  font-size: 32pt;
   font-family: Georgia;
   color: black;
+}
+
+.rsvp-wrapper {
+  width: 100%;
+  margin: 60px;
+  position: relative;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+.rsvp-wrapper-inner {
+  padding: 20px;
+  word-wrap: break-word;
+}
+.rsvp-before-middle {
+  /* for single-letter word*/
+  white-space: pre;
+}
+.rsvp-middle {
+  color: #BF360C;
+}
+.rsvp-after-middle {
+}
+.rsvp-notch-top,
+.rsvp-notch-bottom {
+  position: absolute;
+  height: 15px;
+  border-right: 1px solid #ccc;
+}
+.rsvp-notch-bottom {
+  bottom: 0px;
 }
