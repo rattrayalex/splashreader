@@ -80,6 +80,8 @@
 
 	var _SplashApp2 = _interopRequireDefault(_SplashApp);
 
+	var _rsvp_utils = __webpack_require__(369);
+
 	// TODO: move elsewhere...
 	var word_options = {
 	  wordOptions: {
@@ -182,7 +184,8 @@
 	      _store2['default'].actions.changeWord({ word: word });
 
 	      // move to the next word in a sec
-	      setTimeout(this.splash.bind(this, range), 500);
+	      var wpm = (0, _selectors.wpmSelector)(_store2['default'].getState());
+	      setTimeout(this.splash.bind(this, range), (0, _rsvp_utils.getTimeToDisplay)(word, wpm));
 	    }
 	  }]);
 
@@ -32461,10 +32464,11 @@
 
 	var _immutable2 = _interopRequireDefault(_immutable);
 
-	var initialState = _immutable2['default'].Map({
+	var initialState = _immutable2['default'].fromJS({
 	  buttonShown: true,
 	  isPlaying: false,
-	  currentWord: ''
+	  currentWord: '',
+	  wpm: 300
 	});
 
 	var actionHandlers = {
@@ -32499,6 +32503,25 @@
 	  changeWord: function changeWord(state, _ref6) {
 	    var payload = _ref6.payload;
 	    return state.set('currentWord', payload.word);
+	  },
+
+	  setWpm: function setWpm(state, _ref7) {
+	    var payload = _ref7.payload;
+	    return state.set('wpm', payload.wpm);
+	  },
+
+	  increaseWpm: function increaseWpm(state, _ref8) {
+	    var payload = _ref8.payload;
+	    return state.update('wpm', function (wpm) {
+	      return Math.min(3000, wpm + payload.amount);
+	    });
+	  },
+
+	  decreaseWpm: function decreaseWpm(state, _ref9) {
+	    var payload = _ref9.payload;
+	    return state.update('wpm', function (wpm) {
+	      return Math.max(0, wpm - payload.amount);
+	    });
 	  }
 
 	};
@@ -38312,30 +38335,25 @@
 
 	var _reselect = __webpack_require__(359);
 
-	var currentWordSelector = (0, _reselect.createSelector)([function (state) {
-	  return state.get('currentWord');
-	}], function (currentWord) {
-	  return currentWord;
-	});
-
-	exports.currentWordSelector = currentWordSelector;
-	var isPlayingSelector = (0, _reselect.createSelector)([function (state) {
-	  return state.get('isPlaying');
-	}], function (isPlaying) {
-	  return isPlaying;
-	});
-
-	exports.isPlayingSelector = isPlayingSelector;
-	var buttonShownSelector = (0, _reselect.createSelector)([function (state) {
+	var buttonShownSelector = function buttonShownSelector(state) {
 	  return state.get('buttonShown');
-	}], function (buttonShown) {
-	  return buttonShown;
-	});
-
+	};
 	exports.buttonShownSelector = buttonShownSelector;
-	// overcomplicated for sake of practice
-	var allSelector = (0, _reselect.createSelector)([buttonShownSelector, isPlayingSelector, currentWordSelector], function (buttonShown, isPlaying, currentWord) {
-	  return { buttonShown: buttonShown, isPlaying: isPlaying, currentWord: currentWord };
+	var isPlayingSelector = function isPlayingSelector(state) {
+	  return state.get('isPlaying');
+	};
+	exports.isPlayingSelector = isPlayingSelector;
+	var currentWordSelector = function currentWordSelector(state) {
+	  return state.get('currentWord');
+	};
+	exports.currentWordSelector = currentWordSelector;
+	var wpmSelector = function wpmSelector(state) {
+	  return state.get('wpm');
+	};
+
+	exports.wpmSelector = wpmSelector;
+	var allSelector = (0, _reselect.createSelector)([buttonShownSelector, isPlayingSelector, currentWordSelector, wpmSelector], function (buttonShown, isPlaying, currentWord, wpm) {
+	  return { buttonShown: buttonShown, isPlaying: isPlaying, currentWord: currentWord, wpm: wpm };
 	});
 	exports.allSelector = allSelector;
 
@@ -38449,12 +38467,12 @@
 	  _createClass(SplashApp, [{
 	    key: 'render',
 	    value: function render() {
-	      return _react2['default'].createElement(
-	        'div',
-	        null,
-	        _react2['default'].createElement(_SplashButton2['default'], this.props),
-	        _react2['default'].createElement(_Rsvp2['default'], this.props)
-	      );
+	      var isPlaying = this.props.isPlaying;
+
+	      if (isPlaying) {
+	        return _react2['default'].createElement(_Rsvp2['default'], this.props);
+	      }
+	      return _react2['default'].createElement(_SplashButton2['default'], this.props);
 	    }
 	  }]);
 
@@ -38464,7 +38482,8 @@
 	SplashApp.propTypes = {
 	  currentWord: _react.PropTypes.string.isRequired,
 	  buttonShown: _react.PropTypes.bool.isRequired,
-	  isPlaying: _react.PropTypes.bool.isRequired
+	  isPlaying: _react.PropTypes.bool.isRequired,
+	  wpm: _react.PropTypes.number.isRequired
 	};
 
 	// TODO: use as decorator in ES7
@@ -38499,10 +38518,68 @@
 
 	var _classnames2 = _interopRequireDefault(_classnames);
 
+	var _store = __webpack_require__(344);
+
+	var _store2 = _interopRequireDefault(_store);
+
 	__webpack_require__(363);
 
-	var SplashButton = (function (_React$Component) {
-	  _inherits(SplashButton, _React$Component);
+	var DEFAULT_WPM_STEP = 50;
+
+	var FloatingHoverButtons = (function (_React$Component) {
+	  _inherits(FloatingHoverButtons, _React$Component);
+
+	  function FloatingHoverButtons() {
+	    _classCallCheck(this, FloatingHoverButtons);
+
+	    _get(Object.getPrototypeOf(FloatingHoverButtons.prototype), 'constructor', this).call(this);
+	    this.state = {
+	      hovered: false
+	    };
+	  }
+
+	  _createClass(FloatingHoverButtons, [{
+	    key: '_handleMouseEnter',
+	    value: function _handleMouseEnter(e) {
+	      this.setState({ hovered: true });
+	    }
+	  }, {
+	    key: '_handleMouseLeave',
+	    value: function _handleMouseLeave(e) {
+	      this.setState({ hovered: false });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var primary = _props.primary;
+	      var children = _props.children;
+	      var shown = _props.shown;
+	      var hovered = this.state.hovered;
+
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'floating-hover-buttons-container',
+	          onMouseEnter: this._handleMouseEnter.bind(this),
+	          onMouseLeave: this._handleMouseLeave.bind(this)
+	        },
+	        hovered || shown ? { children: children } : null,
+	        primary
+	      );
+	    }
+	  }]);
+
+	  return FloatingHoverButtons;
+	})(_react2['default'].Component);
+
+	FloatingHoverButtons.propTypes = {
+	  children: _react.PropTypes.array.isRequired,
+	  primary: _react.PropTypes.element.isRequired,
+	  shown: _react.PropTypes.bool
+	};
+
+	var SplashButton = (function (_React$Component2) {
+	  _inherits(SplashButton, _React$Component2);
 
 	  function SplashButton() {
 	    _classCallCheck(this, SplashButton);
@@ -38511,28 +38588,87 @@
 	  }
 
 	  _createClass(SplashButton, [{
+	    key: '_handleHover',
+	    value: function _handleHover(e) {
+	      this.setState({ hovered: true });
+	    }
+	  }, {
 	    key: '_handleClick',
 	    value: function _handleClick(e) {
-	      console.log('TODO: implement');
+	      _store2['default'].actions.playPause();
+	    }
+	  }, {
+	    key: '_decreaseWpm',
+	    value: function _decreaseWpm(e) {
+	      _store2['default'].actions.decreaseWpm({ amount: DEFAULT_WPM_STEP });
+	    }
+	  }, {
+	    key: '_increaseWpm',
+	    value: function _increaseWpm(e) {
+	      _store2['default'].actions.increaseWpm({ amount: DEFAULT_WPM_STEP });
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _props = this.props;
-	      var buttonShown = _props.buttonShown;
-	      var isPlaying = _props.isPlaying;
+	      var _props2 = this.props;
+	      var buttonShown = _props2.buttonShown;
+	      var isPlaying = _props2.isPlaying;
+	      var wpm = _props2.wpm;
 
 	      if (!buttonShown) return null;
 
 	      return _react2['default'].createElement(
-	        'button',
-	        { className: (0, _classnames2['default'])('SplashButton', {
-	            'active': isPlaying
-	          }),
-	          onClick: this._handleClick
+	        FloatingHoverButtons,
+	        { shown: isPlaying,
+	          primary: _react2['default'].createElement(
+	            'button',
+	            { className: (0, _classnames2['default'])('SplashButton', {
+	                'active': isPlaying
+	              }),
+	              onClick: this._handleClick,
+	              title: 'SplashRead (spacebar)'
+	            },
+	            _react2['default'].createElement(
+	              'span',
+	              { className: 'play-button' },
+	              '▶'
+	            )
+	          )
 	        },
-	        _react2['default'].createElement('img', { src: __webpack_require__(367) }),
-	        '  SplashRead (space)'
+	        _react2['default'].createElement(
+	          'button',
+	          { className: 'smaller-hover-button',
+	            onClick: this._increaseWpm,
+	            title: 'Increase Reading Speed',
+	            style: { marginBottom: 10 },
+	            key: 'increase-button'
+	          },
+	          _react2['default'].createElement(
+	            'span',
+	            null,
+	            '▲'
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'small',
+	          { style: { marginBottom: 10 }, key: 'wpm' },
+	          wpm,
+	          ' wpm'
+	        ),
+	        _react2['default'].createElement(
+	          'button',
+	          { className: 'smaller-hover-button',
+	            onClick: this._decreaseWpm,
+	            title: 'Decrease Reading Speed',
+	            style: { marginBottom: 20 },
+	            key: 'decrease-button'
+	          },
+	          _react2['default'].createElement(
+	            'span',
+	            null,
+	            '▼'
+	          )
+	        )
 	      );
 	    }
 	  }]);
@@ -38542,7 +38678,8 @@
 
 	SplashButton.propTypes = {
 	  buttonShown: _react.PropTypes.bool.isRequired,
-	  isPlaying: _react.PropTypes.bool.isRequired
+	  isPlaying: _react.PropTypes.bool.isRequired,
+	  wpm: _react.PropTypes.number.isRequired
 	};
 
 	exports['default'] = SplashButton;
@@ -38638,7 +38775,7 @@
 
 
 	// module
-	exports.push([module.id, ".SplashButton{display:block;position:fixed;bottom:20px;right:20px;padding:10px;color:black;font-size:13px;background:gold;border-radius:3px;border:1px solid rgba(0,0,0,.2);border-top-color:rgba(0,0,0,.1);border-bottom-color:rgba(0,0,0,.3);box-shadow:0 1px 3px rgba(0,0,0,.1);display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-webkit-flex-direction:row;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;cursor:pointer}.SplashButton:hover{border-bottom-width:2px}.SplashButton:active,.SplashButton:visited,.SplashButton:focus{outline:none;underline:none;color:black}.SplashButton:active,.SplashButton.active{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}.SplashButton img{display:inline-block}", ""]);
+	exports.push([module.id, ".floating-hover-buttons-container{display:block;position:fixed;bottom:20px;right:20px;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center}.SplashButton{height:56px;width:56px;padding:10px;color:white;font-size:25px;background:#00bcd4;border-radius:50%;box-shadow:0 3px 6px rgba(0,0,0,.3);display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-webkit-flex-direction:row;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.SplashButton:hover{border-bottom-width:2px}.SplashButton:active,.SplashButton:visited,.SplashButton:focus{outline:none;underline:none;color:white}.SplashButton:active,.SplashButton.active{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}.play-button{padding-left:4px}.SplashButton img{display:inline-block}.smaller-hover-button{border-radius:50%;background:#00bcd4;color:white;box-shadow:0 3px 6px rgba(0,0,0,.2);margin-bottom:20px;display:block;height:40px;width:40px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer}.smaller-hover-button:active,.smaller-hover-button:visited,.smaller-hover-button:focus{outline:none;underline:none;color:white}.smaller-hover-button:active,.smaller-hover-button.active{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}", ""]);
 
 	// exports
 
@@ -38925,12 +39062,7 @@
 
 
 /***/ },
-/* 367 */
-/***/ function(module, exports) {
-
-	module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAWNJREFUOBGd0ssrRFEAx/HxfpUSQhqviB1bS1HWmiyUWNj5G7BSVpYeG2tRsrEkCxaWSiGP1GwokUeZvH2/M3em20hpfvXpnHvuPe8bieSWfLp15NY11WuE4hwDBTmO8mRnNBWGBnBZ1SgKtVl9wx2+fQgSp3xBND3AKA8tuMYHwnHABpxhLXhRQlmKN7cQQyXG4CqqUBfSTr0Px6iHA42jBxuITGMbrT4Ecdb06mzqwhb81uxgH2XO6B4rcAXThsNA1AZyCs/Hb/tRjF0knMX9JNCJZyxjHsb6BGrxAL+dhBMvILnME8obLOEeq2jGOzaxCM/I/X5iEJ6DfSIeoofjQTnDLb7gDOnS9kvE0QsPcgbJASh/ZZaWi8BU6K23swcPMxNnys4RDY3w7q0bb2UOr1hBJnmZWqrSTTGEYXgzbs+Uwx/sETFkkj3AOm+c2XgzdjJ2PIC34ir+jEutgdf1r/wAsKpJZdQIuNAAAAAASUVORK5CYII="
-
-/***/ },
+/* 367 */,
 /* 368 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -38954,15 +39086,19 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _rsvp_utils = __webpack_require__(371);
+	var _rsvp_utils = __webpack_require__(369);
 
-	var _RsvpWord = __webpack_require__(372);
+	var _SplashButton = __webpack_require__(361);
+
+	var _SplashButton2 = _interopRequireDefault(_SplashButton);
+
+	var _RsvpWord = __webpack_require__(370);
 
 	var _RsvpWord2 = _interopRequireDefault(_RsvpWord);
 
-	__webpack_require__(369);
+	__webpack_require__(371);
 
-	var eleven_ems = Array(11).join('m');
+	var eleven_ems = Array(11).join('m'); // for text-width measuring...
 
 	var Rsvp = (function (_React$Component) {
 	  _inherits(Rsvp, _React$Component);
@@ -39028,15 +39164,16 @@
 	          _react2['default'].createElement('div', { className: 'rsvp-notch-top',
 	            style: { marginLeft: notch_offset }
 	          }),
-	          _react2['default'].createElement('div', { className: 'rsvp-notch-bottom',
-	            style: { marginLeft: notch_offset }
-	          }),
 	          _react2['default'].createElement(_RsvpWord2['default'], {
 	            currentWord: currentWord,
 	            ORP_center: ORP_center,
 	            font: font
+	          }),
+	          _react2['default'].createElement('div', { className: 'rsvp-notch-bottom',
+	            style: { marginLeft: notch_offset }
 	          })
-	        )
+	        ),
+	        _react2['default'].createElement(_SplashButton2['default'], this.props)
 	      );
 	    }
 	  }]);
@@ -39049,46 +39186,6 @@
 
 /***/ },
 /* 369 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(370);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(366)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/postcss-loader/index.js!./Rsvp.css", function() {
-				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/postcss-loader/index.js!./Rsvp.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 370 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(365)();
-	// imports
-
-
-	// module
-	exports.push([module.id, ".Rsvp{position:fixed;left:0;right:0;top:0;bottom:0;background:rgba(255,255,255,.9);display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center}.Rsvp .word{font-size:32pt;font-family:Georgia;color:black}.rsvp-wrapper{width:100%;margin:60px;position:relative;border-top:1px solid #ccc;border-bottom:1px solid #ccc}.rsvp-wrapper-inner{padding:20px;word-wrap:break-word}.rsvp-before-middle{white-space:pre}.rsvp-middle{color:#bf360c}.rsvp-notch-top,.rsvp-notch-bottom{position:absolute;height:15px;border-right:1px solid #ccc}.rsvp-notch-bottom{bottom:0}", ""]);
-
-	// exports
-
-
-/***/ },
-/* 371 */
 /***/ function(module, exports) {
 
 	
@@ -39106,6 +39203,8 @@
 	  value: true
 	});
 	exports.getDisplayMultiplier = getDisplayMultiplier;
+	exports.msPerWord = msPerWord;
+	exports.getTimeToDisplay = getTimeToDisplay;
 	exports.getWordMiddle = getWordMiddle;
 	exports.splitWord = splitWord;
 	exports.getTextWidth = getTextWidth;
@@ -39139,6 +39238,14 @@
 	  }
 
 	  return display;
+	}
+
+	function msPerWord(wpm) {
+	  return 60000 / wpm;
+	}
+
+	function getTimeToDisplay(word, wpm) {
+	  return msPerWord(wpm) * getDisplayMultiplier(word);
 	}
 
 	/**
@@ -39206,7 +39313,7 @@
 	}
 
 /***/ },
-/* 372 */
+/* 370 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39229,7 +39336,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _rsvp_utils = __webpack_require__(371);
+	var _rsvp_utils = __webpack_require__(369);
 
 	var RsvpWord = (function (_React$Component) {
 	  _inherits(RsvpWord, _React$Component);
@@ -39299,6 +39406,46 @@
 
 	exports['default'] = RsvpWord;
 	module.exports = exports['default'];
+
+/***/ },
+/* 371 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(372);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(366)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/postcss-loader/index.js!./Rsvp.css", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/postcss-loader/index.js!./Rsvp.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 372 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(365)();
+	// imports
+
+
+	// module
+	exports.push([module.id, ".Rsvp{position:fixed;left:0;right:0;top:0;bottom:0;background:rgba(255,255,255,.9);display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center}.Rsvp .word{font-size:32pt;font-family:Georgia;color:black}.rsvp-wrapper{width:100%;margin:60px;position:relative;border-top:1px solid #ccc;border-bottom:1px solid #ccc}.rsvp-wrapper-inner{padding:20px;word-wrap:break-word}.rsvp-before-middle{white-space:pre}.rsvp-middle{color:#bf360c}.rsvp-notch-top,.rsvp-notch-bottom{position:absolute;height:15px;border-right:1px solid #ccc}.rsvp-notch-bottom{bottom:0}", ""]);
+
+	// exports
+
 
 /***/ }
 /******/ ]);

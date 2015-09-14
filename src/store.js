@@ -3,10 +3,11 @@ import { createAction, handleActions } from 'redux-actions'
 import Immutable from 'immutable'
 
 
-const initialState = Immutable.Map({
+const initialState = Immutable.fromJS({
   buttonShown: true,
   isPlaying: false,
   currentWord: '',
+  wpm: 300,
 })
 
 const actionHandlers = {
@@ -28,6 +29,15 @@ const actionHandlers = {
   ,
   changeWord: (state, { payload }) =>
     state.set('currentWord', payload.word)
+  ,
+  setWpm: (state, { payload }) =>
+    state.set('wpm', payload.wpm)
+  ,
+  increaseWpm: (state, { payload }) =>
+    state.update('wpm', (wpm) => Math.min(3000, wpm + payload.amount))
+  ,
+  decreaseWpm: (state, { payload }) =>
+    state.update('wpm', (wpm) => Math.max(0, wpm - payload.amount))
   ,
 }
 

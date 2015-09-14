@@ -1,27 +1,18 @@
 import { createSelector } from 'reselect'
 
-export const currentWordSelector = createSelector(
-  [state => state.get('currentWord')],
-  (currentWord) => currentWord
-)
 
-export const isPlayingSelector = createSelector(
-  [state => state.get('isPlaying')],
-  (isPlaying) => isPlaying
-)
+export const buttonShownSelector = state => state.get('buttonShown')
+export const isPlayingSelector = state => state.get('isPlaying')
+export const currentWordSelector = state => state.get('currentWord')
+export const wpmSelector = state => state.get('wpm')
 
-export const buttonShownSelector = createSelector(
-  [state => state.get('buttonShown')],
-  (buttonShown) => buttonShown
-)
-
-// overcomplicated for sake of practice
 export const allSelector = createSelector(
   [
     buttonShownSelector,
     isPlayingSelector,
     currentWordSelector,
+    wpmSelector,
   ],
-  (buttonShown, isPlaying, currentWord) =>
-    ( { buttonShown, isPlaying, currentWord } )
+  (buttonShown, isPlaying, currentWord, wpm) =>
+    ( { buttonShown, isPlaying, currentWord, wpm } )
 )

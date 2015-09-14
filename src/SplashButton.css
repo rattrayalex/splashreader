@@ -1,30 +1,39 @@
 
-/* TODO: webpack/postcss autoprefixer */
-.SplashButton {
 
+.floating-hover-buttons-container {
   display: block;
   position: fixed;
   bottom: 20px;
   right: 20px;
 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.SplashButton {
+  /* Stolen from http://material-ui.com/#/components/buttons */
+  height: 56px;
+  width: 56px;
+
   padding: 10px;
 
-  color: black;
-  font-size: 13px;
-  background: gold;
+  color: white;
+  font-size: 25px;
 
-  border-radius: 3px;
-  border: 1px solid rgba(0,0,0,.2);
-  border-top-color: rgba(0,0,0,.1);
-  border-bottom-color: rgba(0,0,0,.3);
+  background: #00bcd4; /* TODO: use css variables */
 
-  box-shadow: 0 1px 3px rgba(0,0,0,.1);
+  border-radius: 50%;
+
+  box-shadow: 0 3px 6px rgba(0,0,0,.3);
 
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: center;
 
   cursor: pointer;
+  user-select: none;
 }
 
 .SplashButton:hover {
@@ -37,7 +46,7 @@
 .SplashButton:focus {
   outline: none;
   underline: none;
-  color: black;
+  color: white;
 }
 
 .SplashButton:active,
@@ -47,6 +56,36 @@
   box-shadow: 0 1px 4px rgba(0,0,0,.3) inset;
 }
 
+.play-button {
+  padding-left: 4px;
+}
 .SplashButton img {
   display: inline-block;
+}
+
+/* TODO: cleanup/abstract */
+.smaller-hover-button {
+  border-radius: 50%;
+  background: #00bcd4;
+  color: white;
+  box-shadow: 0 3px 6px rgba(0,0,0,.2);
+  margin-bottom : 20px;
+  display: block;
+  height: 40px;
+  width: 40px;
+  user-select: none;
+  cursor: pointer;
+}
+.smaller-hover-button:active,
+.smaller-hover-button:visited,
+.smaller-hover-button:focus {
+  outline: none;
+  underline: none;
+  color: white;
+}
+.smaller-hover-button:active,
+.smaller-hover-button.active {
+  border-bottom: none;
+  border-top-color: rgba(0,0,0,.3);
+  box-shadow: 0 1px 4px rgba(0,0,0,.3) inset;
 }

@@ -9,12 +9,11 @@ import { allSelector } from './selectors'
 
 class SplashApp extends React.Component {
   render() {
-    return (
-      <div>
-        <SplashButton {...this.props} />
-        <Rsvp {...this.props} />
-      </div>
-    )
+    const { isPlaying } = this.props
+    if ( isPlaying ) {
+      return <Rsvp {...this.props} />
+    }
+    return <SplashButton {...this.props} />
   }
 }
 
@@ -22,6 +21,7 @@ SplashApp.propTypes = {
   currentWord: PropTypes.string.isRequired,
   buttonShown: PropTypes.bool.isRequired,
   isPlaying: PropTypes.bool.isRequired,
+  wpm: PropTypes.number.isRequired,
 }
 
 // TODO: use as decorator in ES7

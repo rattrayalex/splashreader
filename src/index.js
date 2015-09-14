@@ -6,8 +6,9 @@ import { Provider } from 'react-redux'
 import rangy from 'rangy/lib/rangy-textrange'
 
 import store from './store'
-import { isPlayingSelector } from './selectors'
+import { isPlayingSelector, wpmSelector } from './selectors'
 import SplashApp from './SplashApp'
+import { getTimeToDisplay } from './rsvp_utils'
 
 // TODO: move elsewhere...
 const word_options = {
@@ -95,7 +96,11 @@ class SplashReader {
     store.actions.changeWord({ word })
 
     // move to the next word in a sec
-    setTimeout(this.splash.bind(this, range), 500)
+    const wpm = wpmSelector(store.getState())
+    setTimeout(
+      this.splash.bind(this, range),
+      getTimeToDisplay(word, wpm)
+    )
   }
 }
 

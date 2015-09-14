@@ -1,10 +1,11 @@
 import React from 'react'
 
 import { getTextWidth } from './rsvp_utils'
+import SplashButton from './SplashButton'
 import RsvpWord from './RsvpWord'
 import {} from './Rsvp.css'
 
-const eleven_ems = Array(11).join('m')
+const eleven_ems = Array(11).join('m')  // for text-width measuring...
 
 
 export default class Rsvp extends React.Component {
@@ -51,11 +52,9 @@ export default class Rsvp extends React.Component {
 
     return (
       <div className='Rsvp'>
+
         <div className='rsvp-wrapper'>
           <div className='rsvp-notch-top'
-            style={{ marginLeft: notch_offset }}
-          />
-          <div className='rsvp-notch-bottom'
             style={{ marginLeft: notch_offset }}
           />
 
@@ -65,7 +64,13 @@ export default class Rsvp extends React.Component {
             font={font}
           />
 
+          <div className='rsvp-notch-bottom'
+            style={{ marginLeft: notch_offset }}
+          />
         </div>
+
+        <SplashButton {...this.props} />
+
       </div>
     )
   }

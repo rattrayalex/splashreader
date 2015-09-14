@@ -37,6 +37,14 @@ export function getDisplayMultiplier(word) {
   return display
 }
 
+export function msPerWord(wpm) {
+  return ( 60000 / wpm )
+}
+
+export function getTimeToDisplay(word, wpm) {
+  return ( msPerWord(wpm) * getDisplayMultiplier(word) )
+}
+
 
 /**
  *  gets the "middle" of the word, where the red letter goes
