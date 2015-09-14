@@ -1,25 +1,23 @@
 import React, { PropTypes } from 'react'
+import classNames from 'classnames'
 
-import { connect } from 'react-redux'
-
-import { paraSelected } from './selectors'
-import {} from './splashable.css'
+import {} from './SplashButton.css'
 
 
-// TODO: use ES7
-// @connect(paraSelected)
 class SplashButton extends React.Component {
   _handleClick(e) {
     console.log('TODO: implement')
   }
 
   render() {
-    let { buttonShown } = this.props
+    let { buttonShown, isPlaying } = this.props
     if ( !buttonShown )
       return null
 
     return (
-      <button className='SplashButton'
+      <button className={classNames('SplashButton', {
+          'active': isPlaying,
+        })}
         onClick={this._handleClick}
         >
         <img src={require('../images/icon16.png')} />
@@ -32,8 +30,9 @@ class SplashButton extends React.Component {
 
 SplashButton.propTypes = {
   buttonShown: PropTypes.bool.isRequired,
+  isPlaying: PropTypes.bool.isRequired,
 }
 
-// TODO: use as decorator in ES7
-export default connect(paraSelected)(SplashButton)
+
+export default SplashButton
 

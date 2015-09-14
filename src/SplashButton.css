@@ -40,7 +40,8 @@
   color: black;
 }
 
-.SplashButton:active {
+.SplashButton:active,
+.SplashButton.active {
   border-bottom: none;
   border-top-color: rgba(0,0,0,.3);
   box-shadow: 0 1px 4px rgba(0,0,0,.3) inset;

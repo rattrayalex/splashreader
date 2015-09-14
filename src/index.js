@@ -6,22 +6,23 @@ import { Provider } from 'react-redux'
 import rangy from 'rangy/lib/rangy-textrange'
 
 import store from './store'
-import SplashButton from './SplashButton'
+import { isPlayingSelector } from './selectors'
+import SplashApp from './SplashApp'
 
 // TODO: move elsewhere...
-// const word_regex = /[a-z0-9]+('[a-z0-9]+)*/gi
 const word_options = {
   wordOptions: {
     wordRegex: /[^–—\s]+/gi
-    // this is really a phrase...
-    // TODO: investigate this idea...
-    // wordRegex: /.+(?:\s+['"“\[(]|[.,!?'"”:;\])]\s+|–|—|\r|\n)/gi
   }
 }
 
 
 class SplashReader {
   constructor() {
+    // local vars for ::listenForPlay
+    this.is_playing = false
+    this.was_playing = false
+
     this.wrapper = this.insertWrapper()
 
     this.listenForSpace()
@@ -29,7 +30,7 @@ class SplashReader {
 
     React.render(
       <Provider store={store}>
-        {() => <SplashButton />}
+        {() => <SplashApp />}
       </Provider>,
       this.wrapper
     )
@@ -47,13 +48,27 @@ class SplashReader {
       store.actions.playPause()
       return false
     })
+    key('esc', (e) => {
+      e.preventDefault()
+      store.actions.pause()
+      return false
+    })
   }
   listenForPlay() {
-    store.subscribe(this.splash.bind(this, null))
+    store.subscribe(() => {
+      // TODO: clean up / document better...
+      this.was_playing = this.is_playing
+      this.is_playing = isPlayingSelector(store.getState())
+
+      if ( this.is_playing && !this.was_playing ) {
+        this.splash()
+      }
+    })
   }
   // TODO: move elsewhere
   splash(range=null) {
-    if ( !store.getState().get('isPlaying') ) {
+    console.log('in splash, isPlayingSelector', isPlayingSelector(store.getState()), store.getState())
+    if ( !isPlayingSelector(store.getState()) ) {
       return
     }
 
@@ -74,6 +89,11 @@ class SplashReader {
 
     // highlight it
     sel.setSingleRange(range)
+
+    // send it to React
+    const word = range.text()
+    console.log('got word', word)
+    store.actions.changeWord({ word })
 
     setTimeout(this.splash.bind(this, range), 500)
   }
