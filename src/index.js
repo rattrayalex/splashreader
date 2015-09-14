@@ -19,7 +19,8 @@ const word_options = {
 
 class SplashReader {
   constructor() {
-    // local vars for ::listenForPlay
+    // local vars for ::listenForPlay...
+    // TODO: reconsider
     this.is_playing = false
     this.was_playing = false
 
@@ -67,7 +68,6 @@ class SplashReader {
   }
   // TODO: move elsewhere
   splash(range=null) {
-    console.log('in splash, isPlayingSelector', isPlayingSelector(store.getState()), store.getState())
     if ( !isPlayingSelector(store.getState()) ) {
       return
     }
@@ -92,9 +92,9 @@ class SplashReader {
 
     // send it to React
     const word = range.text()
-    console.log('got word', word)
     store.actions.changeWord({ word })
 
+    // move to the next word in a sec
     setTimeout(this.splash.bind(this, range), 500)
   }
 }
