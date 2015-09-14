@@ -80,7 +80,7 @@
 
 	var _SplashApp2 = _interopRequireDefault(_SplashApp);
 
-	var _rsvp_utils = __webpack_require__(369);
+	var _rsvp_utils = __webpack_require__(370);
 
 	// TODO: move elsewhere...
 	var word_options = {
@@ -38449,7 +38449,7 @@
 
 	var _SplashButton2 = _interopRequireDefault(_SplashButton);
 
-	var _Rsvp = __webpack_require__(368);
+	var _Rsvp = __webpack_require__(369);
 
 	var _Rsvp2 = _interopRequireDefault(_Rsvp);
 
@@ -38526,11 +38526,11 @@
 
 	var _FloatingHoverButtons2 = _interopRequireDefault(_FloatingHoverButtons);
 
-	var _WpmButtons = __webpack_require__(373);
+	var _WpmButtons = __webpack_require__(364);
 
 	var _WpmButtons2 = _interopRequireDefault(_WpmButtons);
 
-	__webpack_require__(364);
+	__webpack_require__(365);
 
 	var SplashButton = (function (_React$Component) {
 	  _inherits(SplashButton, _React$Component);
@@ -38568,10 +38568,14 @@
 	          onClick: this._handleClick,
 	          title: 'SplashRead (spacebar)'
 	        },
-	        _react2['default'].createElement(
+	        !isPlaying ? _react2['default'].createElement(
 	          'span',
 	          { className: 'play-button' },
 	          '▶'
+	        ) : _react2['default'].createElement(
+	          'span',
+	          { className: 'pause-button' },
+	          '▌▌'
 	        )
 	      );
 
@@ -38735,13 +38739,118 @@
 /* 364 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(169);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _store = __webpack_require__(344);
+
+	var _store2 = _interopRequireDefault(_store);
+
+	var DEFAULT_WPM_STEP = 50;
+
+	var WpmButtons = (function (_React$Component) {
+	  _inherits(WpmButtons, _React$Component);
+
+	  function WpmButtons() {
+	    _classCallCheck(this, WpmButtons);
+
+	    _get(Object.getPrototypeOf(WpmButtons.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(WpmButtons, [{
+	    key: '_decreaseWpm',
+	    value: function _decreaseWpm(e) {
+	      _store2['default'].actions.decreaseWpm({ amount: DEFAULT_WPM_STEP });
+	    }
+	  }, {
+	    key: '_increaseWpm',
+	    value: function _increaseWpm(e) {
+	      _store2['default'].actions.increaseWpm({ amount: DEFAULT_WPM_STEP });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var wpm = this.props.wpm;
+
+	      return _react2['default'].createElement(
+	        'center',
+	        null,
+	        _react2['default'].createElement(
+	          'button',
+	          { className: 'smaller-hover-button',
+	            onClick: this._increaseWpm,
+	            title: 'Increase Reading Speed'
+	          },
+	          _react2['default'].createElement(
+	            'span',
+	            null,
+	            '▲'
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { style: { marginBottom: 10, marginTop: -10 } },
+	          _react2['default'].createElement(
+	            'small',
+	            null,
+	            wpm,
+	            ' wpm'
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'button',
+	          { className: 'smaller-hover-button',
+	            onClick: this._decreaseWpm,
+	            title: 'Decrease Reading Speed'
+	          },
+	          _react2['default'].createElement(
+	            'span',
+	            null,
+	            '▼'
+	          )
+	        )
+	      );
+	    }
+	  }]);
+
+	  return WpmButtons;
+	})(_react2['default'].Component);
+
+	exports['default'] = WpmButtons;
+
+	WpmButtons.propTypes = {
+	  wpm: _react2['default'].PropTypes.number.isRequired
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 365 */
+/***/ function(module, exports, __webpack_require__) {
+
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(365);
+	var content = __webpack_require__(366);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(367)(content, {});
+	var update = __webpack_require__(368)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -38758,21 +38867,21 @@
 	}
 
 /***/ },
-/* 365 */
+/* 366 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(366)();
+	exports = module.exports = __webpack_require__(367)();
 	// imports
 
 
 	// module
-	exports.push([module.id, ".floating-hover-buttons-container{display:block;position:fixed;bottom:20px;right:20px;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center}.SplashButton{height:56px;width:56px;padding:10px;color:white;font-size:25px;background:#00bcd4;border-radius:50%;box-shadow:0 3px 6px rgba(0,0,0,.3);display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-webkit-flex-direction:row;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.SplashButton:hover{border-bottom-width:2px}.SplashButton:active,.SplashButton:visited,.SplashButton:focus{outline:none;underline:none;color:white}.SplashButton:active,.SplashButton.active{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}.play-button{padding-left:4px}.SplashButton img{display:inline-block}.smaller-hover-button{border-radius:50%;background:#00bcd4;color:white;box-shadow:0 3px 6px rgba(0,0,0,.2);margin-bottom:20px;display:block;height:40px;width:40px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer}.smaller-hover-button:active,.smaller-hover-button:visited,.smaller-hover-button:focus{outline:none;underline:none;color:white}.smaller-hover-button:active,.smaller-hover-button.active{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}", ""]);
+	exports.push([module.id, ".floating-hover-buttons-container{display:block;position:fixed;bottom:20px;right:20px;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center}.SplashButton{height:56px;width:56px;padding:10px;color:white;font-size:25px;background:#00bcd4;border-radius:50%;box-shadow:0 3px 6px rgba(0,0,0,.3);display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-webkit-flex-direction:row;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.SplashButton:hover{border-bottom-width:2px}.SplashButton:active,.SplashButton:visited,.SplashButton:focus{outline:none;underline:none;color:white}.SplashButton:active,.SplashButton.active{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}.play-button{padding-left:4px}.pause-button{padding-left:7px;font-size:19px}.SplashButton img{display:inline-block}.smaller-hover-button{border-radius:50%;background:#00bcd4;color:white;box-shadow:0 3px 6px rgba(0,0,0,.2);margin-bottom:20px;display:block;height:40px;width:40px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer}.smaller-hover-button:active,.smaller-hover-button:visited,.smaller-hover-button:focus{outline:none;underline:none;color:white}.smaller-hover-button:active,.smaller-hover-button.active{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}", ""]);
 
 	// exports
 
 
 /***/ },
-/* 366 */
+/* 367 */
 /***/ function(module, exports) {
 
 	/*
@@ -38828,7 +38937,7 @@
 
 
 /***/ },
-/* 367 */
+/* 368 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -39053,7 +39162,7 @@
 
 
 /***/ },
-/* 368 */
+/* 369 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39076,17 +39185,17 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _rsvp_utils = __webpack_require__(369);
+	var _rsvp_utils = __webpack_require__(370);
 
 	var _SplashButton = __webpack_require__(361);
 
 	var _SplashButton2 = _interopRequireDefault(_SplashButton);
 
-	var _RsvpWord = __webpack_require__(370);
+	var _RsvpWord = __webpack_require__(371);
 
 	var _RsvpWord2 = _interopRequireDefault(_RsvpWord);
 
-	__webpack_require__(371);
+	__webpack_require__(372);
 
 	var eleven_ems = Array(11).join('m'); // for text-width measuring...
 
@@ -39175,7 +39284,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 369 */
+/* 370 */
 /***/ function(module, exports) {
 
 	
@@ -39303,7 +39412,7 @@
 	}
 
 /***/ },
-/* 370 */
+/* 371 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39326,7 +39435,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _rsvp_utils = __webpack_require__(369);
+	var _rsvp_utils = __webpack_require__(370);
 
 	var RsvpWord = (function (_React$Component) {
 	  _inherits(RsvpWord, _React$Component);
@@ -39398,16 +39507,16 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 371 */
+/* 372 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(372);
+	var content = __webpack_require__(373);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(367)(content, {});
+	var update = __webpack_require__(368)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -39424,10 +39533,10 @@
 	}
 
 /***/ },
-/* 372 */
+/* 373 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(366)();
+	exports = module.exports = __webpack_require__(367)();
 	// imports
 
 
@@ -39436,107 +39545,6 @@
 
 	// exports
 
-
-/***/ },
-/* 373 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(169);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var DEFAULT_WPM_STEP = 50;
-
-	var WpmButtons = (function (_React$Component) {
-	  _inherits(WpmButtons, _React$Component);
-
-	  function WpmButtons() {
-	    _classCallCheck(this, WpmButtons);
-
-	    _get(Object.getPrototypeOf(WpmButtons.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(WpmButtons, [{
-	    key: '_decreaseWpm',
-	    value: function _decreaseWpm(e) {
-	      store.actions.decreaseWpm({ amount: DEFAULT_WPM_STEP });
-	    }
-	  }, {
-	    key: '_increaseWpm',
-	    value: function _increaseWpm(e) {
-	      store.actions.increaseWpm({ amount: DEFAULT_WPM_STEP });
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var wpm = this.props.wpm;
-
-	      return _react2['default'].createElement(
-	        'center',
-	        null,
-	        _react2['default'].createElement(
-	          'button',
-	          { className: 'smaller-hover-button',
-	            onClick: this._increaseWpm,
-	            title: 'Increase Reading Speed'
-	          },
-	          _react2['default'].createElement(
-	            'span',
-	            null,
-	            '▲'
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { style: { marginBottom: 10, marginTop: -10 } },
-	          _react2['default'].createElement(
-	            'small',
-	            null,
-	            wpm,
-	            ' wpm'
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'button',
-	          { className: 'smaller-hover-button',
-	            onClick: this._decreaseWpm,
-	            title: 'Decrease Reading Speed'
-	          },
-	          _react2['default'].createElement(
-	            'span',
-	            null,
-	            '▼'
-	          )
-	        )
-	      );
-	    }
-	  }]);
-
-	  return WpmButtons;
-	})(_react2['default'].Component);
-
-	exports['default'] = WpmButtons;
-
-	WpmButtons.propTypes = {
-	  wpm: _react2['default'].PropTypes.number.isRequired
-	};
-	module.exports = exports['default'];
 
 /***/ }
 /******/ ]);

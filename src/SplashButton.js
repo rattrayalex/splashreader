@@ -31,7 +31,10 @@ class SplashButton extends React.Component {
         onClick={this._handleClick}
         title='SplashRead (spacebar)'
         >
-        <span className="play-button">▶</span>
+        { ( !isPlaying )
+          ? <span className="play-button">▶</span>
+          : <span className='pause-button'>▌▌</span>
+        }
       </button>
     )
 

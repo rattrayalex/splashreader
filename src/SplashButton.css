@@ -59,6 +59,10 @@
 .play-button {
   padding-left: 4px;
 }
+.pause-button {
+  padding-left: 7px;
+  font-size: 19px;
+}
 .SplashButton img {
   display: inline-block;
 }

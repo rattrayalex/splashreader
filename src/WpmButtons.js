@@ -1,5 +1,8 @@
 import React from 'react'
 
+import store from './store'
+
+
 const DEFAULT_WPM_STEP = 50
 
 export default class WpmButtons extends React.Component {
