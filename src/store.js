@@ -3,12 +3,20 @@ import { createAction, handleActions } from 'redux-actions'
 import Immutable from 'immutable'
 
 
+// TODO: nesting.
 const initialState = Immutable.fromJS({
   buttonShown: true,
   isPlaying: false,
   changingPara: false,
+
   currentWord: '',
+  readingEdge: {
+    left: 0,
+  },
+
   wpm: 300,
+  font: '32pt Georgia',
+
 })
 
 const actionHandlers = {
@@ -40,6 +48,9 @@ const actionHandlers = {
   changeWord: (state, { payload }) =>
     state.set('currentWord', payload.word)
   ,
+  setReadingEdge: (state, { payload }) =>
+    state.set('readingEdge', Immutable.fromJS(payload))
+  ,
 
   setWpm: (state, { payload }) =>
     state.set('wpm', payload.wpm)
@@ -48,7 +59,7 @@ const actionHandlers = {
     state.update('wpm', (wpm) => Math.min(3000, wpm + payload.amount))
   ,
   decreaseWpm: (state, { payload }) =>
-    state.update('wpm', (wpm) => Math.max(0, wpm - payload.amount))
+    state.update('wpm', (wpm) => Math.max(50, wpm - payload.amount))
   ,
 }
 

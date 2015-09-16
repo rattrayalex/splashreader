@@ -153,7 +153,6 @@ export function isSingleLine(elem) {
   try {
     const elem_height = parseInt(elem.clientHeight)
     const line_height = parseInt(window.getComputedStyle(elem).lineHeight)
-    console.log({elem, elem_height, line_height})
     // direct comparison didn't work,
     // so just check if it's at least smaller than two lines tall...
     return ( elem_height < ( line_height * 2) )
@@ -206,6 +205,8 @@ const heading_elems = [
  * @return {Boolean}
  */
 export function looksLikeAHeading(elem) {
+  elem = getClosestBlockElement(elem)
+
   if ( elementContainsASingleWord(elem) ) {
     return true
   }

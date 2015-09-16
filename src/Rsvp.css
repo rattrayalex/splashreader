@@ -1,5 +1,6 @@
 
 .Rsvp {
+  z-index: 9999;
   position: fixed;
   left: 0;
   right: 0;
@@ -7,10 +8,6 @@
   bottom: 0;
 
   background: rgba(255,255,255,.9);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
 
 }
 
@@ -22,10 +19,13 @@
 
 .rsvp-wrapper {
   width: 100%;
-  margin: 60px;
-  position: relative;
+  position: absolute;
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
+
+  color: #666;
+  background-color: white;
+  box-shadow: 0 0 50px 50px white;
 }
 .rsvp-wrapper-inner {
   padding: 20px;
@@ -36,7 +36,9 @@
   white-space: pre;
 }
 .rsvp-middle {
-  color: #BF360C;
+  /*the dark red is nice... but people kept asking why it was there*/
+  /*color: #BF360C;*/
+  color: #555;
 }
 .rsvp-after-middle {
 }

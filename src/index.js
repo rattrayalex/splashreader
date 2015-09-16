@@ -14,6 +14,7 @@ import {
 } from './selectors'
 import SplashApp from './SplashApp'
 import { getTimeToDisplay, looksLikeAHeading } from './rsvp_utils'
+import { scrollToElementOnce, getReadingEdgeLeft } from './dom_utils'
 
 // TODO: move elsewhere...
 const word_options = {
@@ -25,7 +26,6 @@ const word_options = {
 function _containsNewline(range) {
   return !!range.text().match(/[\n\r]/)
 }
-
 
 class SplashReader {
   constructor() {
@@ -76,6 +76,11 @@ class SplashReader {
       }
     })
   }
+  setReadingPointAt(range) {
+    scrollToElementOnce(range.endContainer.parentNode)
+    const left = getReadingEdgeLeft(range.startContainer.parentNode)
+    store.actions.setReadingEdge({ left })
+  }
   // TODO: move elsewhere
   // TODO: clean up
   splash(range=null) {
@@ -90,6 +95,11 @@ class SplashReader {
     if ( !range ) {
       range = sel.getRangeAt(0)
       range.move('word', -1, word_options)
+    }
+
+    // scroll if we're not there yet.
+    if ( just_pressed_play ) {
+      this.setReadingPointAt(range)
     }
 
     // resume RSVP if in a new (non-header) paragrah.
@@ -126,6 +136,7 @@ class SplashReader {
     if ( is_new_para ) {
       if ( !just_pressed_play ) {
         time_to_display = 1000
+        this.setReadingPointAt(range)
       }
       store.actions.paraChange()
     }

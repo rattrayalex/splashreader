@@ -6,13 +6,13 @@ import { splitWord, getTextWidth } from './rsvp_utils'
 export default class RsvpWord extends React.Component {
 
   _getWordOffset(word_p1, word_p2) {
-    const { font, ORP_center } = this.props
+    const { font, orpCenter } = this.props
 
     let width_p1 = getTextWidth(word_p1, font)
     let width_p2 = getTextWidth(word_p2, font)
     let center_point = width_p1 + (width_p2 / 2)
 
-    let word_offset = ( ORP_center - center_point ) || 0
+    let word_offset = ( orpCenter - center_point ) || 0
 
     return word_offset
   }

@@ -82,6 +82,8 @@
 
 	var _rsvp_utils = __webpack_require__(370);
 
+	var _dom_utils = __webpack_require__(374);
+
 	// TODO: move elsewhere...
 
 	window.rangy = _rangyLibRangyTextrange2['default'];
@@ -157,6 +159,13 @@
 	        }
 	      });
 	    }
+	  }, {
+	    key: 'setReadingPointAt',
+	    value: function setReadingPointAt(range) {
+	      (0, _dom_utils.scrollToElementOnce)(range.endContainer.parentNode);
+	      var left = (0, _dom_utils.getReadingEdgeLeft)(range.startContainer.parentNode);
+	      _store2['default'].actions.setReadingEdge({ left: left });
+	    }
 
 	    // TODO: move elsewhere
 	    // TODO: clean up
@@ -176,6 +185,11 @@
 	      if (!range) {
 	        range = sel.getRangeAt(0);
 	        range.move('word', -1, word_options);
+	      }
+
+	      // scroll if we're not there yet.
+	      if (just_pressed_play) {
+	        this.setReadingPointAt(range);
 	      }
 
 	      // resume RSVP if in a new (non-header) paragrah.
@@ -212,6 +226,7 @@
 	      if (is_new_para) {
 	        if (!just_pressed_play) {
 	          time_to_display = 1000;
+	          this.setReadingPointAt(range);
 	        }
 	        _store2['default'].actions.paraChange();
 	      }
@@ -32495,12 +32510,20 @@
 
 	var _immutable2 = _interopRequireDefault(_immutable);
 
+	// TODO: nesting.
 	var initialState = _immutable2['default'].fromJS({
 	  buttonShown: true,
 	  isPlaying: false,
 	  changingPara: false,
+
 	  currentWord: '',
-	  wpm: 300
+	  readingEdge: {
+	    left: 0
+	  },
+
+	  wpm: 300,
+	  font: '32pt Georgia'
+
 	});
 
 	var actionHandlers = {
@@ -32547,22 +32570,27 @@
 	    return state.set('currentWord', payload.word);
 	  },
 
-	  setWpm: function setWpm(state, _ref9) {
+	  setReadingEdge: function setReadingEdge(state, _ref9) {
 	    var payload = _ref9.payload;
+	    return state.set('readingEdge', _immutable2['default'].fromJS(payload));
+	  },
+
+	  setWpm: function setWpm(state, _ref10) {
+	    var payload = _ref10.payload;
 	    return state.set('wpm', payload.wpm);
 	  },
 
-	  increaseWpm: function increaseWpm(state, _ref10) {
-	    var payload = _ref10.payload;
+	  increaseWpm: function increaseWpm(state, _ref11) {
+	    var payload = _ref11.payload;
 	    return state.update('wpm', function (wpm) {
 	      return Math.min(3000, wpm + payload.amount);
 	    });
 	  },
 
-	  decreaseWpm: function decreaseWpm(state, _ref11) {
-	    var payload = _ref11.payload;
+	  decreaseWpm: function decreaseWpm(state, _ref12) {
+	    var payload = _ref12.payload;
 	    return state.update('wpm', function (wpm) {
-	      return Math.max(0, wpm - payload.amount);
+	      return Math.max(50, wpm - payload.amount);
 	    });
 	  }
 
@@ -38377,6 +38405,10 @@
 
 	var _reselect = __webpack_require__(359);
 
+	var _rsvp_utils = __webpack_require__(370);
+
+	// TODO: cleanup / nest / break up
+
 	var buttonShownSelector = function buttonShownSelector(state) {
 	  return state.get('buttonShown');
 	};
@@ -38388,23 +38420,42 @@
 	var changingParaSelector = function changingParaSelector(state) {
 	  return state.get('changingPara');
 	};
+
 	exports.changingParaSelector = changingParaSelector;
 	var currentWordSelector = function currentWordSelector(state) {
 	  return state.get('currentWord');
 	};
 	exports.currentWordSelector = currentWordSelector;
+	var readingEdgeLeftSelector = function readingEdgeLeftSelector(state) {
+	  return state.get('readingEdge').get('left');
+	};
+
+	exports.readingEdgeLeftSelector = readingEdgeLeftSelector;
 	var wpmSelector = function wpmSelector(state) {
 	  return state.get('wpm');
 	};
-
 	exports.wpmSelector = wpmSelector;
+	var fontSelector = function fontSelector(state) {
+	  return state.get('font');
+	};
+
+	exports.fontSelector = fontSelector;
 	var rsvpPlayingSelector = (0, _reselect.createSelector)([isPlayingSelector, changingParaSelector], function (isPlaying, changingPara) {
 	  return isPlaying && !changingPara;
 	});
 
 	exports.rsvpPlayingSelector = rsvpPlayingSelector;
-	var allSelector = (0, _reselect.createSelector)([buttonShownSelector, isPlayingSelector, currentWordSelector, wpmSelector, rsvpPlayingSelector], function (buttonShown, isPlaying, currentWord, wpm, rsvpPlaying) {
-	  return { buttonShown: buttonShown, isPlaying: isPlaying, currentWord: currentWord, wpm: wpm, rsvpPlaying: rsvpPlaying };
+	var orpCenterSelector = (0, _reselect.createSelector)([readingEdgeLeftSelector, fontSelector], function (left, font) {
+	  return Math.max(
+	  // five em's wide b/c that's how big
+	  // the left+middle parts of a word
+	  // in the RSVP display can be. (m is typically widest letter)
+	  (0, _rsvp_utils.getTextWidth)('mmmmm', font), left);
+	});
+
+	exports.orpCenterSelector = orpCenterSelector;
+	var allSelector = (0, _reselect.createSelector)([buttonShownSelector, isPlayingSelector, currentWordSelector, orpCenterSelector, wpmSelector, fontSelector, rsvpPlayingSelector], function (buttonShown, isPlaying, currentWord, orpCenter, wpm, font, rsvpPlaying) {
+	  return { buttonShown: buttonShown, isPlaying: isPlaying, currentWord: currentWord, orpCenter: orpCenter, wpm: wpm, font: font, rsvpPlaying: rsvpPlaying };
 	});
 	exports.allSelector = allSelector;
 
@@ -39238,6 +39289,8 @@
 
 	var _rsvp_utils = __webpack_require__(370);
 
+	var _dom_utils = __webpack_require__(374);
+
 	var _SplashButton = __webpack_require__(361);
 
 	var _SplashButton2 = _interopRequireDefault(_SplashButton);
@@ -39248,75 +39301,47 @@
 
 	__webpack_require__(372);
 
-	var eleven_ems = Array(11).join('m'); // for text-width measuring...
-
 	var Rsvp = (function (_React$Component) {
 	  _inherits(Rsvp, _React$Component);
 
 	  function Rsvp() {
 	    _classCallCheck(this, Rsvp);
 
-	    _get(Object.getPrototypeOf(Rsvp.prototype), 'constructor', this).call(this);
-	    this.state = {
-	      // TODO: '32pt libre_baskervilleregular, Georgia'
-	      // TODO: let user set the font
-	      font: '32pt Georgia',
-	      ORP_center: null
-	    };
+	    _get(Object.getPrototypeOf(Rsvp.prototype), 'constructor', this).apply(this, arguments);
 	  }
 
 	  _createClass(Rsvp, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      this._setOrpCenter();
-	      window.addEventListener('resize', this._setOrpCenter.bind(this), true);
-	    }
-	  }, {
-	    key: 'componentWillUnmount',
-	    value: function componentWillUnmount() {
-	      window.removeEventListener('resize', this._setOrpCenter);
-	    }
-	  }, {
-	    key: '_setOrpCenter',
-	    value: function _setOrpCenter() {
-	      var font = this.state.font;
-
-	      var full_width = Math.min(window.innerWidth, (0, _rsvp_utils.getTextWidth)(eleven_ems, font));
-	      var ORP_center = full_width / 3;
-	      var notch_offset = ORP_center + (0, _rsvp_utils.getTextWidth)('m', font) / 2;
-
-	      this.setState({
-	        ORP_center: ORP_center,
-	        notch_offset: notch_offset
-	      });
-	    }
-	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _props = this.props;
 	      var rsvpPlaying = _props.rsvpPlaying;
 	      var currentWord = _props.currentWord;
-	      var _state = this.state;
-	      var font = _state.font;
-	      var notch_offset = _state.notch_offset;
-	      var ORP_center = _state.ORP_center;
+	      var orpCenter = _props.orpCenter;
+	      var font = _props.font;
 
 	      if (!rsvpPlaying) {
 	        return null;
 	      }
+
+	      // the lil notch goes in the middle of a letter (hence half an 'm')
+	      var notch_offset = orpCenter + (0, _rsvp_utils.getTextWidth)('m', font) / 2;
 
 	      return _react2['default'].createElement(
 	        'div',
 	        { className: 'Rsvp' },
 	        _react2['default'].createElement(
 	          'div',
-	          { className: 'rsvp-wrapper' },
+	          { className: 'rsvp-wrapper',
+	            style: {
+	              top: (0, _dom_utils.getReadingHeight)() - 40 // TODO: remove hardcoding
+	            }
+	          },
 	          _react2['default'].createElement('div', { className: 'rsvp-notch-top',
 	            style: { marginLeft: notch_offset }
 	          }),
 	          _react2['default'].createElement(_RsvpWord2['default'], {
 	            currentWord: currentWord,
-	            ORP_center: ORP_center,
+	            orpCenter: orpCenter,
 	            font: font
 	          }),
 	          _react2['default'].createElement('div', { className: 'rsvp-notch-bottom',
@@ -39523,7 +39548,6 @@
 	  try {
 	    var elem_height = parseInt(elem.clientHeight);
 	    var line_height = parseInt(window.getComputedStyle(elem).lineHeight);
-	    console.log({ elem: elem, elem_height: elem_height, line_height: line_height });
 	    // direct comparison didn't work,
 	    // so just check if it's at least smaller than two lines tall...
 	    return elem_height < line_height * 2;
@@ -39569,6 +39593,8 @@
 	 */
 
 	function looksLikeAHeading(elem) {
+	  elem = getClosestBlockElement(elem);
+
 	  if (elementContainsASingleWord(elem)) {
 	    return true;
 	  }
@@ -39616,13 +39642,13 @@
 	    value: function _getWordOffset(word_p1, word_p2) {
 	      var _props = this.props;
 	      var font = _props.font;
-	      var ORP_center = _props.ORP_center;
+	      var orpCenter = _props.orpCenter;
 
 	      var width_p1 = (0, _rsvp_utils.getTextWidth)(word_p1, font);
 	      var width_p2 = (0, _rsvp_utils.getTextWidth)(word_p2, font);
 	      var center_point = width_p1 + width_p2 / 2;
 
-	      var word_offset = ORP_center - center_point || 0;
+	      var word_offset = orpCenter - center_point || 0;
 
 	      return word_offset;
 	    }
@@ -39706,10 +39732,92 @@
 
 
 	// module
-	exports.push([module.id, ".Rsvp{position:fixed;left:0;right:0;top:0;bottom:0;background:rgba(255,255,255,.9);display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center}.Rsvp .word{font-size:32pt;font-family:Georgia;color:black}.rsvp-wrapper{width:100%;margin:60px;position:relative;border-top:1px solid #ccc;border-bottom:1px solid #ccc}.rsvp-wrapper-inner{padding:20px;word-wrap:break-word}.rsvp-before-middle{white-space:pre}.rsvp-middle{color:#bf360c}.rsvp-notch-top,.rsvp-notch-bottom{position:absolute;height:15px;border-right:1px solid #ccc}.rsvp-notch-bottom{bottom:0}", ""]);
+	exports.push([module.id, ".Rsvp{z-index:9999;position:fixed;left:0;right:0;top:0;bottom:0;background:rgba(255,255,255,.9)}.Rsvp .word{font-size:32pt;font-family:Georgia;color:black}.rsvp-wrapper{width:100%;position:absolute;border-top:1px solid #ccc;border-bottom:1px solid #ccc;color:#666;background-color:white;box-shadow:0 0 50px 50px white}.rsvp-wrapper-inner{padding:20px;word-wrap:break-word}.rsvp-before-middle{white-space:pre}.rsvp-middle{color:#555}.rsvp-notch-top,.rsvp-notch-bottom{position:absolute;height:15px;border-right:1px solid #ccc}.rsvp-notch-bottom{bottom:0}", ""]);
 
 	// exports
 
+
+/***/ },
+/* 374 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.getReadingEdgeLeft = getReadingEdgeLeft;
+	exports.getReadingHeight = getReadingHeight;
+	exports.scrollToElementOnce = scrollToElementOnce;
+
+	function getReadingEdgeLeft(elem) {
+	  return elem.getBoundingClientRect().left + window.scrollX;
+	}
+
+	function getReadingHeight() {
+	  return window.innerHeight * .32;
+	}
+
+	// TODO: scroll w/in scrolly-divs on the page.
+
+	function scrollToElementOnce(elem) {
+
+	  var elem_top = elem.getBoundingClientRect().top + window.scrollY;
+	  var offset = getReadingHeight();
+	  var target = elem_top - offset;
+	  console.log('in scrollToElementOnce', { elem: elem, elem_top: elem_top, offset: offset, target: target });
+	  scrollToOnce(document.body, target, 500);
+	}
+
+	/**
+	 * Scrolls screen to an element with animation.
+	 *
+	 * @see http://stackoverflow.com/a/16136789/1048433
+	 *
+	 * @param  {DOM Element} element
+	 * @param  {int} to       padding from top
+	 * @param  {int} duration milliseconds
+	 * @return {void}
+	 */
+	var isAnimating = false;
+	function scrollToOnce(element, to, duration) {
+	  if (isAnimating) {
+	    return;
+	  }
+
+	  var start = element.scrollTop;
+	  var change = to - start;
+	  var increment = 20;
+
+	  if (change === 0) {
+	    console.log('not animating, change is 0', { start: start, to: to, change: change });
+	    return;
+	  }
+	  isAnimating = true;
+
+	  var animateScroll = function animateScroll(elapsedTime) {
+	    elapsedTime += increment;
+	    var position = easeInOut(elapsedTime, start, change, duration);
+	    element.scrollTop = position;
+	    if (elapsedTime < duration) {
+	      setTimeout(animateScroll.bind(null, elapsedTime), increment);
+	    } else {
+	      isAnimating = false;
+	    }
+	  };
+
+	  animateScroll(0);
+	}
+
+	/** see http://stackoverflow.com/a/16136789/1048433 */
+	function easeInOut(currentTime, start, change, duration) {
+	  currentTime /= duration / 2;
+	  if (currentTime < 1) {
+	    return change / 2 * currentTime * currentTime + start;
+	  }
+	  currentTime -= 1;
+	  return -change / 2 * (currentTime * (currentTime - 2) - 1) + start;
+	}
 
 /***/ }
 /******/ ]);
