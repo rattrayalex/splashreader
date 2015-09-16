@@ -43,10 +43,10 @@ export default class Rsvp extends React.Component {
   }
 
   render() {
-    const { isPlaying, currentWord } = this.props
+    const { rsvpPlaying, currentWord } = this.props
     const { font, notch_offset, ORP_center } = this.state
 
-    if ( !isPlaying ) {
+    if ( !rsvpPlaying ) {
       return null
     }
 

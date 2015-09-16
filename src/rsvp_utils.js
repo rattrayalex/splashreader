@@ -41,6 +41,16 @@ export function msPerWord(wpm) {
   return ( 60000 / wpm )
 }
 
+/**
+ * given a target word-per-minute,
+ * tells you how long to display a given word,
+ * adjusted for how complicated the word is.
+ *
+ * @param  {string} word
+ * @param  {int} wpm
+ * @return {int}
+ *         milliseconds to display word
+ */
 export function getTimeToDisplay(word, wpm) {
   return ( msPerWord(wpm) * getDisplayMultiplier(word) )
 }
@@ -90,6 +100,7 @@ export function splitWord(word) {
 /**
   Uses canvas.measureText to compute and return the width
   of the given text of given font in pixels.
+
   @param {String} text
     The text to be rendered.
   @param {String} font
@@ -107,4 +118,105 @@ export function getTextWidth(text, font) {
   const metrics = context.measureText(text)
 
   return metrics.width
+}
+
+/**
+ * crawls up the DOM tree
+ * to find the nearest `display: block` element
+ * (including the passed-in element)
+ *
+ * @param  {DOM Element} elem
+ * @return {element}
+ */
+export function getClosestBlockElement(elem) {
+  if ( window.getComputedStyle(elem).display === 'block' ) {
+    return elem
+  }
+  if ( !elem.parentElement ) {
+    // if it's spans all the way up for some reason, just return the top one.
+    return elem
+  }
+  return getClosestBlockElement(elem.parentElement)
+}
+
+/**
+ * tries to detect whether the given element
+ * is inside a block element
+ * that is only a single line of text high.
+ * Doesn't always work.
+ * TODO: improve accuracy
+ *
+ * @param  {DOM Element}  elem
+ * @return {Boolean}
+ */
+export function isSingleLine(elem) {
+  try {
+    const elem_height = parseInt(elem.clientHeight)
+    const line_height = parseInt(window.getComputedStyle(elem).lineHeight)
+    console.log({elem, elem_height, line_height})
+    // direct comparison didn't work,
+    // so just check if it's at least smaller than two lines tall...
+    return ( elem_height < ( line_height * 2) )
+
+  } catch (e) {
+    console.error('could not calculate isSingleLine', e)
+    return false
+  }
+}
+
+/**
+ * Does an okay (not perfect) job
+ * of telling you whether an element is bold or italic
+ *
+ * @param  {DOM Element}  elem
+ * @return {Boolean}
+ */
+export function isBoldOrItalic(elem) {
+  const { fontWeight, fontStyle } = window.getComputedStyle(elem)
+  return (
+    fontWeight === 'bold'
+    ||
+    fontWeight === 'bolder'
+    ||
+    fontStyle === 'italic'
+    ||
+    fontStyle === 'oblique'
+  )
+}
+
+
+/**
+ * @param  {DOM Element} elem
+ * @return {Boolean}
+ */
+export function elementContainsASingleWord(elem) {
+  return ( elem.innerText.split(/\s/).length === 1 )
+}
+
+
+const heading_elems = [
+  'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
+  'DT',
+]
+/**
+ * tries to guess at whether an element
+ * is a heading...
+ *
+ * @param  {DOM Element} elem
+ * @return {Boolean}
+ */
+export function looksLikeAHeading(elem) {
+  if ( elementContainsASingleWord(elem) ) {
+    return true
+  }
+
+  return (
+    (
+      heading_elems.includes(elem.nodeName)
+      ||
+      isBoldOrItalic(elem)
+    )
+    &&
+    isSingleLine(elem)
+  )
 }

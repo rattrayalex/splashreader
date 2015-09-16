@@ -6,6 +6,7 @@ import Immutable from 'immutable'
 const initialState = Immutable.fromJS({
   buttonShown: true,
   isPlaying: false,
+  changingPara: false,
   currentWord: '',
   wpm: 300,
 })
@@ -21,15 +22,25 @@ const actionHandlers = {
   play: (state, { payload }) =>
     state.set('isPlaying', true)
   ,
+
+  paraChange: (state, { payload }) =>
+    state.set('changingPara', true)
+  ,
+  paraResume: (state, { payload }) =>
+    state.set('changingPara', false)
+  ,
+
   wordSelected: (state, { payload }) =>
     state.set('buttonShown', true)
   ,
   wordDeselected: (state, { payload }) =>
     state.set('buttonShown', false)
   ,
+
   changeWord: (state, { payload }) =>
     state.set('currentWord', payload.word)
   ,
+
   setWpm: (state, { payload }) =>
     state.set('wpm', payload.wpm)
   ,

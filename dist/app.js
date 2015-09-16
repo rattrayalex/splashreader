@@ -83,11 +83,18 @@
 	var _rsvp_utils = __webpack_require__(370);
 
 	// TODO: move elsewhere...
+
+	window.rangy = _rangyLibRangyTextrange2['default'];
+
 	var word_options = {
 	  wordOptions: {
 	    wordRegex: /[^–—\s]+/gi
 	  }
 	};
+
+	function _containsNewline(range) {
+	  return !!range.text().match(/[\n\r]/);
+	}
 
 	var SplashReader = (function () {
 	  function SplashReader() {
@@ -152,6 +159,7 @@
 	    }
 
 	    // TODO: move elsewhere
+	    // TODO: clean up
 	  }, {
 	    key: 'splash',
 	    value: function splash() {
@@ -162,19 +170,32 @@
 	      }
 
 	      var sel = _rangyLibRangyTextrange2['default'].getSelection();
+	      var just_pressed_play = range ? false : true;
 
 	      // initialize
 	      if (!range) {
 	        range = sel.getRangeAt(0);
-	        range.move("word", -1, word_options);
+	        range.move('word', -1, word_options);
 	      }
 
-	      // set range to next word
-	      range.moveStart("word", 1, word_options);
-	      range.moveEnd("word", 1, word_options);
-	      range.expand('word', Object.assign(word_options, {
-	        trim: true
-	      }));
+	      // resume RSVP if in a new (non-header) paragrah.
+	      // Otherwise, move to next word.
+	      // (results, intentionally, in first-words-of-paragraph
+	      // being dispayed twice: first without RSVP, and then with RSVP)
+	      var is_changing_para = (0, _selectors.changingParaSelector)(_store2['default'].getState());
+	      var is_in_heading = (0, _rsvp_utils.looksLikeAHeading)(range.endContainer.parentElement);
+	      var is_new_para = false;
+	      if (is_changing_para && !is_in_heading) {
+	        _store2['default'].actions.paraResume();
+	      } else {
+	        // set range to next word
+	        range.moveStart('word', 1, word_options);
+	        range.moveEnd('word', 1, word_options);
+	        is_new_para = _containsNewline(range) ? true : false;
+	        range.expand('word', Object.assign(word_options, {
+	          trim: true // removes whitespace, newlines, etc.
+	        }));
+	      }
 
 	      // highlight it
 	      sel.setSingleRange(range);
@@ -185,7 +206,17 @@
 
 	      // move to the next word in a sec
 	      var wpm = (0, _selectors.wpmSelector)(_store2['default'].getState());
-	      setTimeout(this.splash.bind(this, range), (0, _rsvp_utils.getTimeToDisplay)(word, wpm));
+	      var time_to_display = (0, _rsvp_utils.getTimeToDisplay)(word, wpm);
+
+	      // pause RSVP at paragraph change
+	      if (is_new_para) {
+	        if (!just_pressed_play) {
+	          time_to_display = 1000;
+	        }
+	        _store2['default'].actions.paraChange();
+	      }
+
+	      setTimeout(this.splash.bind(this, range), time_to_display);
 	    }
 	  }]);
 
@@ -32467,6 +32498,7 @@
 	var initialState = _immutable2['default'].fromJS({
 	  buttonShown: true,
 	  isPlaying: false,
+	  changingPara: false,
 	  currentWord: '',
 	  wpm: 300
 	});
@@ -32490,35 +32522,45 @@
 	    return state.set('isPlaying', true);
 	  },
 
-	  wordSelected: function wordSelected(state, _ref4) {
+	  paraChange: function paraChange(state, _ref4) {
 	    var payload = _ref4.payload;
+	    return state.set('changingPara', true);
+	  },
+
+	  paraResume: function paraResume(state, _ref5) {
+	    var payload = _ref5.payload;
+	    return state.set('changingPara', false);
+	  },
+
+	  wordSelected: function wordSelected(state, _ref6) {
+	    var payload = _ref6.payload;
 	    return state.set('buttonShown', true);
 	  },
 
-	  wordDeselected: function wordDeselected(state, _ref5) {
-	    var payload = _ref5.payload;
+	  wordDeselected: function wordDeselected(state, _ref7) {
+	    var payload = _ref7.payload;
 	    return state.set('buttonShown', false);
 	  },
 
-	  changeWord: function changeWord(state, _ref6) {
-	    var payload = _ref6.payload;
+	  changeWord: function changeWord(state, _ref8) {
+	    var payload = _ref8.payload;
 	    return state.set('currentWord', payload.word);
 	  },
 
-	  setWpm: function setWpm(state, _ref7) {
-	    var payload = _ref7.payload;
+	  setWpm: function setWpm(state, _ref9) {
+	    var payload = _ref9.payload;
 	    return state.set('wpm', payload.wpm);
 	  },
 
-	  increaseWpm: function increaseWpm(state, _ref8) {
-	    var payload = _ref8.payload;
+	  increaseWpm: function increaseWpm(state, _ref10) {
+	    var payload = _ref10.payload;
 	    return state.update('wpm', function (wpm) {
 	      return Math.min(3000, wpm + payload.amount);
 	    });
 	  },
 
-	  decreaseWpm: function decreaseWpm(state, _ref9) {
-	    var payload = _ref9.payload;
+	  decreaseWpm: function decreaseWpm(state, _ref11) {
+	    var payload = _ref11.payload;
 	    return state.update('wpm', function (wpm) {
 	      return Math.max(0, wpm - payload.amount);
 	    });
@@ -38343,6 +38385,10 @@
 	  return state.get('isPlaying');
 	};
 	exports.isPlayingSelector = isPlayingSelector;
+	var changingParaSelector = function changingParaSelector(state) {
+	  return state.get('changingPara');
+	};
+	exports.changingParaSelector = changingParaSelector;
 	var currentWordSelector = function currentWordSelector(state) {
 	  return state.get('currentWord');
 	};
@@ -38352,8 +38398,13 @@
 	};
 
 	exports.wpmSelector = wpmSelector;
-	var allSelector = (0, _reselect.createSelector)([buttonShownSelector, isPlayingSelector, currentWordSelector, wpmSelector], function (buttonShown, isPlaying, currentWord, wpm) {
-	  return { buttonShown: buttonShown, isPlaying: isPlaying, currentWord: currentWord, wpm: wpm };
+	var rsvpPlayingSelector = (0, _reselect.createSelector)([isPlayingSelector, changingParaSelector], function (isPlaying, changingPara) {
+	  return isPlaying && !changingPara;
+	});
+
+	exports.rsvpPlayingSelector = rsvpPlayingSelector;
+	var allSelector = (0, _reselect.createSelector)([buttonShownSelector, isPlayingSelector, currentWordSelector, wpmSelector, rsvpPlayingSelector], function (buttonShown, isPlaying, currentWord, wpm, rsvpPlaying) {
+	  return { buttonShown: buttonShown, isPlaying: isPlaying, currentWord: currentWord, wpm: wpm, rsvpPlaying: rsvpPlaying };
 	});
 	exports.allSelector = allSelector;
 
@@ -38467,9 +38518,9 @@
 	  _createClass(SplashApp, [{
 	    key: 'render',
 	    value: function render() {
-	      var isPlaying = this.props.isPlaying;
+	      var rsvpPlaying = this.props.rsvpPlaying;
 
-	      if (isPlaying) {
+	      if (rsvpPlaying) {
 	        return _react2['default'].createElement(_Rsvp2['default'], this.props);
 	      }
 	      return _react2['default'].createElement(_SplashButton2['default'], this.props);
@@ -38482,7 +38533,7 @@
 	SplashApp.propTypes = {
 	  currentWord: _react.PropTypes.string.isRequired,
 	  buttonShown: _react.PropTypes.bool.isRequired,
-	  isPlaying: _react.PropTypes.bool.isRequired,
+	  rsvpPlaying: _react.PropTypes.bool.isRequired,
 	  wpm: _react.PropTypes.number.isRequired
 	};
 
@@ -38727,7 +38778,7 @@
 	})(_react2['default'].Component);
 
 	FloatingHoverButtons.propTypes = {
-	  children: _react.PropTypes.array.isRequired,
+	  children: _react.PropTypes.oneOfType([_react.PropTypes.array, _react.PropTypes.object]).isRequired,
 	  primary: _react.PropTypes.element.isRequired,
 	  shown: _react.PropTypes.bool
 	};
@@ -39243,14 +39294,14 @@
 	    key: 'render',
 	    value: function render() {
 	      var _props = this.props;
-	      var isPlaying = _props.isPlaying;
+	      var rsvpPlaying = _props.rsvpPlaying;
 	      var currentWord = _props.currentWord;
 	      var _state = this.state;
 	      var font = _state.font;
 	      var notch_offset = _state.notch_offset;
 	      var ORP_center = _state.ORP_center;
 
-	      if (!isPlaying) {
+	      if (!rsvpPlaying) {
 	        return null;
 	      }
 
@@ -39307,6 +39358,11 @@
 	exports.getWordMiddle = getWordMiddle;
 	exports.splitWord = splitWord;
 	exports.getTextWidth = getTextWidth;
+	exports.getClosestBlockElement = getClosestBlockElement;
+	exports.isSingleLine = isSingleLine;
+	exports.isBoldOrItalic = isBoldOrItalic;
+	exports.elementContainsASingleWord = elementContainsASingleWord;
+	exports.looksLikeAHeading = looksLikeAHeading;
 
 	function getDisplayMultiplier(word) {
 	  word = word.trim();
@@ -39342,6 +39398,17 @@
 	function msPerWord(wpm) {
 	  return 60000 / wpm;
 	}
+
+	/**
+	 * given a target word-per-minute,
+	 * tells you how long to display a given word,
+	 * adjusted for how complicated the word is.
+	 *
+	 * @param  {string} word
+	 * @param  {int} wpm
+	 * @return {int}
+	 *         milliseconds to display word
+	 */
 
 	function getTimeToDisplay(word, wpm) {
 	  return msPerWord(wpm) * getDisplayMultiplier(word);
@@ -39391,6 +39458,7 @@
 	/**
 	  Uses canvas.measureText to compute and return the width
 	  of the given text of given font in pixels.
+
 	  @param {String} text
 	    The text to be rendered.
 	  @param {String} font
@@ -39409,6 +39477,103 @@
 	  var metrics = context.measureText(text);
 
 	  return metrics.width;
+	}
+
+	/**
+	 * crawls up the DOM tree
+	 * to find the nearest `display: block` element
+	 * (including the passed-in element)
+	 *
+	 * @param  {DOM Element} elem
+	 * @return {element}
+	 */
+
+	function getClosestBlockElement(_x) {
+	  var _again = true;
+
+	  _function: while (_again) {
+	    var elem = _x;
+	    _again = false;
+
+	    if (window.getComputedStyle(elem).display === 'block') {
+	      return elem;
+	    }
+	    if (!elem.parentElement) {
+	      // if it's spans all the way up for some reason, just return the top one.
+	      return elem;
+	    }
+	    _x = elem.parentElement;
+	    _again = true;
+	    continue _function;
+	  }
+	}
+
+	/**
+	 * tries to detect whether the given element
+	 * is inside a block element
+	 * that is only a single line of text high.
+	 * Doesn't always work.
+	 * TODO: improve accuracy
+	 *
+	 * @param  {DOM Element}  elem
+	 * @return {Boolean}
+	 */
+
+	function isSingleLine(elem) {
+	  try {
+	    var elem_height = parseInt(elem.clientHeight);
+	    var line_height = parseInt(window.getComputedStyle(elem).lineHeight);
+	    console.log({ elem: elem, elem_height: elem_height, line_height: line_height });
+	    // direct comparison didn't work,
+	    // so just check if it's at least smaller than two lines tall...
+	    return elem_height < line_height * 2;
+	  } catch (e) {
+	    console.error('could not calculate isSingleLine', e);
+	    return false;
+	  }
+	}
+
+	/**
+	 * Does an okay (not perfect) job
+	 * of telling you whether an element is bold or italic
+	 *
+	 * @param  {DOM Element}  elem
+	 * @return {Boolean}
+	 */
+
+	function isBoldOrItalic(elem) {
+	  var _window$getComputedStyle = window.getComputedStyle(elem);
+
+	  var fontWeight = _window$getComputedStyle.fontWeight;
+	  var fontStyle = _window$getComputedStyle.fontStyle;
+
+	  return fontWeight === 'bold' || fontWeight === 'bolder' || fontStyle === 'italic' || fontStyle === 'oblique';
+	}
+
+	/**
+	 * @param  {DOM Element} elem
+	 * @return {Boolean}
+	 */
+
+	function elementContainsASingleWord(elem) {
+	  return elem.innerText.split(/\s/).length === 1;
+	}
+
+	var heading_elems = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'DT'];
+	/**
+	 * tries to guess at whether an element
+	 * is a heading...
+	 *
+	 * @param  {DOM Element} elem
+	 * @return {Boolean}
+	 */
+
+	function looksLikeAHeading(elem) {
+	  if (elementContainsASingleWord(elem)) {
+	    return true;
+	  }
+
+	  return (heading_elems.includes(elem.nodeName) || isBoldOrItalic(elem)) && isSingleLine(elem);
 	}
 
 /***/ },

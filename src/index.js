@@ -1,20 +1,29 @@
-import "babel-core/polyfill" // for Object.assign
+import 'babel-core/polyfill' // for Object.assign
 import key from 'keymaster'
 import React from 'react'
 import { Provider } from 'react-redux'
 
 import rangy from 'rangy/lib/rangy-textrange'
+window.rangy = rangy
 
 import store from './store'
-import { isPlayingSelector, wpmSelector } from './selectors'
+import {
+  isPlayingSelector,
+  wpmSelector,
+  changingParaSelector
+} from './selectors'
 import SplashApp from './SplashApp'
-import { getTimeToDisplay } from './rsvp_utils'
+import { getTimeToDisplay, looksLikeAHeading } from './rsvp_utils'
 
 // TODO: move elsewhere...
 const word_options = {
   wordOptions: {
     wordRegex: /[^–—\s]+/gi
   }
+}
+
+function _containsNewline(range) {
+  return !!range.text().match(/[\n\r]/)
 }
 
 
@@ -68,25 +77,39 @@ class SplashReader {
     })
   }
   // TODO: move elsewhere
+  // TODO: clean up
   splash(range=null) {
     if ( !isPlayingSelector(store.getState()) ) {
       return
     }
 
     let sel = rangy.getSelection()
+    const just_pressed_play = ( range ? false : true )
 
     // initialize
     if ( !range ) {
       range = sel.getRangeAt(0)
-      range.move("word", -1, word_options)
+      range.move('word', -1, word_options)
     }
 
-    // set range to next word
-    range.moveStart("word", 1, word_options)
-    range.moveEnd("word", 1, word_options)
-    range.expand('word', Object.assign(word_options, {
-      trim: true
-    }))
+    // resume RSVP if in a new (non-header) paragrah.
+    // Otherwise, move to next word.
+    // (results, intentionally, in first-words-of-paragraph
+    // being dispayed twice: first without RSVP, and then with RSVP)
+    const is_changing_para = changingParaSelector(store.getState())
+    const is_in_heading = looksLikeAHeading(range.endContainer.parentElement)
+    let is_new_para = false
+    if ( is_changing_para && !is_in_heading ) {
+      store.actions.paraResume()
+    } else {
+      // set range to next word
+      range.moveStart('word', 1, word_options)
+      range.moveEnd('word', 1, word_options)
+      is_new_para = _containsNewline(range) ? true : false
+      range.expand('word', Object.assign(word_options, {
+        trim: true  // removes whitespace, newlines, etc.
+      }))
+    }
 
     // highlight it
     sel.setSingleRange(range)
@@ -97,9 +120,19 @@ class SplashReader {
 
     // move to the next word in a sec
     const wpm = wpmSelector(store.getState())
+    let time_to_display = getTimeToDisplay(word, wpm)
+
+    // pause RSVP at paragraph change
+    if ( is_new_para ) {
+      if ( !just_pressed_play ) {
+        time_to_display = 1000
+      }
+      store.actions.paraChange()
+    }
+
     setTimeout(
       this.splash.bind(this, range),
-      getTimeToDisplay(word, wpm)
+      time_to_display
     )
   }
 }

@@ -9,8 +9,8 @@ import { allSelector } from './selectors'
 
 class SplashApp extends React.Component {
   render() {
-    const { isPlaying } = this.props
-    if ( isPlaying ) {
+    const { rsvpPlaying } = this.props
+    if ( rsvpPlaying ) {
       return <Rsvp {...this.props} />
     }
     return <SplashButton {...this.props} />
@@ -20,7 +20,7 @@ class SplashApp extends React.Component {
 SplashApp.propTypes = {
   currentWord: PropTypes.string.isRequired,
   buttonShown: PropTypes.bool.isRequired,
-  isPlaying: PropTypes.bool.isRequired,
+  rsvpPlaying: PropTypes.bool.isRequired,
   wpm: PropTypes.number.isRequired,
 }
 

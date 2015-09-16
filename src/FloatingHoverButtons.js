@@ -34,7 +34,10 @@ class FloatingHoverButtons extends React.Component {
 
 }
 FloatingHoverButtons.propTypes = {
-  children: PropTypes.array.isRequired,
+  children: PropTypes.oneOfType([
+    PropTypes.array,
+    PropTypes.object
+  ]).isRequired,
   primary: PropTypes.element.isRequired,
   shown: PropTypes.bool,
 }
