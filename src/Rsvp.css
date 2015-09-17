@@ -18,14 +18,21 @@
 }
 
 .rsvp-wrapper {
-  width: 100%;
   position: absolute;
+  width: 100%;
+
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
 
   color: #666;
   background-color: white;
   box-shadow: 0 0 50px 50px white;
+
+  /* ensure shadow not visible w/in box */
+  margin-left: -50px;
+  margin-right: -50px;
+  padding-left: 50px;
+  padding-right: 50px;
 }
 .rsvp-wrapper-inner {
   padding: 20px;

@@ -47,12 +47,14 @@ class SplashReader {
     )
     return this
   }
+
   insertWrapper() {
     const wrapper = document.createElement('div')
     wrapper.setAttribute('id', 'splashreader-wrapper')
     document.body.appendChild(wrapper)
     return wrapper
   }
+
   listenForSpace() {
     key('space', (e) => {
       e.preventDefault()
@@ -65,6 +67,7 @@ class SplashReader {
       return false
     })
   }
+
   listenForPlay() {
     store.subscribe(() => {
       // TODO: clean up / document better...
@@ -76,11 +79,13 @@ class SplashReader {
       }
     })
   }
+
   setReadingPointAt(range) {
     scrollToElementOnce(range.endContainer.parentNode)
-    const left = getReadingEdgeLeft(range.startContainer.parentNode)
+    const left = getReadingEdgeLeft(range.endContainer.parentNode)
     store.actions.setReadingEdge({ left })
   }
+
   // TODO: move elsewhere
   // TODO: clean up
   splash(range=null) {
@@ -95,11 +100,6 @@ class SplashReader {
     if ( !range ) {
       range = sel.getRangeAt(0)
       range.move('word', -1, word_options)
-    }
-
-    // scroll if we're not there yet.
-    if ( just_pressed_play ) {
-      this.setReadingPointAt(range)
     }
 
     // resume RSVP if in a new (non-header) paragrah.
@@ -119,6 +119,11 @@ class SplashReader {
       range.expand('word', Object.assign(word_options, {
         trim: true  // removes whitespace, newlines, etc.
       }))
+    }
+
+    // scroll if we're not there yet.
+    if ( just_pressed_play ) {
+      this.setReadingPointAt(range)
     }
 
     // highlight it
