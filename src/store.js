@@ -1,7 +1,11 @@
-import { createStore } from 'redux'
+import { createStore, compose, applyMiddleware } from 'redux'
+// import { devTools, persistState } from 'redux-devtools'
+import createLogger from 'redux-logger'
 import { createAction, handleActions } from 'redux-actions'
 import Immutable from 'immutable'
 
+
+// chrome.storage.sync.set({'wpm': wpm})
 
 // TODO: nesting.
 const initialState = Immutable.fromJS({
@@ -38,10 +42,10 @@ const actionHandlers = {
     state.set('changingPara', false)
   ,
 
-  wordSelected: (state, { payload }) =>
+  textHighlighted: (state, { payload }) =>
     state.set('buttonShown', true)
   ,
-  wordDeselected: (state, { payload }) =>
+  nothingHighlighted: (state, { payload }) =>
     state.set('buttonShown', false)
   ,
 
@@ -65,7 +69,24 @@ const actionHandlers = {
 
 const reducer = handleActions(actionHandlers, initialState)
 
-const store = createStore(reducer)
+// For redux-devtools:
+// const finalCreateStore = compose(
+//   // Enables your middleware:
+//   // applyMiddleware(m1, m2, m3), // any Redux middleware, e.g. redux-thunk
+//   // Provides support for DevTools:
+//   devTools(),
+//   // Lets you write ?debug_session=<name> in address bar to persist debug sessions
+//   persistState(window.location.href.match(/[?&]debug_session=([^&]+)\b/))
+// )(createStore)
+// const store = finalCreateStore(reducer)
+
+const logger = createLogger({
+  // print immutable as json
+  transformer: (x) => ( x.toJSON ? x.toJSON() : x )
+})
+const createStoreWithMiddleware = applyMiddleware(logger)(createStore)
+const store = createStoreWithMiddleware(reducer)
+// const store = createStore(reducer)
 
 
 // be automagic about creating actions

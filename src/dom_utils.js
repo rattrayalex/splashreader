@@ -1,7 +1,37 @@
+import rangy from 'rangy/lib/rangy-textrange'
+
+
+export function isTextHighlighted() {
+  return (
+    rangy.getSelection().rangeCount === 1
+    &&
+    rangy.getSelection().getRangeAt(0).text()
+  )
+}
+
+export function isSingleWordHighlighted() {
+  const sel = rangy.getSelection()
+
+  if ( sel.rangeCount < 1 ) {
+    return false
+  }
+
+  let range = sel.getRangeAt(0)
+  let text = range.text()
+
+  // TODO: improve accuracy... this is simple/dumb
+  if ( !text.match(/\s/) ) {
+    return true
+  }
+
+  return false
+}
+
 
 export function getReadingEdgeLeft(elem) {
   return elem.getBoundingClientRect().left + window.scrollX
 }
+
 
 export function getReadingHeight() {
   return ( window.innerHeight * .32 )
@@ -9,11 +39,9 @@ export function getReadingHeight() {
 
 // TODO: scroll w/in scrolly-divs on the page.
 export function scrollToElementOnce (elem) {
-
   let elem_top = elem.getBoundingClientRect().top + window.scrollY
   let offset = getReadingHeight()
   let target = elem_top - offset
-  console.log('in scrollToElementOnce', { elem, elem_top, offset, target, })
   scrollToOnce(document.body, target, 500)
 }
 

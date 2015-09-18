@@ -2,8 +2,9 @@ import 'babel-core/polyfill' // for Object.assign
 import key from 'keymaster'
 import React from 'react'
 import { Provider } from 'react-redux'
-
+import { DevTools, DebugPanel, LogMonitor } from 'redux-devtools/lib/react'
 import rangy from 'rangy/lib/rangy-textrange'
+
 window.rangy = rangy
 
 import store from './store'
@@ -14,7 +15,11 @@ import {
 } from './selectors'
 import SplashApp from './SplashApp'
 import { getTimeToDisplay, looksLikeAHeading } from './rsvp_utils'
-import { scrollToElementOnce, getReadingEdgeLeft } from './dom_utils'
+import {
+  scrollToElementOnce,
+  getReadingEdgeLeft,
+  isTextHighlighted,
+} from './dom_utils'
 
 // TODO: move elsewhere...
 const word_options = {
@@ -36,13 +41,20 @@ class SplashReader {
 
     this.wrapper = this.insertWrapper()
 
-    this.listenForSpace()
     this.listenForPlay()
+    this.listenForWordHighlight()
+    this.listenForEsc()
 
     React.render(
-      <Provider store={store}>
-        {() => <SplashApp />}
-      </Provider>,
+      // include below `Provider` for redux-devtools
+      // <DebugPanel top right bottom>
+      //   <DevTools store={store} monitor={LogMonitor} />
+      // </DebugPanel>
+      <div>
+        <Provider store={store}>
+          {() => <SplashApp />}
+        </Provider>
+      </div>,
       this.wrapper
     )
     return this
@@ -55,17 +67,42 @@ class SplashReader {
     return wrapper
   }
 
+  listenForWordHighlight() {
+    this.unListenForWordHighlight()
+    document.addEventListener(
+      'selectionchange',
+      this.listenForSpace.bind(this)
+    )
+  }
+  unListenForWordHighlight() {
+    document.removeEventListener(
+      'selectionchange',
+      this.listenForSpace.bind(this)
+    )
+  }
   listenForSpace() {
-    key('space', (e) => {
-      e.preventDefault()
-      store.actions.playPause()
-      return false
-    })
+    this.unListenForSpace()
+    if ( isTextHighlighted() ) {
+      store.actions.textHighlighted()
+      key('space', (e) => {
+        e.preventDefault()
+        store.actions.playPause()
+      })
+    } else {
+      store.actions.nothingHighlighted()
+    }
+  }
+  unListenForSpace() {
+    key.unbind('space')
+  }
+  listenForEsc() {
+    this.unListenForEsc()
     key('esc', (e) => {
-      e.preventDefault()
       store.actions.pause()
-      return false
     })
+  }
+  unListenForEsc() {
+    key.unbind('esc')
   }
 
   listenForPlay() {
@@ -77,6 +114,7 @@ class SplashReader {
       if ( this.is_playing && !this.was_playing ) {
         this.splash()
       }
+
     })
   }
 

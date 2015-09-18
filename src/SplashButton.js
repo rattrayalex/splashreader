@@ -14,7 +14,6 @@ class SplashButton extends React.Component {
     store.actions.playPause()
   }
 
-
   render() {
     let { buttonShown, isPlaying, wpm } = this.props
 
