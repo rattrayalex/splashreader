@@ -16,22 +16,22 @@ export function getDisplayMultiplier(word) {
   }
 
   if ( word.length > 8 ) {
-    display *= 1.2
+    display *= 1.4
   }
 
   // Double up on words with numbers, symbols, or punctuation!
-  if ( word.match(/[^a-zA-Z]/) ) { // anything but a letter
-    display *= 1.2
+  if ( word.match(/[^a-zA-Z]/) ) {
+    display *= 1.4
   }
 
   // Triple up on words that have a number.
   if ( word.match(/[0-9]/) ) {
-    display *= 1.4
+    display *= 1.8
   }
 
   // triple up on words that end with one of: . ! ? : ) ]
   if ( word.slice(-1).match(/\.|\!|\?|:|\)|\]/) ) {
-    display *= 1.4
+    display *= 1.8
   }
 
   return display

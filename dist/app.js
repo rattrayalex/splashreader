@@ -107,6 +107,8 @@
 	    this.is_playing = false;
 	    this.was_playing = false;
 
+	    this.play_timeout = null;
+
 	    this.wrapper = this.insertWrapper();
 
 	    this.listenForPlay();
@@ -207,6 +209,8 @@
 	      if (!(0, _selectors.isPlayingSelector)(_store2['default'].getState())) {
 	        return;
 	      }
+	      // prevent double-play.
+	      window.clearTimeout(this.play_timeout);
 
 	      var sel = _rangyLibRangyTextrange2['default'].getSelection();
 	      var just_pressed_play = range ? false : true;
@@ -261,7 +265,7 @@
 	        _store2['default'].actions.paraChange();
 	      }
 
-	      setTimeout(this.splash.bind(this, range), time_to_display);
+	      this.play_timeout = setTimeout(this.splash.bind(this, range), time_to_display);
 	    }
 	  }]);
 
@@ -39012,23 +39016,22 @@
 	  }
 
 	  if (word.length > 8) {
-	    display *= 1.2;
+	    display *= 1.4;
 	  }
 
 	  // Double up on words with numbers, symbols, or punctuation!
 	  if (word.match(/[^a-zA-Z]/)) {
-	    // anything but a letter
-	    display *= 1.2;
+	    display *= 1.4;
 	  }
 
 	  // Triple up on words that have a number.
 	  if (word.match(/[0-9]/)) {
-	    display *= 1.4;
+	    display *= 1.8;
 	  }
 
 	  // triple up on words that end with one of: . ! ? : ) ]
 	  if (word.slice(-1).match(/\.|\!|\?|:|\)|\]/)) {
-	    display *= 1.4;
+	    display *= 1.8;
 	  }
 
 	  return display;
@@ -40015,6 +40018,9 @@
 	      var font = _props.font;
 
 	      if (!rsvpPlaying) {
+	        return null;
+	      }
+	      if (!currentWord.trim().length) {
 	        return null;
 	      }
 

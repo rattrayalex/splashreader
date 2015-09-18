@@ -38,6 +38,8 @@ class SplashReader {
     this.is_playing = false
     this.was_playing = false
 
+    this.play_timeout = null
+
     this.wrapper = this.insertWrapper()
 
     this.listenForPlay()
@@ -123,6 +125,8 @@ class SplashReader {
     if ( !isPlayingSelector(store.getState()) ) {
       return
     }
+    // prevent double-play.
+    window.clearTimeout(this.play_timeout)
 
     let sel = rangy.getSelection()
     const just_pressed_play = ( range ? false : true )
@@ -177,7 +181,7 @@ class SplashReader {
       store.actions.paraChange()
     }
 
-    setTimeout(
+    this.play_timeout = setTimeout(
       this.splash.bind(this, range),
       time_to_display
     )

@@ -14,6 +14,9 @@ export default class Rsvp extends React.Component {
     if ( !rsvpPlaying ) {
       return null
     }
+    if ( !currentWord.trim().length ) {
+      return null
+    }
 
     // the lil notch goes in the middle of a letter (hence half an 'm')
     const notch_offset = ( orpCenter + getTextWidth('m', font) / 2 )
