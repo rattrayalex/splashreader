@@ -2,7 +2,6 @@ import 'babel-core/polyfill' // for Object.assign
 import key from 'keymaster'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { DevTools, DebugPanel, LogMonitor } from 'redux-devtools/lib/react'
 import rangy from 'rangy/lib/rangy-textrange'
 
 window.rangy = rangy
@@ -46,15 +45,9 @@ class SplashReader {
     this.listenForEsc()
 
     React.render(
-      // include below `Provider` for redux-devtools
-      // <DebugPanel top right bottom>
-      //   <DevTools store={store} monitor={LogMonitor} />
-      // </DebugPanel>
-      <div>
-        <Provider store={store}>
-          {() => <SplashApp />}
-        </Provider>
-      </div>,
+      <Provider store={store}>
+        {() => <SplashApp />}
+      </Provider>,
       this.wrapper
     )
     return this

@@ -1,5 +1,4 @@
-import { createStore, compose, applyMiddleware } from 'redux'
-// import { devTools, persistState } from 'redux-devtools'
+import { createStore, applyMiddleware } from 'redux'
 import createLogger from 'redux-logger'
 import { createAction, handleActions } from 'redux-actions'
 import Immutable from 'immutable'
@@ -68,17 +67,6 @@ const actionHandlers = {
 }
 
 const reducer = handleActions(actionHandlers, initialState)
-
-// For redux-devtools:
-// const finalCreateStore = compose(
-//   // Enables your middleware:
-//   // applyMiddleware(m1, m2, m3), // any Redux middleware, e.g. redux-thunk
-//   // Provides support for DevTools:
-//   devTools(),
-//   // Lets you write ?debug_session=<name> in address bar to persist debug sessions
-//   persistState(window.location.href.match(/[?&]debug_session=([^&]+)\b/))
-// )(createStore)
-// const store = finalCreateStore(reducer)
 
 const logger = createLogger({
   // print immutable as json
