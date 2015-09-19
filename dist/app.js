@@ -38753,7 +38753,7 @@
 	  try {
 	    return chrome.storage.sync.get('wpm', cb);
 	  } catch (e) {
-	    console.error('Could not save WPM to chrome', e);
+	    console.error('Could not load WPM from chrome', e);
 	  }
 	}
 
