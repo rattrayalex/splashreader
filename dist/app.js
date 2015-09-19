@@ -66,23 +66,25 @@
 
 	var _reactRedux = __webpack_require__(324);
 
-	var _rangyLibRangyTextrange = __webpack_require__(478);
+	var _rangyLibRangyTextrange = __webpack_require__(342);
 
 	var _rangyLibRangyTextrange2 = _interopRequireDefault(_rangyLibRangyTextrange);
 
-	var _store = __webpack_require__(480);
+	var _store = __webpack_require__(344);
 
 	var _store2 = _interopRequireDefault(_store);
 
-	var _selectors = __webpack_require__(497);
+	var _selectors = __webpack_require__(362);
 
-	var _SplashApp = __webpack_require__(500);
+	var _SplashApp = __webpack_require__(365);
 
 	var _SplashApp2 = _interopRequireDefault(_SplashApp);
 
-	var _rsvp_utils = __webpack_require__(499);
+	var _rsvp_utils = __webpack_require__(364);
 
-	var _dom_utils = __webpack_require__(510);
+	var _dom_utils = __webpack_require__(375);
+
+	var _chromeSync = __webpack_require__(361);
 
 	// TODO: move elsewhere...
 
@@ -111,6 +113,7 @@
 
 	    this.wrapper = this.insertWrapper();
 
+	    this.loadWpmFromChrome();
 	    this.listenForPlay();
 	    this.listenForWordHighlight();
 	    this.listenForEsc();
@@ -132,6 +135,18 @@
 	      wrapper.setAttribute('id', 'splashreader-wrapper');
 	      document.body.appendChild(wrapper);
 	      return wrapper;
+	    }
+	  }, {
+	    key: 'loadWpmFromChrome',
+	    value: function loadWpmFromChrome() {
+	      (0, _chromeSync.loadWpm)(function (_ref) {
+	        var wpm = _ref.wpm;
+
+	        wpm = parseInt(wpm);
+	        if (wpm) {
+	          _store2['default'].actions.setWpm({ wpm: wpm });
+	        }
+	      });
 	    }
 	  }, {
 	    key: 'listenForWordHighlight',
@@ -26805,143 +26820,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(167)))
 
 /***/ },
-/* 342 */,
-/* 343 */,
-/* 344 */,
-/* 345 */,
-/* 346 */,
-/* 347 */,
-/* 348 */,
-/* 349 */,
-/* 350 */,
-/* 351 */,
-/* 352 */,
-/* 353 */,
-/* 354 */,
-/* 355 */,
-/* 356 */,
-/* 357 */,
-/* 358 */,
-/* 359 */,
-/* 360 */,
-/* 361 */,
-/* 362 */,
-/* 363 */,
-/* 364 */,
-/* 365 */,
-/* 366 */,
-/* 367 */,
-/* 368 */,
-/* 369 */,
-/* 370 */,
-/* 371 */,
-/* 372 */,
-/* 373 */,
-/* 374 */,
-/* 375 */,
-/* 376 */,
-/* 377 */,
-/* 378 */,
-/* 379 */,
-/* 380 */,
-/* 381 */,
-/* 382 */,
-/* 383 */,
-/* 384 */,
-/* 385 */,
-/* 386 */,
-/* 387 */,
-/* 388 */,
-/* 389 */,
-/* 390 */,
-/* 391 */,
-/* 392 */,
-/* 393 */,
-/* 394 */,
-/* 395 */,
-/* 396 */,
-/* 397 */,
-/* 398 */,
-/* 399 */,
-/* 400 */,
-/* 401 */,
-/* 402 */,
-/* 403 */,
-/* 404 */,
-/* 405 */,
-/* 406 */,
-/* 407 */,
-/* 408 */,
-/* 409 */,
-/* 410 */,
-/* 411 */,
-/* 412 */,
-/* 413 */,
-/* 414 */,
-/* 415 */,
-/* 416 */,
-/* 417 */,
-/* 418 */,
-/* 419 */,
-/* 420 */,
-/* 421 */,
-/* 422 */,
-/* 423 */,
-/* 424 */,
-/* 425 */,
-/* 426 */,
-/* 427 */,
-/* 428 */,
-/* 429 */,
-/* 430 */,
-/* 431 */,
-/* 432 */,
-/* 433 */,
-/* 434 */,
-/* 435 */,
-/* 436 */,
-/* 437 */,
-/* 438 */,
-/* 439 */,
-/* 440 */,
-/* 441 */,
-/* 442 */,
-/* 443 */,
-/* 444 */,
-/* 445 */,
-/* 446 */,
-/* 447 */,
-/* 448 */,
-/* 449 */,
-/* 450 */,
-/* 451 */,
-/* 452 */,
-/* 453 */,
-/* 454 */,
-/* 455 */,
-/* 456 */,
-/* 457 */,
-/* 458 */,
-/* 459 */,
-/* 460 */,
-/* 461 */,
-/* 462 */,
-/* 463 */,
-/* 464 */,
-/* 465 */,
-/* 466 */,
-/* 467 */,
-/* 468 */,
-/* 469 */,
-/* 470 */,
-/* 471 */,
-/* 472 */,
-/* 473 */,
-/* 474 */,
-/* 475 */,
-/* 476 */,
-/* 477 */,
-/* 478 */
+/* 342 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -27012,7 +26891,7 @@
 	(function(factory, root) {
 	    if (true) {
 	        // AMD. Register as an anonymous module with a dependency on Rangy.
-	        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(479)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(343)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	    } else if (typeof module != "undefined" && typeof exports == "object") {
 	        // Node/CommonJS style
 	        module.exports = factory( require("rangy") );
@@ -28876,7 +28755,7 @@
 	}, this);
 
 /***/ },
-/* 479 */
+/* 343 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -32726,7 +32605,7 @@
 	}, this);
 
 /***/ },
-/* 480 */
+/* 344 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32739,17 +32618,17 @@
 
 	var _redux = __webpack_require__(332);
 
-	var _reduxLogger = __webpack_require__(481);
+	var _reduxLogger = __webpack_require__(345);
 
 	var _reduxLogger2 = _interopRequireDefault(_reduxLogger);
 
-	var _reduxActions = __webpack_require__(484);
+	var _reduxActions = __webpack_require__(348);
 
-	var _immutable = __webpack_require__(496);
+	var _immutable = __webpack_require__(360);
 
 	var _immutable2 = _interopRequireDefault(_immutable);
 
-	// chrome.storage.sync.set({'wpm': wpm})
+	var _chromeSync = __webpack_require__(361);
 
 	// TODO: nesting.
 	var initialState = _immutable2['default'].fromJS({
@@ -32818,20 +32697,20 @@
 
 	  setWpm: function setWpm(state, _ref10) {
 	    var payload = _ref10.payload;
-	    return state.set('wpm', payload.wpm);
+	    return state.set('wpm', (0, _chromeSync.saveWpm)(payload.wpm));
 	  },
 
 	  increaseWpm: function increaseWpm(state, _ref11) {
 	    var payload = _ref11.payload;
 	    return state.update('wpm', function (wpm) {
-	      return Math.min(3000, wpm + payload.amount);
+	      return (0, _chromeSync.saveWpm)(Math.min(3000, wpm + payload.amount));
 	    });
 	  },
 
 	  decreaseWpm: function decreaseWpm(state, _ref12) {
 	    var payload = _ref12.payload;
 	    return state.update('wpm', function (wpm) {
-	      return Math.max(50, wpm - payload.amount);
+	      return (0, _chromeSync.saveWpm)(Math.max(50, wpm - payload.amount));
 	    });
 	  }
 
@@ -32869,7 +32748,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 481 */
+/* 345 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32880,11 +32759,11 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _createLogger = __webpack_require__(482);
+	var _createLogger = __webpack_require__(346);
 
 	var _createLogger2 = _interopRequireDefault(_createLogger);
 
-	var _logger = __webpack_require__(483);
+	var _logger = __webpack_require__(347);
 
 	var _logger2 = _interopRequireDefault(_logger);
 
@@ -32907,7 +32786,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 482 */
+/* 346 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -33023,7 +32902,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 483 */
+/* 347 */
 /***/ function(module, exports) {
 
 	/**
@@ -33076,7 +32955,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 484 */
+/* 348 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33085,15 +32964,15 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _createAction = __webpack_require__(485);
+	var _createAction = __webpack_require__(349);
 
 	var _createAction2 = _interopRequireDefault(_createAction);
 
-	var _handleAction = __webpack_require__(486);
+	var _handleAction = __webpack_require__(350);
 
 	var _handleAction2 = _interopRequireDefault(_handleAction);
 
-	var _handleActions = __webpack_require__(493);
+	var _handleActions = __webpack_require__(357);
 
 	var _handleActions2 = _interopRequireDefault(_handleActions);
 
@@ -33102,7 +32981,7 @@
 	exports.handleActions = _handleActions2['default'];
 
 /***/ },
-/* 485 */
+/* 349 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -33131,7 +33010,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 486 */
+/* 350 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33139,7 +33018,7 @@
 	exports.__esModule = true;
 	exports['default'] = handleAction;
 
-	var _fluxStandardAction = __webpack_require__(487);
+	var _fluxStandardAction = __webpack_require__(351);
 
 	function isFunction(val) {
 	  return typeof val === 'function';
@@ -33167,7 +33046,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 487 */
+/* 351 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33178,7 +33057,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _lodashIsplainobject = __webpack_require__(488);
+	var _lodashIsplainobject = __webpack_require__(352);
 
 	var _lodashIsplainobject2 = _interopRequireDefault(_lodashIsplainobject);
 
@@ -33197,7 +33076,7 @@
 	}
 
 /***/ },
-/* 488 */
+/* 352 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -33208,9 +33087,9 @@
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var baseFor = __webpack_require__(489),
-	    isArguments = __webpack_require__(490),
-	    keysIn = __webpack_require__(491);
+	var baseFor = __webpack_require__(353),
+	    isArguments = __webpack_require__(354),
+	    keysIn = __webpack_require__(355);
 
 	/** `Object#toString` result references. */
 	var objectTag = '[object Object]';
@@ -33306,7 +33185,7 @@
 
 
 /***/ },
-/* 489 */
+/* 353 */
 /***/ function(module, exports) {
 
 	/**
@@ -33398,7 +33277,7 @@
 
 
 /***/ },
-/* 490 */
+/* 354 */
 /***/ function(module, exports) {
 
 	/**
@@ -33510,7 +33389,7 @@
 
 
 /***/ },
-/* 491 */
+/* 355 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -33521,8 +33400,8 @@
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-	var isArguments = __webpack_require__(490),
-	    isArray = __webpack_require__(492);
+	var isArguments = __webpack_require__(354),
+	    isArray = __webpack_require__(356);
 
 	/** Used to detect unsigned integer values. */
 	var reIsUint = /^\d+$/;
@@ -33648,7 +33527,7 @@
 
 
 /***/ },
-/* 492 */
+/* 356 */
 /***/ function(module, exports) {
 
 	/**
@@ -33834,7 +33713,7 @@
 
 
 /***/ },
-/* 493 */
+/* 357 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33844,15 +33723,15 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _handleAction = __webpack_require__(486);
+	var _handleAction = __webpack_require__(350);
 
 	var _handleAction2 = _interopRequireDefault(_handleAction);
 
-	var _ownKeys = __webpack_require__(494);
+	var _ownKeys = __webpack_require__(358);
 
 	var _ownKeys2 = _interopRequireDefault(_ownKeys);
 
-	var _reduceReducers = __webpack_require__(495);
+	var _reduceReducers = __webpack_require__(359);
 
 	var _reduceReducers2 = _interopRequireDefault(_reduceReducers);
 
@@ -33870,7 +33749,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 494 */
+/* 358 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -33895,7 +33774,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 495 */
+/* 359 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -33918,7 +33797,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 496 */
+/* 360 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38850,7 +38729,36 @@
 	}));
 
 /***/ },
-/* 497 */
+/* 361 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.saveWpm = saveWpm;
+	exports.loadWpm = loadWpm;
+
+	function saveWpm(wpm) {
+	  try {
+	    chrome.storage.sync.set({ 'wpm': wpm });
+	  } catch (e) {
+	    console.error('Could not save WPM to chrome', e);
+	  }
+	  return wpm;
+	}
+
+	function loadWpm(cb) {
+	  try {
+	    return chrome.storage.sync.get('wpm', cb);
+	  } catch (e) {
+	    console.error('Could not save WPM to chrome', e);
+	  }
+	}
+
+/***/ },
+/* 362 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -38859,9 +38767,9 @@
 	  value: true
 	});
 
-	var _reselect = __webpack_require__(498);
+	var _reselect = __webpack_require__(363);
 
-	var _rsvp_utils = __webpack_require__(499);
+	var _rsvp_utils = __webpack_require__(364);
 
 	// TODO: cleanup / nest / break up
 
@@ -38916,7 +38824,7 @@
 	exports.allSelector = allSelector;
 
 /***/ },
-/* 498 */
+/* 363 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -38978,7 +38886,7 @@
 	}
 
 /***/ },
-/* 499 */
+/* 364 */
 /***/ function(module, exports) {
 
 	
@@ -39220,7 +39128,7 @@
 	}
 
 /***/ },
-/* 500 */
+/* 365 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39245,15 +39153,15 @@
 
 	var _reactRedux = __webpack_require__(324);
 
-	var _SplashButton = __webpack_require__(501);
+	var _SplashButton = __webpack_require__(366);
 
 	var _SplashButton2 = _interopRequireDefault(_SplashButton);
 
-	var _Rsvp = __webpack_require__(509);
+	var _Rsvp = __webpack_require__(374);
 
 	var _Rsvp2 = _interopRequireDefault(_Rsvp);
 
-	var _selectors = __webpack_require__(497);
+	var _selectors = __webpack_require__(362);
 
 	var SplashApp = (function (_React$Component) {
 	  _inherits(SplashApp, _React$Component);
@@ -39291,7 +39199,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 501 */
+/* 366 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39314,23 +39222,23 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _classnames = __webpack_require__(502);
+	var _classnames = __webpack_require__(367);
 
 	var _classnames2 = _interopRequireDefault(_classnames);
 
-	var _store = __webpack_require__(480);
+	var _store = __webpack_require__(344);
 
 	var _store2 = _interopRequireDefault(_store);
 
-	var _FloatingHoverButtons = __webpack_require__(503);
+	var _FloatingHoverButtons = __webpack_require__(368);
 
 	var _FloatingHoverButtons2 = _interopRequireDefault(_FloatingHoverButtons);
 
-	var _WpmButtons = __webpack_require__(504);
+	var _WpmButtons = __webpack_require__(369);
 
 	var _WpmButtons2 = _interopRequireDefault(_WpmButtons);
 
-	__webpack_require__(505);
+	__webpack_require__(370);
 
 	var SplashButton = (function (_React$Component) {
 	  _inherits(SplashButton, _React$Component);
@@ -39402,7 +39310,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 502 */
+/* 367 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -39457,7 +39365,7 @@
 
 
 /***/ },
-/* 503 */
+/* 368 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39536,7 +39444,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 504 */
+/* 369 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39559,7 +39467,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _store = __webpack_require__(480);
+	var _store = __webpack_require__(344);
 
 	var _store2 = _interopRequireDefault(_store);
 
@@ -39641,16 +39549,16 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 505 */
+/* 370 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(506);
+	var content = __webpack_require__(371);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(508)(content, {});
+	var update = __webpack_require__(373)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -39667,10 +39575,10 @@
 	}
 
 /***/ },
-/* 506 */
+/* 371 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(507)();
+	exports = module.exports = __webpack_require__(372)();
 	// imports
 
 
@@ -39681,7 +39589,7 @@
 
 
 /***/ },
-/* 507 */
+/* 372 */
 /***/ function(module, exports) {
 
 	/*
@@ -39737,7 +39645,7 @@
 
 
 /***/ },
-/* 508 */
+/* 373 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -39962,7 +39870,7 @@
 
 
 /***/ },
-/* 509 */
+/* 374 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39985,19 +39893,19 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _rsvp_utils = __webpack_require__(499);
+	var _rsvp_utils = __webpack_require__(364);
 
-	var _dom_utils = __webpack_require__(510);
+	var _dom_utils = __webpack_require__(375);
 
-	var _SplashButton = __webpack_require__(501);
+	var _SplashButton = __webpack_require__(366);
 
 	var _SplashButton2 = _interopRequireDefault(_SplashButton);
 
-	var _RsvpWord = __webpack_require__(511);
+	var _RsvpWord = __webpack_require__(376);
 
 	var _RsvpWord2 = _interopRequireDefault(_RsvpWord);
 
-	__webpack_require__(512);
+	__webpack_require__(377);
 
 	var Rsvp = (function (_React$Component) {
 	  _inherits(Rsvp, _React$Component);
@@ -40061,7 +39969,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 510 */
+/* 375 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -40077,7 +39985,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _rangyLibRangyTextrange = __webpack_require__(478);
+	var _rangyLibRangyTextrange = __webpack_require__(342);
 
 	var _rangyLibRangyTextrange2 = _interopRequireDefault(_rangyLibRangyTextrange);
 
@@ -40171,7 +40079,7 @@
 	}
 
 /***/ },
-/* 511 */
+/* 376 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -40194,7 +40102,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _rsvp_utils = __webpack_require__(499);
+	var _rsvp_utils = __webpack_require__(364);
 
 	var RsvpWord = (function (_React$Component) {
 	  _inherits(RsvpWord, _React$Component);
@@ -40266,16 +40174,16 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 512 */
+/* 377 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(513);
+	var content = __webpack_require__(378);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(508)(content, {});
+	var update = __webpack_require__(373)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -40292,10 +40200,10 @@
 	}
 
 /***/ },
-/* 513 */
+/* 378 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(507)();
+	exports = module.exports = __webpack_require__(372)();
 	// imports
 
 

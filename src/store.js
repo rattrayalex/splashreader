@@ -3,8 +3,8 @@ import createLogger from 'redux-logger'
 import { createAction, handleActions } from 'redux-actions'
 import Immutable from 'immutable'
 
+import { saveWpm } from './chromeSync'
 
-// chrome.storage.sync.set({'wpm': wpm})
 
 // TODO: nesting.
 const initialState = Immutable.fromJS({
@@ -56,13 +56,13 @@ const actionHandlers = {
   ,
 
   setWpm: (state, { payload }) =>
-    state.set('wpm', payload.wpm)
+    state.set('wpm', saveWpm(payload.wpm))
   ,
   increaseWpm: (state, { payload }) =>
-    state.update('wpm', (wpm) => Math.min(3000, wpm + payload.amount))
+    state.update('wpm', (wpm) => saveWpm(Math.min(3000, wpm + payload.amount)))
   ,
   decreaseWpm: (state, { payload }) =>
-    state.update('wpm', (wpm) => Math.max(50, wpm - payload.amount))
+    state.update('wpm', (wpm) => saveWpm(Math.max(50, wpm - payload.amount)))
   ,
 }
 

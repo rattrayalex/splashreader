@@ -19,6 +19,7 @@ import {
   getReadingEdgeLeft,
   isTextHighlighted,
 } from './dom_utils'
+import { loadWpm } from './chromeSync'
 
 // TODO: move elsewhere...
 const word_options = {
@@ -42,6 +43,7 @@ class SplashReader {
 
     this.wrapper = this.insertWrapper()
 
+    this.loadWpmFromChrome()
     this.listenForPlay()
     this.listenForWordHighlight()
     this.listenForEsc()
@@ -60,6 +62,15 @@ class SplashReader {
     wrapper.setAttribute('id', 'splashreader-wrapper')
     document.body.appendChild(wrapper)
     return wrapper
+  }
+
+  loadWpmFromChrome() {
+    loadWpm( ({ wpm }) => {
+      wpm = parseInt(wpm)
+      if ( wpm ) {
+        store.actions.setWpm({ wpm })
+      }
+    })
   }
 
   listenForWordHighlight() {
