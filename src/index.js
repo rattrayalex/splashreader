@@ -18,6 +18,7 @@ import {
   scrollToElementOnce,
   getReadingEdgeLeft,
   isTextHighlighted,
+  isEditableFocused,
 } from './dom_utils'
 import { loadWpm } from './chromeSync'
 
@@ -88,7 +89,7 @@ class SplashReader {
   }
   listenForSpace() {
     this.unListenForSpace()
-    if ( isTextHighlighted() ) {
+    if ( isTextHighlighted() && !isEditableFocused() ) {
       store.actions.textHighlighted()
       key('space', (e) => {
         e.preventDefault()

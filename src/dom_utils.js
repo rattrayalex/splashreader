@@ -1,11 +1,25 @@
 import rangy from 'rangy/lib/rangy-textrange'
 
+export function isElementEditable(elem) {
+  return (
+    elem.getAttribute('contenteditable') === 'true'
+    ||
+    elem.nodeName === 'INPUT'
+  )
+}
+
+export function isEditableFocused() {
+  let activeElement = document.activeElement
+  return isElementEditable(activeElement)
+}
 
 export function isTextHighlighted() {
   return (
     rangy.getSelection().rangeCount === 1
     &&
-    rangy.getSelection().getRangeAt(0).text()
+    rangy.getSelection().getRangeAt(0).text().trim().length
+    &&
+    ( 1 || console.log('isTextHighlighted', rangy.getSelection().getRangeAt(0).text()) )
   )
 }
 

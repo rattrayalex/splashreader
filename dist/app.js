@@ -163,7 +163,7 @@
 	    key: 'listenForSpace',
 	    value: function listenForSpace() {
 	      this.unListenForSpace();
-	      if ((0, _dom_utils.isTextHighlighted)()) {
+	      if ((0, _dom_utils.isTextHighlighted)() && !(0, _dom_utils.isEditableFocused)()) {
 	        _store2['default'].actions.textHighlighted();
 	        (0, _keymaster2['default'])('space', function (e) {
 	          e.preventDefault();
@@ -39583,7 +39583,7 @@
 
 
 	// module
-	exports.push([module.id, ".floating-hover-buttons-container{display:block;position:fixed;bottom:20px;right:20px;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center}.SplashButton{height:56px;width:56px;padding:10px;color:white;font-size:25px;background:#00bcd4;border-radius:50%;box-shadow:0 3px 6px rgba(0,0,0,.3);display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-webkit-flex-direction:row;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.SplashButton:hover{border-bottom-width:2px}.SplashButton:active,.SplashButton:visited,.SplashButton:focus{outline:none;underline:none;color:white}.SplashButton:active,.SplashButton.active{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}.play-button{padding-left:4px}.pause-button{padding-left:7px;font-size:19px}.SplashButton img{display:inline-block}.smaller-hover-button{border-radius:50%;background:#00bcd4;color:white;box-shadow:0 3px 6px rgba(0,0,0,.2);margin-bottom:20px;display:block;height:40px;width:40px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer}.smaller-hover-button:active,.smaller-hover-button:visited,.smaller-hover-button:focus{outline:none;underline:none;color:white}.smaller-hover-button:active,.smaller-hover-button.active{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}", ""]);
+	exports.push([module.id, ".floating-hover-buttons-container{display:block;position:fixed;bottom:23px;right:23px;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center}.SplashButton{height:56px;width:56px;padding:10px;color:white;font-size:25px;background:#00bcd4;border-radius:50%;box-shadow:0 3px 6px rgba(0,0,0,.3);display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-webkit-flex-direction:row;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.SplashButton:hover{border-bottom-width:2px}.SplashButton:active,.SplashButton:visited,.SplashButton:focus{outline:none;underline:none;color:white}.SplashButton:active,.SplashButton.active{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}.play-button{padding-left:4px}.pause-button{padding-left:7px;font-size:19px}.SplashButton img{display:inline-block}.smaller-hover-button{border-radius:50%;background:#00bcd4;color:white;box-shadow:0 3px 6px rgba(0,0,0,.2);margin-bottom:20px;display:block;height:40px;width:40px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer}.smaller-hover-button:active,.smaller-hover-button:visited,.smaller-hover-button:focus{outline:none;underline:none;color:white}.smaller-hover-button:active,.smaller-hover-button.active{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}", ""]);
 
 	// exports
 
@@ -39977,6 +39977,8 @@
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
+	exports.isElementEditable = isElementEditable;
+	exports.isEditableFocused = isEditableFocused;
 	exports.isTextHighlighted = isTextHighlighted;
 	exports.isSingleWordHighlighted = isSingleWordHighlighted;
 	exports.getReadingEdgeLeft = getReadingEdgeLeft;
@@ -39989,8 +39991,17 @@
 
 	var _rangyLibRangyTextrange2 = _interopRequireDefault(_rangyLibRangyTextrange);
 
+	function isElementEditable(elem) {
+	  return elem.getAttribute('contenteditable') === 'true' || elem.nodeName === 'INPUT';
+	}
+
+	function isEditableFocused() {
+	  var activeElement = document.activeElement;
+	  return isElementEditable(activeElement);
+	}
+
 	function isTextHighlighted() {
-	  return _rangyLibRangyTextrange2['default'].getSelection().rangeCount === 1 && _rangyLibRangyTextrange2['default'].getSelection().getRangeAt(0).text();
+	  return _rangyLibRangyTextrange2['default'].getSelection().rangeCount === 1 && _rangyLibRangyTextrange2['default'].getSelection().getRangeAt(0).text().trim().length && (1 || console.log('isTextHighlighted', _rangyLibRangyTextrange2['default'].getSelection().getRangeAt(0).text()));
 	}
 
 	function isSingleWordHighlighted() {

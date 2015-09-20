@@ -3,8 +3,8 @@
 .floating-hover-buttons-container {
   display: block;
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 23px;
+  right: 23px;
 
   display: flex;
   flex-direction: column;
