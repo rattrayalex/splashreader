@@ -1,4 +1,5 @@
 import rangy from 'rangy/lib/rangy-textrange'
+import { word_options } from './constants'
 
 export function isElementEditable(elem) {
   return (
@@ -6,6 +7,26 @@ export function isElementEditable(elem) {
     ||
     elem.nodeName === 'INPUT'
   )
+}
+
+function _containsNewline(range) {
+  return !!range.text().match(/[\n\r]/)
+}
+
+export function moveToNextWord(range) {
+
+  // set range to next word
+  range.moveStart('word', 1, word_options)
+  range.moveEnd('word', 1, word_options)
+
+  let is_new_para = _containsNewline(range)
+
+  // removes whitespace, newlines, etc.
+  range.collapse(false)  // collapse to end of word
+  range.moveStart('word', -1, word_options)
+  range.expand('word', Object.assign(word_options, { trim: true }))
+
+  return is_new_para
 }
 
 export function isEditableFocused() {

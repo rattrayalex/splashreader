@@ -4,7 +4,7 @@ import { getTextWidth } from './rsvp_utils'
 import { getReadingHeight } from './dom_utils'
 import SplashButton from './SplashButton'
 import RsvpWord from './RsvpWord'
-import {} from './Rsvp.css'
+import styles from './Rsvp.css'
 
 
 export default class Rsvp extends React.Component {
@@ -22,14 +22,14 @@ export default class Rsvp extends React.Component {
     const notch_offset = ( orpCenter + getTextWidth('m', font) / 2 )
 
     return (
-      <div className='Rsvp'>
+      <div className={styles.Rsvp}>
 
-        <div className='rsvp-wrapper'
+        <div className={styles.rsvpWrapper}
           style={{
             top: getReadingHeight() - 40 // TODO: remove hardcoding
           }}
           >
-          <div className='rsvp-notch-top'
+          <div className={styles.rsvpNotchTop}
             style={{ marginLeft: notch_offset }}
           />
 
@@ -39,7 +39,7 @@ export default class Rsvp extends React.Component {
             font={font}
           />
 
-          <div className='rsvp-notch-bottom'
+          <div className={styles.rsvpNotchBottom}
             style={{ marginLeft: notch_offset }}
           />
         </div>

@@ -1,7 +1,8 @@
 import React from 'react'
+import classNames from 'classnames'
 
 import store from './store'
-
+import styles from './SplashButton.css'
 
 const DEFAULT_WPM_STEP = 50
 
@@ -17,23 +18,21 @@ export default class WpmButtons extends React.Component {
 
     return (
       <center>
-        <button className='smaller-hover-button'
+        <button
+          className={classNames(styles.upArrow, styles.smallerHoverButton)}
           onClick={this._increaseWpm}
           title='Increase Reading Speed'
-          >
-          <span>▲</span>
-        </button>
+        />
 
-        <div style={{ marginBottom: 10, marginTop: -10 }}>
-          <small>{wpm} wpm</small>
+        <div className={styles.wpmLabel}>
+          {wpm} wpm
         </div>
 
-        <button className='smaller-hover-button'
+        <button
+          className={classNames(styles.downArrow, styles.smallerHoverButton)}
           onClick={this._decreaseWpm}
           title='Decrease Reading Speed'
-          >
-          <span>▼</span>
-        </button>
+        />
       </center>
     )
   }

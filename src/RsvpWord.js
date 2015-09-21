@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { splitWord, getTextWidth } from './rsvp_utils'
+import styles from './Rsvp.css'
 
 
 export default class RsvpWord extends React.Component {
@@ -25,16 +26,16 @@ export default class RsvpWord extends React.Component {
     const word_offset = this._getWordOffset(word_p1, word_p2)
 
     return (
-      <div className='rsvp-wrapper-inner'
+      <div className={styles.rsvpWrapperInner}
         style={{ font, marginLeft: word_offset, }}
         >
-        <span className='rsvp-before-middle'>
+        <span className={styles.rsvpBeforeMiddle}>
           {word_p1}
         </span>
-        <span className='rsvp-middle'>
+        <span className={styles.rsvpMiddle}>
           {word_p2}
         </span>
-        <span className='rsvp-after-middle'>
+        <span className={styles.rsvpAfterMiddle}>
           {word_p3}
         </span>
       </div>

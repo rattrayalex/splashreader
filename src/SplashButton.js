@@ -4,7 +4,7 @@ import classNames from 'classnames'
 import store from './store'
 import FloatingHoverButtons from './FloatingHoverButtons'
 import WpmButtons from './WpmButtons'
-import {} from './SplashButton.css'
+import styles from './SplashButton.css'
 
 
 
@@ -22,8 +22,8 @@ class SplashButton extends React.Component {
     }
 
     let play_pause_class = classNames({
-      'SplashButton': true,
-      'active': isPlaying,
+      [styles.SplashButton]: true,
+      [styles.active]: isPlaying,
     })
     let play_pause_button = (
       <button className={play_pause_class}
@@ -31,8 +31,8 @@ class SplashButton extends React.Component {
         title='SplashRead (spacebar)'
         >
         { ( !isPlaying )
-          ? <span className="play-button">▶</span>
-          : <span className='pause-button'>▌▌</span>
+          ? <span className={styles.playButton}></span>
+          : <span className={styles.pauseButton}></span>
         }
       </button>
     )
@@ -55,4 +55,3 @@ SplashButton.propTypes = {
 
 
 export default SplashButton
-

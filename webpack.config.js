@@ -20,7 +20,7 @@ module.exports = {
       },
       { // ref: https://github.com/postcss/postcss-loader
         test:   /\.css$/,
-        loader: "style-loader!css-loader!postcss-loader",
+        loader: "style!css?module!postcss-loader",
       },
       {
         test: /\.(png|jpg)$/,

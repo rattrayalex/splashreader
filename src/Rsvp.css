@@ -1,5 +1,7 @@
 
 .Rsvp {
+  all: initial;
+
   z-index: 9999;
   position: fixed;
   left: 0;
@@ -17,7 +19,7 @@
   color: black;
 }
 
-.rsvp-wrapper {
+.rsvpWrapper {
   position: absolute;
   width: 100%;
 
@@ -34,27 +36,27 @@
   padding-left: 50px;
   padding-right: 50px;
 }
-.rsvp-wrapper-inner {
+.rsvpWrapperInner {
   padding: 20px;
   word-wrap: break-word;
 }
-.rsvp-before-middle {
+.rsvpBeforeMiddle {
   /* for single-letter word*/
   white-space: pre;
 }
-.rsvp-middle {
+.rsvpMiddle {
   /*the dark red is nice... but people kept asking why it was there*/
   /*color: #BF360C;*/
   color: #555;
 }
-.rsvp-after-middle {
+.rsvpAfterMiddle {
 }
-.rsvp-notch-top,
-.rsvp-notch-bottom {
+.rsvpNotchTop,
+.rsvpNotchBottom {
   position: absolute;
   height: 15px;
   border-right: 1px solid #ccc;
 }
-.rsvp-notch-bottom {
+.rsvpNotchBottom {
   bottom: 0px;
 }

@@ -1,6 +1,6 @@
 
 
-.floating-hover-buttons-container {
+.floatingHoverButtonsContainer {
   display: block;
   position: fixed;
   bottom: 23px;
@@ -12,6 +12,7 @@
 }
 
 .SplashButton {
+
   /* Stolen from http://material-ui.com/#/components/buttons */
   height: 56px;
   width: 56px;
@@ -22,7 +23,7 @@
   font-size: 25px;
 
   background: #00bcd4; /* TODO: use css variables */
-
+  border: none;
   border-radius: 50%;
 
   box-shadow: 0 3px 6px rgba(0,0,0,.3);
@@ -37,13 +38,14 @@
 }
 
 .SplashButton:hover {
-  border-bottom-width: 2px;
 
+  border-bottom-width: 2px;
 }
 
 .SplashButton:active,
 .SplashButton:visited,
 .SplashButton:focus {
+
   outline: none;
   underline: none;
   color: white;
@@ -51,24 +53,33 @@
 
 .SplashButton:active,
 .SplashButton.active {
+
   border-bottom: none;
   border-top-color: rgba(0,0,0,.3);
   box-shadow: 0 1px 4px rgba(0,0,0,.3) inset;
 }
 
-.play-button {
+.playButton {
   padding-left: 4px;
 }
-.pause-button {
+.playButton::after {
+  content: '▶';
+}
+.pauseButton {
   padding-left: 7px;
   font-size: 19px;
+}
+.pauseButton::after {
+  content: '▌▌';
 }
 .SplashButton img {
   display: inline-block;
 }
 
 /* TODO: cleanup/abstract */
-.smaller-hover-button {
+.smallerHoverButton {
+
+  border: none;
   border-radius: 50%;
   background: #00bcd4;
   color: white;
@@ -80,16 +91,29 @@
   user-select: none;
   cursor: pointer;
 }
-.smaller-hover-button:active,
-.smaller-hover-button:visited,
-.smaller-hover-button:focus {
+.smallerHoverButton:active,
+.smallerHoverButton:visited,
+.smallerHoverButton:focus {
   outline: none;
   underline: none;
   color: white;
 }
-.smaller-hover-button:active,
-.smaller-hover-button.active {
+.smallerHoverButton:active,
+.smallerHoverButton.active {
   border-bottom: none;
   border-top-color: rgba(0,0,0,.3);
   box-shadow: 0 1px 4px rgba(0,0,0,.3) inset;
+}
+.upArrow::after {
+  content: '▲';
+}
+.downArrow::after {
+  content: '▼';
+}
+.wpmLabel {
+  all: initial;
+  font-family: 'Helvetica Neue', Helvetica, Arial;
+  font-size: 14px;
+  margin-bottom: 10px;
+  margin-top: -10px;
 }

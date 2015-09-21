@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-
+import styles from './SplashButton.css'
 
 class FloatingHoverButtons extends React.Component {
   constructor() {
@@ -19,7 +19,7 @@ class FloatingHoverButtons extends React.Component {
     let { hovered } = this.state
 
     return (
-      <div className='floating-hover-buttons-container'
+      <div className={styles.floatingHoverButtonsContainer}
         onMouseEnter={this._handleMouseEnter.bind(this)}
         onMouseLeave={this._handleMouseLeave.bind(this)}
         >

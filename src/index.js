@@ -4,8 +4,6 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import rangy from 'rangy/lib/rangy-textrange'
 
-window.rangy = rangy
-
 import store from './store'
 import {
   isPlayingSelector,
@@ -19,19 +17,13 @@ import {
   getReadingEdgeLeft,
   isTextHighlighted,
   isEditableFocused,
+  moveToNextWord,
 } from './dom_utils'
 import { loadWpm } from './chromeSync'
+import { word_options } from './constants'
 
-// TODO: move elsewhere...
-const word_options = {
-  wordOptions: {
-    wordRegex: /[^–—\s]+/gi
-  }
-}
+window.rangy = rangy
 
-function _containsNewline(range) {
-  return !!range.text().match(/[\n\r]/)
-}
 
 class SplashReader {
   constructor() {
@@ -94,6 +86,7 @@ class SplashReader {
       key('space', (e) => {
         e.preventDefault()
         store.actions.playPause()
+        return false
       })
     } else {
       store.actions.nothingHighlighted()
@@ -126,8 +119,9 @@ class SplashReader {
   }
 
   setReadingPointAt(range) {
-    scrollToElementOnce(range.endContainer.parentNode)
-    const left = getReadingEdgeLeft(range.endContainer.parentNode)
+    const node = range.endContainer.parentNode
+    scrollToElementOnce(node)
+    const left = getReadingEdgeLeft(node)
     store.actions.setReadingEdge({ left })
   }
 
@@ -146,7 +140,7 @@ class SplashReader {
     // initialize
     if ( !range ) {
       range = sel.getRangeAt(0)
-      range.move('word', -1, word_options)
+      // range.move('word', -1, word_options)
     }
 
     // resume RSVP if in a new (non-header) paragrah.
@@ -158,18 +152,12 @@ class SplashReader {
     let is_new_para = false
     if ( is_changing_para && !is_in_heading ) {
       store.actions.paraResume()
-    } else {
-      // set range to next word
-      range.moveStart('word', 1, word_options)
-      range.moveEnd('word', 1, word_options)
-      is_new_para = _containsNewline(range) ? true : false
-      range.expand('word', Object.assign(word_options, {
-        trim: true  // removes whitespace, newlines, etc.
-      }))
+    } else if ( !just_pressed_play ) {
+      is_new_para = moveToNextWord(range)
     }
 
     // scroll if we're not there yet.
-    if ( just_pressed_play ) {
+    if ( just_pressed_play || is_changing_para ) {
       this.setReadingPointAt(range)
     }
 

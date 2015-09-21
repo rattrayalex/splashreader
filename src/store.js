@@ -73,8 +73,8 @@ const logger = createLogger({
   transformer: (x) => ( x.toJSON ? x.toJSON() : x )
 })
 const createStoreWithMiddleware = applyMiddleware(logger)(createStore)
-const store = createStoreWithMiddleware(reducer)
-// const store = createStore(reducer)
+// const store = createStoreWithMiddleware(reducer)
+const store = createStore(reducer)
 
 
 // be automagic about creating actions
