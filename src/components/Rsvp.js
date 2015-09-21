@@ -1,7 +1,7 @@
 import React from 'react'
 
-import { getTextWidth } from './rsvp_utils'
-import { getReadingHeight } from './dom_utils'
+import { getTextWidth } from '../utils/rsvp'
+import { getReadingHeight } from '../utils/dom'
 import SplashButton from './SplashButton'
 import RsvpWord from './RsvpWord'
 import styles from './Rsvp.css'

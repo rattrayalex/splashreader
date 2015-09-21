@@ -4,22 +4,22 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import rangy from 'rangy/lib/rangy-textrange'
 
-import store from './store'
+import store from './flux/store'
 import {
   isPlayingSelector,
   wpmSelector,
   changingParaSelector
-} from './selectors'
-import SplashApp from './SplashApp'
-import { getTimeToDisplay, looksLikeAHeading } from './rsvp_utils'
+} from './flux/selectors'
+import SplashApp from './components/SplashApp'
+import { getTimeToDisplay, looksLikeAHeading } from './utils/rsvp'
 import {
   scrollToElementOnce,
   getReadingEdgeLeft,
   isTextHighlighted,
   isEditableFocused,
   moveToNextWord,
-} from './dom_utils'
-import { loadWpm } from './chromeSync'
+} from './utils/dom'
+import { loadWpm } from './utils/chrome'
 import { word_options } from './constants'
 
 window.rangy = rangy

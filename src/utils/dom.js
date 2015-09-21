@@ -1,5 +1,5 @@
 import rangy from 'rangy/lib/rangy-textrange'
-import { word_options } from './constants'
+import { word_options } from '../constants'
 
 export function isElementEditable(elem) {
   return (

@@ -3,7 +3,7 @@ import createLogger from 'redux-logger'
 import { createAction, handleActions } from 'redux-actions'
 import Immutable from 'immutable'
 
-import { saveWpm } from './chromeSync'
+import { saveWpm } from '../utils/chrome'
 
 
 // TODO: nesting.

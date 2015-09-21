@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
 import classNames from 'classnames'
 
-import store from './store'
+import store from '../flux/store'
 import FloatingHoverButtons from './FloatingHoverButtons'
 import WpmButtons from './WpmButtons'
 import styles from './SplashButton.css'

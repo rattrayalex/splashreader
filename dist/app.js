@@ -70,21 +70,21 @@
 
 	var _rangyLibRangyTextrange2 = _interopRequireDefault(_rangyLibRangyTextrange);
 
-	var _store = __webpack_require__(360);
+	var _fluxStore = __webpack_require__(360);
 
-	var _store2 = _interopRequireDefault(_store);
+	var _fluxStore2 = _interopRequireDefault(_fluxStore);
 
-	var _selectors = __webpack_require__(378);
+	var _fluxSelectors = __webpack_require__(378);
 
-	var _SplashApp = __webpack_require__(381);
+	var _componentsSplashApp = __webpack_require__(381);
 
-	var _SplashApp2 = _interopRequireDefault(_SplashApp);
+	var _componentsSplashApp2 = _interopRequireDefault(_componentsSplashApp);
 
-	var _rsvp_utils = __webpack_require__(380);
+	var _utilsRsvp = __webpack_require__(380);
 
-	var _dom_utils = __webpack_require__(391);
+	var _utilsDom = __webpack_require__(391);
 
-	var _chromeSync = __webpack_require__(377);
+	var _utilsChrome = __webpack_require__(377);
 
 	var _constants = __webpack_require__(392);
 
@@ -110,9 +110,9 @@
 
 	    _react2['default'].render(_react2['default'].createElement(
 	      _reactRedux.Provider,
-	      { store: _store2['default'] },
+	      { store: _fluxStore2['default'] },
 	      function () {
-	        return _react2['default'].createElement(_SplashApp2['default'], null);
+	        return _react2['default'].createElement(_componentsSplashApp2['default'], null);
 	      }
 	    ), this.wrapper);
 	    return this;
@@ -129,12 +129,12 @@
 	  }, {
 	    key: 'loadWpmFromChrome',
 	    value: function loadWpmFromChrome() {
-	      (0, _chromeSync.loadWpm)(function (_ref) {
+	      (0, _utilsChrome.loadWpm)(function (_ref) {
 	        var wpm = _ref.wpm;
 
 	        wpm = parseInt(wpm);
 	        if (wpm) {
-	          _store2['default'].actions.setWpm({ wpm: wpm });
+	          _fluxStore2['default'].actions.setWpm({ wpm: wpm });
 	        }
 	      });
 	    }
@@ -153,15 +153,15 @@
 	    key: 'listenForSpace',
 	    value: function listenForSpace() {
 	      this.unListenForSpace();
-	      if ((0, _dom_utils.isTextHighlighted)() && !(0, _dom_utils.isEditableFocused)()) {
-	        _store2['default'].actions.textHighlighted();
+	      if ((0, _utilsDom.isTextHighlighted)() && !(0, _utilsDom.isEditableFocused)()) {
+	        _fluxStore2['default'].actions.textHighlighted();
 	        (0, _keymaster2['default'])('space', function (e) {
 	          e.preventDefault();
-	          _store2['default'].actions.playPause();
+	          _fluxStore2['default'].actions.playPause();
 	          return false;
 	        });
 	      } else {
-	        _store2['default'].actions.nothingHighlighted();
+	        _fluxStore2['default'].actions.nothingHighlighted();
 	      }
 	    }
 	  }, {
@@ -174,7 +174,7 @@
 	    value: function listenForEsc() {
 	      this.unListenForEsc();
 	      (0, _keymaster2['default'])('esc', function (e) {
-	        _store2['default'].actions.pause();
+	        _fluxStore2['default'].actions.pause();
 	      });
 	    }
 	  }, {
@@ -187,10 +187,10 @@
 	    value: function listenForPlay() {
 	      var _this = this;
 
-	      _store2['default'].subscribe(function () {
+	      _fluxStore2['default'].subscribe(function () {
 	        // TODO: clean up / document better...
 	        _this.was_playing = _this.is_playing;
-	        _this.is_playing = (0, _selectors.isPlayingSelector)(_store2['default'].getState());
+	        _this.is_playing = (0, _fluxSelectors.isPlayingSelector)(_fluxStore2['default'].getState());
 
 	        if (_this.is_playing && !_this.was_playing) {
 	          _this.splash();
@@ -201,9 +201,9 @@
 	    key: 'setReadingPointAt',
 	    value: function setReadingPointAt(range) {
 	      var node = range.endContainer.parentNode;
-	      (0, _dom_utils.scrollToElementOnce)(node);
-	      var left = (0, _dom_utils.getReadingEdgeLeft)(node);
-	      _store2['default'].actions.setReadingEdge({ left: left });
+	      (0, _utilsDom.scrollToElementOnce)(node);
+	      var left = (0, _utilsDom.getReadingEdgeLeft)(node);
+	      _fluxStore2['default'].actions.setReadingEdge({ left: left });
 	    }
 
 	    // TODO: move elsewhere
@@ -213,7 +213,7 @@
 	    value: function splash() {
 	      var range = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
 
-	      if (!(0, _selectors.isPlayingSelector)(_store2['default'].getState())) {
+	      if (!(0, _fluxSelectors.isPlayingSelector)(_fluxStore2['default'].getState())) {
 	        return;
 	      }
 	      // prevent double-play.
@@ -232,13 +232,13 @@
 	      // Otherwise, move to next word.
 	      // (results, intentionally, in first-words-of-paragraph
 	      // being dispayed twice: first without RSVP, and then with RSVP)
-	      var is_changing_para = (0, _selectors.changingParaSelector)(_store2['default'].getState());
-	      var is_in_heading = (0, _rsvp_utils.looksLikeAHeading)(range.endContainer.parentElement);
+	      var is_changing_para = (0, _fluxSelectors.changingParaSelector)(_fluxStore2['default'].getState());
+	      var is_in_heading = (0, _utilsRsvp.looksLikeAHeading)(range.endContainer.parentElement);
 	      var is_new_para = false;
 	      if (is_changing_para && !is_in_heading) {
-	        _store2['default'].actions.paraResume();
+	        _fluxStore2['default'].actions.paraResume();
 	      } else if (!just_pressed_play) {
-	        is_new_para = (0, _dom_utils.moveToNextWord)(range);
+	        is_new_para = (0, _utilsDom.moveToNextWord)(range);
 	      }
 
 	      // scroll if we're not there yet.
@@ -251,11 +251,11 @@
 
 	      // send it to React
 	      var word = range.text();
-	      _store2['default'].actions.changeWord({ word: word });
+	      _fluxStore2['default'].actions.changeWord({ word: word });
 
 	      // move to the next word in a sec
-	      var wpm = (0, _selectors.wpmSelector)(_store2['default'].getState());
-	      var time_to_display = (0, _rsvp_utils.getTimeToDisplay)(word, wpm);
+	      var wpm = (0, _fluxSelectors.wpmSelector)(_fluxStore2['default'].getState());
+	      var time_to_display = (0, _utilsRsvp.getTimeToDisplay)(word, wpm);
 
 	      // pause RSVP at paragraph change
 	      if (is_new_para) {
@@ -263,7 +263,7 @@
 	          time_to_display = 1000;
 	          this.setReadingPointAt(range);
 	        }
-	        _store2['default'].actions.paraChange();
+	        _fluxStore2['default'].actions.paraChange();
 	      }
 
 	      this.play_timeout = setTimeout(this.splash.bind(this, range), time_to_display);
@@ -32845,7 +32845,7 @@
 
 	var _immutable2 = _interopRequireDefault(_immutable);
 
-	var _chromeSync = __webpack_require__(377);
+	var _utilsChrome = __webpack_require__(377);
 
 	// TODO: nesting.
 	var initialState = _immutable2['default'].fromJS({
@@ -32914,20 +32914,20 @@
 
 	  setWpm: function setWpm(state, _ref10) {
 	    var payload = _ref10.payload;
-	    return state.set('wpm', (0, _chromeSync.saveWpm)(payload.wpm));
+	    return state.set('wpm', (0, _utilsChrome.saveWpm)(payload.wpm));
 	  },
 
 	  increaseWpm: function increaseWpm(state, _ref11) {
 	    var payload = _ref11.payload;
 	    return state.update('wpm', function (wpm) {
-	      return (0, _chromeSync.saveWpm)(Math.min(3000, wpm + payload.amount));
+	      return (0, _utilsChrome.saveWpm)(Math.min(3000, wpm + payload.amount));
 	    });
 	  },
 
 	  decreaseWpm: function decreaseWpm(state, _ref12) {
 	    var payload = _ref12.payload;
 	    return state.update('wpm', function (wpm) {
-	      return (0, _chromeSync.saveWpm)(Math.max(50, wpm - payload.amount));
+	      return (0, _utilsChrome.saveWpm)(Math.max(50, wpm - payload.amount));
 	    });
 	  }
 
@@ -39019,7 +39019,7 @@
 
 	var _reselect = __webpack_require__(379);
 
-	var _rsvp_utils = __webpack_require__(380);
+	var _utilsRsvp = __webpack_require__(380);
 
 	// TODO: cleanup / nest / break up
 
@@ -39064,7 +39064,7 @@
 	  // five em's wide b/c that's how big
 	  // the left+middle parts of a word
 	  // in the RSVP display can be. (m is typically widest letter)
-	  (0, _rsvp_utils.getTextWidth)('mmmmm', font), left);
+	  (0, _utilsRsvp.getTextWidth)('mmmmm', font), left);
 	});
 
 	exports.orpCenterSelector = orpCenterSelector;
@@ -39411,7 +39411,7 @@
 
 	var _Rsvp2 = _interopRequireDefault(_Rsvp);
 
-	var _selectors = __webpack_require__(378);
+	var _fluxSelectors = __webpack_require__(378);
 
 	var SplashApp = (function (_React$Component) {
 	  _inherits(SplashApp, _React$Component);
@@ -39445,7 +39445,7 @@
 	};
 
 	// TODO: use as decorator in ES7
-	exports['default'] = (0, _reactRedux.connect)(_selectors.allSelector)(SplashApp);
+	exports['default'] = (0, _reactRedux.connect)(_fluxSelectors.allSelector)(SplashApp);
 	module.exports = exports['default'];
 
 /***/ },
@@ -39478,9 +39478,9 @@
 
 	var _classnames2 = _interopRequireDefault(_classnames);
 
-	var _store = __webpack_require__(360);
+	var _fluxStore = __webpack_require__(360);
 
-	var _store2 = _interopRequireDefault(_store);
+	var _fluxStore2 = _interopRequireDefault(_fluxStore);
 
 	var _FloatingHoverButtons = __webpack_require__(384);
 
@@ -39506,7 +39506,7 @@
 	  _createClass(SplashButton, [{
 	    key: '_handleClick',
 	    value: function _handleClick(e) {
-	      _store2['default'].actions.playPause();
+	      _fluxStore2['default'].actions.playPause();
 	    }
 	  }, {
 	    key: 'render',
@@ -39708,8 +39708,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/css-loader/index.js?module!./../node_modules/postcss-loader/index.js!./SplashButton.css", function() {
-				var newContent = require("!!./../node_modules/css-loader/index.js?module!./../node_modules/postcss-loader/index.js!./SplashButton.css");
+			module.hot.accept("!!./../../node_modules/css-loader/index.js?module!./../../node_modules/postcss-loader/index.js!./SplashButton.css", function() {
+				var newContent = require("!!./../../node_modules/css-loader/index.js?module!./../../node_modules/postcss-loader/index.js!./SplashButton.css");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -39727,19 +39727,19 @@
 
 
 	// module
-	exports.push([module.id, "._3qayHrO8qzvySdv-eVOy7f{display:block;position:fixed;bottom:23px;right:23px;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center}._1TxmP1SWgji2s5w-9UrwNp{height:56px;width:56px;padding:10px;color:white;font-size:25px;background:#00bcd4;border:none;border-radius:50%;box-shadow:0 3px 6px rgba(0,0,0,.3);display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-webkit-flex-direction:row;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}._1TxmP1SWgji2s5w-9UrwNp:hover{border-bottom-width:2px}._1TxmP1SWgji2s5w-9UrwNp:active,._1TxmP1SWgji2s5w-9UrwNp:visited,._1TxmP1SWgji2s5w-9UrwNp:focus{outline:none;underline:none;color:white}._1TxmP1SWgji2s5w-9UrwNp:active,._1TxmP1SWgji2s5w-9UrwNp.c80HGm4CWDJyy6ulxPuU5{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}._1ItUIbwRDfZHEvp-G4MUIb{padding-left:4px}._1ItUIbwRDfZHEvp-G4MUIb::after{content:'\\25B6'}._2O10t-DENoLytWNSYDL6J0{padding-left:7px;font-size:19px}._2O10t-DENoLytWNSYDL6J0::after{content:'\\258C\\258C'}._1TxmP1SWgji2s5w-9UrwNp img{display:inline-block}._2tUS_3oRYOrqWn9Z0cwX8s{border:none;border-radius:50%;background:#00bcd4;color:white;box-shadow:0 3px 6px rgba(0,0,0,.2);margin-bottom:20px;display:block;height:40px;width:40px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer}._2tUS_3oRYOrqWn9Z0cwX8s:active,._2tUS_3oRYOrqWn9Z0cwX8s:visited,._2tUS_3oRYOrqWn9Z0cwX8s:focus{outline:none;underline:none;color:white}._2tUS_3oRYOrqWn9Z0cwX8s:active,._2tUS_3oRYOrqWn9Z0cwX8s.c80HGm4CWDJyy6ulxPuU5{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}.IAGN125awo6nTApTgpE3Q::after{content:'\\25B2'}._3xl847Wgk8YGucW38-7nIL::after{content:'\\25BC'}._2fKOxWzNBQEl-2zUoy4Lgd{all:initial;font-family:Helvetica Neue,Helvetica,Arial;font-size:14px;margin-bottom:10px;margin-top:-10px}", ""]);
+	exports.push([module.id, ".JbSjuhjRD5FV6s5URhLS1{display:block;position:fixed;bottom:23px;right:23px;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center}.tHlBH4w8dJ3HKwy-R94fn{height:56px;width:56px;padding:10px;color:white;font-size:25px;background:#00bcd4;border:none;border-radius:50%;box-shadow:0 3px 6px rgba(0,0,0,.3);display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-webkit-flex-direction:row;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.tHlBH4w8dJ3HKwy-R94fn:hover{border-bottom-width:2px}.tHlBH4w8dJ3HKwy-R94fn:active,.tHlBH4w8dJ3HKwy-R94fn:visited,.tHlBH4w8dJ3HKwy-R94fn:focus{outline:none;underline:none;color:white}.tHlBH4w8dJ3HKwy-R94fn:active,.tHlBH4w8dJ3HKwy-R94fn.qZMPi-pFHf80dDQ2cfhHx{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}._2RsLjc1BxWV7Ncsc1b8mAR{padding-left:4px}._2RsLjc1BxWV7Ncsc1b8mAR::after{content:'\\25B6'}._2sRcIlJLjx4X6jQo3CnVcj{padding-left:7px;font-size:19px}._2sRcIlJLjx4X6jQo3CnVcj::after{content:'\\258C\\258C'}.tHlBH4w8dJ3HKwy-R94fn img{display:inline-block}._1xe1uxIWQ1BrvX5mbmVas2{border:none;border-radius:50%;background:#00bcd4;color:white;box-shadow:0 3px 6px rgba(0,0,0,.2);margin-bottom:20px;display:block;height:40px;width:40px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer}._1xe1uxIWQ1BrvX5mbmVas2:active,._1xe1uxIWQ1BrvX5mbmVas2:visited,._1xe1uxIWQ1BrvX5mbmVas2:focus{outline:none;underline:none;color:white}._1xe1uxIWQ1BrvX5mbmVas2:active,._1xe1uxIWQ1BrvX5mbmVas2.qZMPi-pFHf80dDQ2cfhHx{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}._1m8YfDtQuhQ9JX2NbMCRPH::after{content:'\\25B2'}._2nbooLsvSrOYdvILjjBGaa::after{content:'\\25BC'}._3MgydSjJIqirm0pwaXEznQ{all:initial;font-family:Helvetica Neue,Helvetica,Arial;font-size:14px;margin-bottom:10px;margin-top:-10px}", ""]);
 
 	// exports
 	exports.locals = {
-		"floatingHoverButtonsContainer": "_3qayHrO8qzvySdv-eVOy7f",
-		"SplashButton": "_1TxmP1SWgji2s5w-9UrwNp",
-		"active": "c80HGm4CWDJyy6ulxPuU5",
-		"playButton": "_1ItUIbwRDfZHEvp-G4MUIb",
-		"pauseButton": "_2O10t-DENoLytWNSYDL6J0",
-		"smallerHoverButton": "_2tUS_3oRYOrqWn9Z0cwX8s",
-		"upArrow": "IAGN125awo6nTApTgpE3Q",
-		"downArrow": "_3xl847Wgk8YGucW38-7nIL",
-		"wpmLabel": "_2fKOxWzNBQEl-2zUoy4Lgd"
+		"floatingHoverButtonsContainer": "JbSjuhjRD5FV6s5URhLS1",
+		"SplashButton": "tHlBH4w8dJ3HKwy-R94fn",
+		"active": "qZMPi-pFHf80dDQ2cfhHx",
+		"playButton": "_2RsLjc1BxWV7Ncsc1b8mAR",
+		"pauseButton": "_2sRcIlJLjx4X6jQo3CnVcj",
+		"smallerHoverButton": "_1xe1uxIWQ1BrvX5mbmVas2",
+		"upArrow": "_1m8YfDtQuhQ9JX2NbMCRPH",
+		"downArrow": "_2nbooLsvSrOYdvILjjBGaa",
+		"wpmLabel": "_3MgydSjJIqirm0pwaXEznQ"
 	};
 
 /***/ },
@@ -40051,9 +40051,9 @@
 
 	var _classnames2 = _interopRequireDefault(_classnames);
 
-	var _store = __webpack_require__(360);
+	var _fluxStore = __webpack_require__(360);
 
-	var _store2 = _interopRequireDefault(_store);
+	var _fluxStore2 = _interopRequireDefault(_fluxStore);
 
 	var _SplashButtonCss = __webpack_require__(385);
 
@@ -40073,12 +40073,12 @@
 	  _createClass(WpmButtons, [{
 	    key: '_decreaseWpm',
 	    value: function _decreaseWpm(e) {
-	      _store2['default'].actions.decreaseWpm({ amount: DEFAULT_WPM_STEP });
+	      _fluxStore2['default'].actions.decreaseWpm({ amount: DEFAULT_WPM_STEP });
 	    }
 	  }, {
 	    key: '_increaseWpm',
 	    value: function _increaseWpm(e) {
-	      _store2['default'].actions.increaseWpm({ amount: DEFAULT_WPM_STEP });
+	      _fluxStore2['default'].actions.increaseWpm({ amount: DEFAULT_WPM_STEP });
 	    }
 	  }, {
 	    key: 'render',
@@ -40142,9 +40142,9 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _rsvp_utils = __webpack_require__(380);
+	var _utilsRsvp = __webpack_require__(380);
 
-	var _dom_utils = __webpack_require__(391);
+	var _utilsDom = __webpack_require__(391);
 
 	var _SplashButton = __webpack_require__(382);
 
@@ -40184,7 +40184,7 @@
 	      }
 
 	      // the lil notch goes in the middle of a letter (hence half an 'm')
-	      var notch_offset = orpCenter + (0, _rsvp_utils.getTextWidth)('m', font) / 2;
+	      var notch_offset = orpCenter + (0, _utilsRsvp.getTextWidth)('m', font) / 2;
 
 	      return _react2['default'].createElement(
 	        'div',
@@ -40193,7 +40193,7 @@
 	          'div',
 	          { className: _RsvpCss2['default'].rsvpWrapper,
 	            style: {
-	              top: (0, _dom_utils.getReadingHeight)() - 40 // TODO: remove hardcoding
+	              top: (0, _utilsDom.getReadingHeight)() - 40 // TODO: remove hardcoding
 	            }
 	          },
 	          _react2['default'].createElement('div', { className: _RsvpCss2['default'].rsvpNotchTop,
@@ -40408,7 +40408,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _rsvp_utils = __webpack_require__(380);
+	var _utilsRsvp = __webpack_require__(380);
 
 	var _RsvpCss = __webpack_require__(394);
 
@@ -40430,8 +40430,8 @@
 	      var font = _props.font;
 	      var orpCenter = _props.orpCenter;
 
-	      var width_p1 = (0, _rsvp_utils.getTextWidth)(word_p1, font);
-	      var width_p2 = (0, _rsvp_utils.getTextWidth)(word_p2, font);
+	      var width_p1 = (0, _utilsRsvp.getTextWidth)(word_p1, font);
+	      var width_p2 = (0, _utilsRsvp.getTextWidth)(word_p2, font);
 	      var center_point = width_p1 + width_p2 / 2;
 
 	      var word_offset = orpCenter - center_point || 0;
@@ -40445,7 +40445,7 @@
 	      var currentWord = _props2.currentWord;
 	      var font = _props2.font;
 
-	      var _splitWord = (0, _rsvp_utils.splitWord)(currentWord);
+	      var _splitWord = (0, _utilsRsvp.splitWord)(currentWord);
 
 	      var word_p1 = _splitWord.word_p1;
 	      var word_p2 = _splitWord.word_p2;
@@ -40499,8 +40499,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/css-loader/index.js?module!./../node_modules/postcss-loader/index.js!./Rsvp.css", function() {
-				var newContent = require("!!./../node_modules/css-loader/index.js?module!./../node_modules/postcss-loader/index.js!./Rsvp.css");
+			module.hot.accept("!!./../../node_modules/css-loader/index.js?module!./../../node_modules/postcss-loader/index.js!./Rsvp.css", function() {
+				var newContent = require("!!./../../node_modules/css-loader/index.js?module!./../../node_modules/postcss-loader/index.js!./Rsvp.css");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -40518,18 +40518,18 @@
 
 
 	// module
-	exports.push([module.id, "._4QkfdWYseblqrlptsO1bG{all:initial;z-index:9999;position:fixed;left:0;right:0;top:0;bottom:0;background:rgba(255,255,255,.9)}._4QkfdWYseblqrlptsO1bG ._5I5LRW1eFpuVKe_9gA8FS{font-size:32pt;font-family:Georgia;color:black}._2y5J9lRt4zZAlbxpvuvPoX{position:absolute;width:100%;border-top:1px solid #ccc;border-bottom:1px solid #ccc;color:#666;background-color:white;box-shadow:0 0 50px 50px white;margin-left:-50px;margin-right:-50px;padding-left:50px;padding-right:50px}._1QP0PMNcW9AZzMHAgEXSkL{padding:20px;word-wrap:break-word}._2jMV-am0QDNYzn-ZuFDEQv{white-space:pre}.aKisCbL4qZbnpQqv-r2nm{color:#555}._1Wupoq6O18fyDfdVkqNcj_,.A3-dzwllPDOlTfb642EmP{position:absolute;height:15px;border-right:1px solid #ccc}.A3-dzwllPDOlTfb642EmP{bottom:0}", ""]);
+	exports.push([module.id, "._185YEZICGZOMQhFTbms-ug{all:initial;z-index:9999;position:fixed;left:0;right:0;top:0;bottom:0;background:rgba(255,255,255,.9)}._185YEZICGZOMQhFTbms-ug ._3e2FbZF5vdydZ3qPSRRZba{font-size:32pt;font-family:Georgia;color:black}.EPeK2s5p6oOgoEfPQDsLI{position:absolute;width:100%;border-top:1px solid #ccc;border-bottom:1px solid #ccc;color:#666;background-color:white;box-shadow:0 0 50px 50px white;margin-left:-50px;margin-right:-50px;padding-left:50px;padding-right:50px}._39VsGNPDXOdL_TOF3eldEz{padding:20px;word-wrap:break-word}._1j4fQNvUPEMPpEmKd-ditA{white-space:pre}._38aJoOLCd6DdBG2c28GkE4{color:#555}._3duaqCs2w-QFYp3x5FZ4Y4,._2daHR8i-XNajTUW3BeSwPf{position:absolute;height:15px;border-right:1px solid #ccc}._2daHR8i-XNajTUW3BeSwPf{bottom:0}", ""]);
 
 	// exports
 	exports.locals = {
-		"Rsvp": "_4QkfdWYseblqrlptsO1bG",
-		"word": "_5I5LRW1eFpuVKe_9gA8FS",
-		"rsvpWrapper": "_2y5J9lRt4zZAlbxpvuvPoX",
-		"rsvpWrapperInner": "_1QP0PMNcW9AZzMHAgEXSkL",
-		"rsvpBeforeMiddle": "_2jMV-am0QDNYzn-ZuFDEQv",
-		"rsvpMiddle": "aKisCbL4qZbnpQqv-r2nm",
-		"rsvpNotchTop": "_1Wupoq6O18fyDfdVkqNcj_",
-		"rsvpNotchBottom": "A3-dzwllPDOlTfb642EmP"
+		"Rsvp": "_185YEZICGZOMQhFTbms-ug",
+		"word": "_3e2FbZF5vdydZ3qPSRRZba",
+		"rsvpWrapper": "EPeK2s5p6oOgoEfPQDsLI",
+		"rsvpWrapperInner": "_39VsGNPDXOdL_TOF3eldEz",
+		"rsvpBeforeMiddle": "_1j4fQNvUPEMPpEmKd-ditA",
+		"rsvpMiddle": "_38aJoOLCd6DdBG2c28GkE4",
+		"rsvpNotchTop": "_3duaqCs2w-QFYp3x5FZ4Y4",
+		"rsvpNotchBottom": "_2daHR8i-XNajTUW3BeSwPf"
 	};
 
 /***/ }

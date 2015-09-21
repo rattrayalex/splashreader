@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import SplashButton from './SplashButton'
 import Rsvp from './Rsvp'
 
-import { allSelector } from './selectors'
+import { allSelector } from '../flux/selectors'
 
 
 class SplashApp extends React.Component {

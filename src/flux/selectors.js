@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 
-import { getTextWidth } from './rsvp_utils'
+import { getTextWidth } from '../utils/rsvp'
 
 // TODO: cleanup / nest / break up
 

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { splitWord, getTextWidth } from './rsvp_utils'
+import { splitWord, getTextWidth } from '../utils/rsvp'
 import styles from './Rsvp.css'
 
 
