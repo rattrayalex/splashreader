@@ -5,6 +5,10 @@ import styles from './Rsvp.css'
 
 
 export default class RsvpWord extends React.Component {
+  static propTypes = {
+    font: React.PropTypes.string.isRequired,
+    orpCenter: React.PropTypes.number.isRequired,
+  }
 
   _getWordOffset(word_p1, word_p2) {
     const { font, orpCenter } = this.props

@@ -1,19 +1,28 @@
 import React, { PropTypes } from 'react'
 import styles from './SplashButton.css'
 
-class FloatingHoverButtons extends React.Component {
-  constructor() {
-    super()
-    this.state = {
-      hovered: false
-    }
+
+export default class FloatingHoverButtons extends React.Component {
+  static propTypes = {
+    children: PropTypes.oneOfType([
+      PropTypes.array,
+      PropTypes.object
+    ]).isRequired,
+    primary: PropTypes.element.isRequired,
+    shown: PropTypes.bool,
   }
+
+  state = {
+    hovered: false
+  }
+
   _handleMouseEnter(e) {
     this.setState({ hovered: true })
   }
   _handleMouseLeave(e) {
     this.setState({ hovered: false })
   }
+
   render() {
     let { primary, children, shown } = this.props
     let { hovered } = this.state
@@ -31,15 +40,4 @@ class FloatingHoverButtons extends React.Component {
       </div>
     )
   }
-
 }
-FloatingHoverButtons.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.array,
-    PropTypes.object
-  ]).isRequired,
-  primary: PropTypes.element.isRequired,
-  shown: PropTypes.bool,
-}
-
-export default FloatingHoverButtons

@@ -8,12 +8,17 @@ const DEFAULT_WPM_STEP = 50
 
 
 export default class WpmButtons extends React.Component {
+  static propTypes = {
+    wpm: React.PropTypes.number.isRequired,
+  }
+
   _decreaseWpm(e) {
     store.actions.decreaseWpm({ amount: DEFAULT_WPM_STEP })
   }
   _increaseWpm(e) {
     store.actions.increaseWpm({ amount: DEFAULT_WPM_STEP })
   }
+
   render() {
     let { wpm } = this.props
 
@@ -37,8 +42,4 @@ export default class WpmButtons extends React.Component {
       </center>
     )
   }
-}
-
-WpmButtons.propTypes = {
-  wpm: React.PropTypes.number.isRequired,
 }

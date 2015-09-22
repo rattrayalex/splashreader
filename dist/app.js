@@ -39427,9 +39427,9 @@
 	  _inherits(SplashApp, _React$Component);
 
 	  function SplashApp() {
-	    _classCallCheck(this, SplashApp);
+	    _classCallCheck(this, _SplashApp);
 
-	    _get(Object.getPrototypeOf(SplashApp.prototype), 'constructor', this).apply(this, arguments);
+	    _get(Object.getPrototypeOf(_SplashApp.prototype), 'constructor', this).apply(this, arguments);
 	  }
 
 	  _createClass(SplashApp, [{
@@ -39442,20 +39442,23 @@
 	      }
 	      return _react2['default'].createElement(_SplashButton2['default'], this.props);
 	    }
+	  }], [{
+	    key: 'propTypes',
+	    value: {
+	      currentWord: _react.PropTypes.string.isRequired,
+	      buttonShown: _react.PropTypes.bool.isRequired,
+	      rsvpPlaying: _react.PropTypes.bool.isRequired,
+	      wpm: _react.PropTypes.number.isRequired
+	    },
+	    enumerable: true
 	  }]);
 
+	  var _SplashApp = SplashApp;
+	  SplashApp = (0, _reactRedux.connect)(_fluxSelectors.allSelector)(SplashApp) || SplashApp;
 	  return SplashApp;
 	})(_react2['default'].Component);
 
-	SplashApp.propTypes = {
-	  currentWord: _react.PropTypes.string.isRequired,
-	  buttonShown: _react.PropTypes.bool.isRequired,
-	  rsvpPlaying: _react.PropTypes.bool.isRequired,
-	  wpm: _react.PropTypes.number.isRequired
-	};
-
-	// TODO: use as decorator in ES7
-	exports['default'] = (0, _reactRedux.connect)(_fluxSelectors.allSelector)(SplashApp);
+	exports['default'] = SplashApp;
 	module.exports = exports['default'];
 
 /***/ },
@@ -39550,16 +39553,18 @@
 	        _react2['default'].createElement(_WpmButtons2['default'], { wpm: wpm })
 	      );
 	    }
+	  }], [{
+	    key: 'propTypes',
+	    value: {
+	      buttonShown: _react.PropTypes.bool.isRequired,
+	      isPlaying: _react.PropTypes.bool.isRequired,
+	      wpm: _react.PropTypes.number.isRequired
+	    },
+	    enumerable: true
 	  }]);
 
 	  return SplashButton;
 	})(_react2['default'].Component);
-
-	SplashButton.propTypes = {
-	  buttonShown: _react.PropTypes.bool.isRequired,
-	  isPlaying: _react.PropTypes.bool.isRequired,
-	  wpm: _react.PropTypes.number.isRequired
-	};
 
 	exports['default'] = SplashButton;
 	module.exports = exports['default'];
@@ -39653,7 +39658,8 @@
 	  function FloatingHoverButtons() {
 	    _classCallCheck(this, FloatingHoverButtons);
 
-	    _get(Object.getPrototypeOf(FloatingHoverButtons.prototype), 'constructor', this).call(this);
+	    _get(Object.getPrototypeOf(FloatingHoverButtons.prototype), 'constructor', this).apply(this, arguments);
+
 	    this.state = {
 	      hovered: false
 	    };
@@ -39688,16 +39694,18 @@
 	        primary
 	      );
 	    }
+	  }], [{
+	    key: 'propTypes',
+	    value: {
+	      children: _react.PropTypes.oneOfType([_react.PropTypes.array, _react.PropTypes.object]).isRequired,
+	      primary: _react.PropTypes.element.isRequired,
+	      shown: _react.PropTypes.bool
+	    },
+	    enumerable: true
 	  }]);
 
 	  return FloatingHoverButtons;
 	})(_react2['default'].Component);
-
-	FloatingHoverButtons.propTypes = {
-	  children: _react.PropTypes.oneOfType([_react.PropTypes.array, _react.PropTypes.object]).isRequired,
-	  primary: _react.PropTypes.element.isRequired,
-	  shown: _react.PropTypes.bool
-	};
 
 	exports['default'] = FloatingHoverButtons;
 	module.exports = exports['default'];
@@ -40116,16 +40124,18 @@
 	        })
 	      );
 	    }
+	  }], [{
+	    key: 'propTypes',
+	    value: {
+	      wpm: _react2['default'].PropTypes.number.isRequired
+	    },
+	    enumerable: true
 	  }]);
 
 	  return WpmButtons;
 	})(_react2['default'].Component);
 
 	exports['default'] = WpmButtons;
-
-	WpmButtons.propTypes = {
-	  wpm: _react2['default'].PropTypes.number.isRequired
-	};
 	module.exports = exports['default'];
 
 /***/ },
@@ -40485,6 +40495,13 @@
 	        )
 	      );
 	    }
+	  }], [{
+	    key: 'propTypes',
+	    value: {
+	      font: _react2['default'].PropTypes.string.isRequired,
+	      orpCenter: _react2['default'].PropTypes.number.isRequired
+	    },
+	    enumerable: true
 	  }]);
 
 	  return RsvpWord;

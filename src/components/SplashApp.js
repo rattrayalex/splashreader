@@ -3,11 +3,18 @@ import { connect } from 'react-redux'
 
 import SplashButton from './SplashButton'
 import Rsvp from './Rsvp'
-
 import { allSelector } from '../flux/selectors'
 
 
-class SplashApp extends React.Component {
+@connect(allSelector)
+export default class SplashApp extends React.Component {
+  static propTypes = {
+    currentWord: PropTypes.string.isRequired,
+    buttonShown: PropTypes.bool.isRequired,
+    rsvpPlaying: PropTypes.bool.isRequired,
+    wpm: PropTypes.number.isRequired,
+  }
+
   render() {
     const { rsvpPlaying } = this.props
     if ( rsvpPlaying ) {
@@ -16,13 +23,3 @@ class SplashApp extends React.Component {
     return <SplashButton {...this.props} />
   }
 }
-
-SplashApp.propTypes = {
-  currentWord: PropTypes.string.isRequired,
-  buttonShown: PropTypes.bool.isRequired,
-  rsvpPlaying: PropTypes.bool.isRequired,
-  wpm: PropTypes.number.isRequired,
-}
-
-// TODO: use as decorator in ES7
-export default connect(allSelector)(SplashApp)

@@ -7,8 +7,12 @@ import WpmButtons from './WpmButtons'
 import styles from './SplashButton.css'
 
 
-
-class SplashButton extends React.Component {
+export default class SplashButton extends React.Component {
+  static propTypes = {
+    buttonShown: PropTypes.bool.isRequired,
+    isPlaying: PropTypes.bool.isRequired,
+    wpm: PropTypes.number.isRequired,
+  }
 
   _handleClick(e) {
     store.actions.playPause()
@@ -46,12 +50,3 @@ class SplashButton extends React.Component {
     )
   }
 }
-
-SplashButton.propTypes = {
-  buttonShown: PropTypes.bool.isRequired,
-  isPlaying: PropTypes.bool.isRequired,
-  wpm: PropTypes.number.isRequired,
-}
-
-
-export default SplashButton

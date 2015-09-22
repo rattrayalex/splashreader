@@ -16,7 +16,7 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loaders: ["babel-loader"],
+        loaders: ["babel-loader?stage=0"],
       },
       { // ref: https://github.com/postcss/postcss-loader
         test:   /\.css$/,
