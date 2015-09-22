@@ -48,6 +48,8 @@
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -82,15 +84,17 @@
 
 	var _utilsRsvp = __webpack_require__(380);
 
-	var _utilsRsvp2 = _interopRequireDefault(_utilsRsvp);
+	var rsvp = _interopRequireWildcard(_utilsRsvp);
 
 	var _utilsDom = __webpack_require__(391);
 
-	var _utilsDom2 = _interopRequireDefault(_utilsDom);
+	var dom = _interopRequireWildcard(_utilsDom);
 
 	var _utilsChrome = __webpack_require__(377);
 
-	var _utilsChrome2 = _interopRequireDefault(_utilsChrome);
+	var chrome = _interopRequireWildcard(_utilsChrome);
+
+	var _constants = __webpack_require__(392);
 
 	window.rangy = _rangyLibRangyTextrange2['default'];
 
@@ -133,7 +137,7 @@
 	  }, {
 	    key: 'loadWpmFromChrome',
 	    value: function loadWpmFromChrome() {
-	      _utilsChrome2['default'].loadWpm(function (_ref) {
+	      chrome.loadWpm(function (_ref) {
 	        var wpm = _ref.wpm;
 
 	        wpm = parseInt(wpm);
@@ -157,7 +161,7 @@
 	    key: 'listenForSpace',
 	    value: function listenForSpace() {
 	      this.unListenForSpace();
-	      if (_utilsDom2['default'].isTextHighlighted() && !_utilsDom2['default'].isEditableFocused()) {
+	      if (dom.isTextHighlighted() && !dom.isEditableFocused()) {
 	        _fluxStore2['default'].actions.textHighlighted();
 	        (0, _keymaster2['default'])('space', function (e) {
 	          e.preventDefault();
@@ -205,8 +209,8 @@
 	    key: 'setReadingPointAt',
 	    value: function setReadingPointAt(range) {
 	      var node = range.endContainer.parentNode;
-	      _utilsDom2['default'].scrollToElementOnce(node);
-	      var left = _utilsDom2['default'].getReadingEdgeLeft(node);
+	      dom.scrollToElementOnce(node);
+	      var left = dom.getReadingEdgeLeft(node);
 	      _fluxStore2['default'].actions.setReadingEdge({ left: left });
 	    }
 
@@ -223,11 +227,11 @@
 	      // prevent double-play.
 	      window.clearTimeout(this.play_timeout);
 
-	      var sel = _rangyLibRangyTextrange2['default'].getSelection();
 	      var just_pressed_play = range ? false : true;
 
 	      // initialize
 	      if (!range) {
+	        var sel = _rangyLibRangyTextrange2['default'].getSelection();
 	        range = sel.getRangeAt(0);
 	      }
 
@@ -236,12 +240,15 @@
 	      // (results, intentionally, in first-words-of-paragraph
 	      // being dispayed twice: first without RSVP, and then with RSVP)
 	      var is_changing_para = (0, _fluxSelectors.changingParaSelector)(_fluxStore2['default'].getState());
-	      var is_in_heading = _utilsRsvp2['default'].looksLikeAHeading(range.endContainer.parentElement);
+	      var is_in_heading = rsvp.looksLikeAHeading(range.endContainer.parentElement);
 	      var is_new_para = false;
 	      if (is_changing_para && !is_in_heading) {
 	        _fluxStore2['default'].actions.paraResume();
-	      } else if (!just_pressed_play) {
-	        is_new_para = _utilsDom2['default'].moveToNextWord(range);
+	      } else {
+	        if (just_pressed_play) {
+	          range.move('word', -1, _constants.word_options);
+	        }
+	        is_new_para = dom.moveToNextWord(range);
 	      }
 
 	      // scroll if we're not there yet.
@@ -250,7 +257,7 @@
 	      }
 
 	      // highlight it
-	      sel.setSingleRange(range);
+	      range.select();
 
 	      // send it to React
 	      var word = range.text();
@@ -258,7 +265,7 @@
 
 	      // move to the next word in a sec
 	      var wpm = (0, _fluxSelectors.wpmSelector)(_fluxStore2['default'].getState());
-	      var time_to_display = _utilsRsvp2['default'].getTimeToDisplay(word, wpm);
+	      var time_to_display = rsvp.getTimeToDisplay(word, wpm);
 
 	      // pause RSVP at paragraph change
 	      if (is_new_para) {

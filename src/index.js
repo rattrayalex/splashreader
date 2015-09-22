@@ -11,9 +11,10 @@ import {
   changingParaSelector,
 } from './flux/selectors'
 import SplashApp from './components/SplashApp'
-import rsvp from './utils/rsvp'
-import dom from './utils/dom'
-import chrome from './utils/chrome'
+import * as rsvp from './utils/rsvp'
+import * as dom from './utils/dom'
+import * as chrome from './utils/chrome'
+import { word_options } from './constants'
 
 window.rangy = rangy
 
@@ -127,11 +128,11 @@ class SplashReader {
     // prevent double-play.
     window.clearTimeout(this.play_timeout)
 
-    let sel = rangy.getSelection()
     const just_pressed_play = ( range ? false : true )
 
     // initialize
     if ( !range ) {
+      let sel = rangy.getSelection()
       range = sel.getRangeAt(0)
     }
 
@@ -144,7 +145,10 @@ class SplashReader {
     let is_new_para = false
     if ( is_changing_para && !is_in_heading ) {
       store.actions.paraResume()
-    } else if ( !just_pressed_play ) {
+    } else {
+      if ( just_pressed_play ) {
+        range.move('word', -1, word_options)
+      }
       is_new_para = dom.moveToNextWord(range)
     }
 
@@ -154,7 +158,7 @@ class SplashReader {
     }
 
     // highlight it
-    sel.setSingleRange(range)
+    range.select()
 
     // send it to React
     const word = range.text()
