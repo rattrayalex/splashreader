@@ -8,9 +8,13 @@ export function saveWpm(wpm) {
   return wpm
 }
 
-export function loadWpm(cb) {
+export async function loadWpm() {
   try {
-    return chrome.storage.sync.get('wpm', cb)
+    return await new Promise( (resolve, reject) =>
+      chrome.storage.sync.get('wpm', ({ wpm }) =>
+        resolve(wpm)
+      )
+    )
   } catch (e) {
     console.error('Could not load WPM from chrome', e)
   }

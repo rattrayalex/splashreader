@@ -51,13 +51,12 @@ class SplashReader {
     return wrapper
   }
 
-  loadWpmFromChrome() {
-    chrome.loadWpm( ({ wpm }) => {
-      wpm = parseInt(wpm)
-      if ( wpm ) {
-        store.actions.setWpm({ wpm })
-      }
-    })
+  async loadWpmFromChrome() {
+    let wpm = await chrome.loadWpm()
+    wpm = parseInt(wpm)
+    if ( wpm ) {
+      store.actions.setWpm({ wpm })
+    }
   }
 
   listenForWordHighlight() {

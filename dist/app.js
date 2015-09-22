@@ -137,14 +137,26 @@
 	  }, {
 	    key: 'loadWpmFromChrome',
 	    value: function loadWpmFromChrome() {
-	      chrome.loadWpm(function (_ref) {
-	        var wpm = _ref.wpm;
+	      var wpm;
+	      return regeneratorRuntime.async(function loadWpmFromChrome$(context$2$0) {
+	        while (1) switch (context$2$0.prev = context$2$0.next) {
+	          case 0:
+	            context$2$0.next = 2;
+	            return regeneratorRuntime.awrap(chrome.loadWpm());
 
-	        wpm = parseInt(wpm);
-	        if (wpm) {
-	          _fluxStore2['default'].actions.setWpm({ wpm: wpm });
+	          case 2:
+	            wpm = context$2$0.sent;
+
+	            wpm = parseInt(wpm);
+	            if (wpm) {
+	              _fluxStore2['default'].actions.setWpm({ wpm: wpm });
+	            }
+
+	          case 5:
+	          case 'end':
+	            return context$2$0.stop();
 	        }
-	      });
+	      }, null, this);
 	    }
 	  }, {
 	    key: 'listenForWordHighlight',
@@ -39009,12 +39021,33 @@
 	  return wpm;
 	}
 
-	function loadWpm(cb) {
-	  try {
-	    return chrome.storage.sync.get('wpm', cb);
-	  } catch (e) {
-	    console.error('Could not load WPM from chrome', e);
-	  }
+	function loadWpm() {
+	  return regeneratorRuntime.async(function loadWpm$(context$1$0) {
+	    while (1) switch (context$1$0.prev = context$1$0.next) {
+	      case 0:
+	        context$1$0.prev = 0;
+	        context$1$0.next = 3;
+	        return regeneratorRuntime.awrap(new Promise(function (resolve, reject) {
+	          return chrome.storage.sync.get('wpm', function (_ref) {
+	            var wpm = _ref.wpm;
+	            return resolve(wpm);
+	          });
+	        }));
+
+	      case 3:
+	        return context$1$0.abrupt('return', context$1$0.sent);
+
+	      case 6:
+	        context$1$0.prev = 6;
+	        context$1$0.t0 = context$1$0['catch'](0);
+
+	        console.error('Could not load WPM from chrome', context$1$0.t0);
+
+	      case 9:
+	      case 'end':
+	        return context$1$0.stop();
+	    }
+	  }, null, this, [[0, 6]]);
 	}
 
 /***/ },
