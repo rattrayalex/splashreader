@@ -82,11 +82,15 @@
 
 	var _utilsRsvp = __webpack_require__(380);
 
+	var _utilsRsvp2 = _interopRequireDefault(_utilsRsvp);
+
 	var _utilsDom = __webpack_require__(391);
+
+	var _utilsDom2 = _interopRequireDefault(_utilsDom);
 
 	var _utilsChrome = __webpack_require__(377);
 
-	var _constants = __webpack_require__(392);
+	var _utilsChrome2 = _interopRequireDefault(_utilsChrome);
 
 	window.rangy = _rangyLibRangyTextrange2['default'];
 
@@ -129,7 +133,7 @@
 	  }, {
 	    key: 'loadWpmFromChrome',
 	    value: function loadWpmFromChrome() {
-	      (0, _utilsChrome.loadWpm)(function (_ref) {
+	      _utilsChrome2['default'].loadWpm(function (_ref) {
 	        var wpm = _ref.wpm;
 
 	        wpm = parseInt(wpm);
@@ -153,7 +157,7 @@
 	    key: 'listenForSpace',
 	    value: function listenForSpace() {
 	      this.unListenForSpace();
-	      if ((0, _utilsDom.isTextHighlighted)() && !(0, _utilsDom.isEditableFocused)()) {
+	      if (_utilsDom2['default'].isTextHighlighted() && !_utilsDom2['default'].isEditableFocused()) {
 	        _fluxStore2['default'].actions.textHighlighted();
 	        (0, _keymaster2['default'])('space', function (e) {
 	          e.preventDefault();
@@ -201,8 +205,8 @@
 	    key: 'setReadingPointAt',
 	    value: function setReadingPointAt(range) {
 	      var node = range.endContainer.parentNode;
-	      (0, _utilsDom.scrollToElementOnce)(node);
-	      var left = (0, _utilsDom.getReadingEdgeLeft)(node);
+	      _utilsDom2['default'].scrollToElementOnce(node);
+	      var left = _utilsDom2['default'].getReadingEdgeLeft(node);
 	      _fluxStore2['default'].actions.setReadingEdge({ left: left });
 	    }
 
@@ -225,7 +229,6 @@
 	      // initialize
 	      if (!range) {
 	        range = sel.getRangeAt(0);
-	        // range.move('word', -1, word_options)
 	      }
 
 	      // resume RSVP if in a new (non-header) paragrah.
@@ -233,12 +236,12 @@
 	      // (results, intentionally, in first-words-of-paragraph
 	      // being dispayed twice: first without RSVP, and then with RSVP)
 	      var is_changing_para = (0, _fluxSelectors.changingParaSelector)(_fluxStore2['default'].getState());
-	      var is_in_heading = (0, _utilsRsvp.looksLikeAHeading)(range.endContainer.parentElement);
+	      var is_in_heading = _utilsRsvp2['default'].looksLikeAHeading(range.endContainer.parentElement);
 	      var is_new_para = false;
 	      if (is_changing_para && !is_in_heading) {
 	        _fluxStore2['default'].actions.paraResume();
 	      } else if (!just_pressed_play) {
-	        is_new_para = (0, _utilsDom.moveToNextWord)(range);
+	        is_new_para = _utilsDom2['default'].moveToNextWord(range);
 	      }
 
 	      // scroll if we're not there yet.
@@ -255,7 +258,7 @@
 
 	      // move to the next word in a sec
 	      var wpm = (0, _fluxSelectors.wpmSelector)(_fluxStore2['default'].getState());
-	      var time_to_display = (0, _utilsRsvp.getTimeToDisplay)(word, wpm);
+	      var time_to_display = _utilsRsvp2['default'].getTimeToDisplay(word, wpm);
 
 	      // pause RSVP at paragraph change
 	      if (is_new_para) {
