@@ -94,6 +94,10 @@
 
 	var chrome = _interopRequireWildcard(_utilsChrome);
 
+	var _utilsRanges = __webpack_require__(397);
+
+	var ranges = _interopRequireWildcard(_utilsRanges);
+
 	var _constants = __webpack_require__(392);
 
 	window.rangy = _rangyLibRangyTextrange2['default'];
@@ -173,7 +177,7 @@
 	    key: 'listenForSpace',
 	    value: function listenForSpace() {
 	      this.unListenForSpace();
-	      if (dom.isTextHighlighted() && !dom.isEditableFocused()) {
+	      if (ranges.isTextHighlighted() && !dom.isEditableFocused()) {
 	        _fluxStore2['default'].actions.textHighlighted();
 	        (0, _keymaster2['default'])('space', function (e) {
 	          e.preventDefault();
@@ -220,10 +224,24 @@
 	  }, {
 	    key: 'setReadingPointAt',
 	    value: function setReadingPointAt(range) {
-	      var node = range.endContainer.parentNode;
-	      dom.scrollToElementOnce(node);
-	      var left = dom.getReadingEdgeLeft(node);
-	      _fluxStore2['default'].actions.setReadingEdge({ left: left });
+	      var node, left;
+	      return regeneratorRuntime.async(function setReadingPointAt$(context$2$0) {
+	        while (1) switch (context$2$0.prev = context$2$0.next) {
+	          case 0:
+	            node = range.endContainer.parentNode;
+	            context$2$0.next = 3;
+	            return regeneratorRuntime.awrap(dom.scrollToElementOnce(node));
+
+	          case 3:
+	            left = dom.getLeftEdge(node);
+
+	            _fluxStore2['default'].actions.setReadingEdge({ left: left });
+
+	          case 5:
+	          case 'end':
+	            return context$2$0.stop();
+	        }
+	      }, null, this);
 	    }
 
 	    // TODO: move elsewhere
@@ -232,63 +250,85 @@
 	    key: 'splash',
 	    value: function splash() {
 	      var range = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+	      var just_pressed_play, sel, is_changing_para, is_in_heading, is_new_para, word, wpm, time_to_display;
+	      return regeneratorRuntime.async(function splash$(context$2$0) {
+	        while (1) switch (context$2$0.prev = context$2$0.next) {
+	          case 0:
+	            if ((0, _fluxSelectors.isPlayingSelector)(_fluxStore2['default'].getState())) {
+	              context$2$0.next = 2;
+	              break;
+	            }
 
-	      if (!(0, _fluxSelectors.isPlayingSelector)(_fluxStore2['default'].getState())) {
-	        return;
-	      }
-	      // prevent double-play.
-	      window.clearTimeout(this.play_timeout);
+	            return context$2$0.abrupt('return');
 
-	      var just_pressed_play = range ? false : true;
+	          case 2:
+	            // prevent double-play.
+	            window.clearTimeout(this.play_timeout);
 
-	      // initialize
-	      if (!range) {
-	        var sel = _rangyLibRangyTextrange2['default'].getSelection();
-	        range = sel.getRangeAt(0);
-	      }
+	            just_pressed_play = range ? false : true;
 
-	      // resume RSVP if in a new (non-header) paragrah.
-	      // Otherwise, move to next word.
-	      // (results, intentionally, in first-words-of-paragraph
-	      // being dispayed twice: first without RSVP, and then with RSVP)
-	      var is_changing_para = (0, _fluxSelectors.changingParaSelector)(_fluxStore2['default'].getState());
-	      var is_in_heading = rsvp.looksLikeAHeading(range.endContainer.parentElement);
-	      var is_new_para = false;
-	      if (is_changing_para && !is_in_heading) {
-	        _fluxStore2['default'].actions.paraResume();
-	      } else {
-	        if (just_pressed_play) {
-	          range.move('word', -1, _constants.word_options);
+	            // initialize
+	            if (!range) {
+	              sel = _rangyLibRangyTextrange2['default'].getSelection();
+
+	              range = sel.getRangeAt(0);
+	            }
+
+	            // resume RSVP if in a new (non-header) paragrah.
+	            // Otherwise, move to next word.
+	            // (results, intentionally, in first-words-of-paragraph
+	            // being dispayed twice: first without RSVP, and then with RSVP)
+	            is_changing_para = (0, _fluxSelectors.changingParaSelector)(_fluxStore2['default'].getState());
+	            is_in_heading = rsvp.looksLikeAHeading(range.endContainer.parentElement);
+	            is_new_para = false;
+
+	            if (is_changing_para && !is_in_heading) {
+	              _fluxStore2['default'].actions.paraResume();
+	            } else {
+	              if (just_pressed_play) {
+	                range.move('word', -1, _constants.word_options);
+	              }
+	              is_new_para = ranges.moveToNextWord(range);
+	            }
+
+	            // highlight it
+	            range.select();
+
+	            // send it to React
+	            word = range.text();
+
+	            _fluxStore2['default'].actions.changeWord({ word: word });
+
+	            // scroll if we're not there yet.
+
+	            if (!(just_pressed_play || is_changing_para)) {
+	              context$2$0.next = 15;
+	              break;
+	            }
+
+	            context$2$0.next = 15;
+	            return regeneratorRuntime.awrap(this.setReadingPointAt(range));
+
+	          case 15:
+	            wpm = (0, _fluxSelectors.wpmSelector)(_fluxStore2['default'].getState());
+	            time_to_display = rsvp.getTimeToDisplay(word, wpm);
+
+	            // pause RSVP at paragraph change
+	            if (is_new_para) {
+	              if (!just_pressed_play) {
+	                time_to_display = 1000;
+	                this.setReadingPointAt(range);
+	              }
+	              _fluxStore2['default'].actions.paraChange();
+	            }
+
+	            this.play_timeout = setTimeout(this.splash.bind(this, range), time_to_display);
+
+	          case 19:
+	          case 'end':
+	            return context$2$0.stop();
 	        }
-	        is_new_para = dom.moveToNextWord(range);
-	      }
-
-	      // scroll if we're not there yet.
-	      if (just_pressed_play || is_changing_para) {
-	        this.setReadingPointAt(range);
-	      }
-
-	      // highlight it
-	      range.select();
-
-	      // send it to React
-	      var word = range.text();
-	      _fluxStore2['default'].actions.changeWord({ word: word });
-
-	      // move to the next word in a sec
-	      var wpm = (0, _fluxSelectors.wpmSelector)(_fluxStore2['default'].getState());
-	      var time_to_display = rsvp.getTimeToDisplay(word, wpm);
-
-	      // pause RSVP at paragraph change
-	      if (is_new_para) {
-	        if (!just_pressed_play) {
-	          time_to_display = 1000;
-	          this.setReadingPointAt(range);
-	        }
-	        _fluxStore2['default'].actions.paraChange();
-	      }
-
-	      this.play_timeout = setTimeout(this.splash.bind(this, range), time_to_display);
+	      }, null, this);
 	    }
 	  }]);
 
@@ -296,6 +336,8 @@
 	})();
 
 	var Reader = new SplashReader();
+
+	// move to the next word in a sec
 
 /***/ },
 /* 1 */
@@ -40274,96 +40316,81 @@
 
 /***/ },
 /* 391 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
+	
+	/**
+	 * Whether the document's active element is editable.
+	 * @return {Boolean}
+	 */
 	'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
-	exports.isElementEditable = isElementEditable;
-	exports.moveToNextWord = moveToNextWord;
 	exports.isEditableFocused = isEditableFocused;
-	exports.isTextHighlighted = isTextHighlighted;
-	exports.isSingleWordHighlighted = isSingleWordHighlighted;
-	exports.getReadingEdgeLeft = getReadingEdgeLeft;
+	exports.getLeftEdge = getLeftEdge;
 	exports.getReadingHeight = getReadingHeight;
 	exports.scrollToElementOnce = scrollToElementOnce;
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function isEditableFocused() {
+	  var activeElement = document.activeElement;
+	  return _isElementEditable(activeElement);
+	}
 
-	var _rangyLibRangyTextrange = __webpack_require__(358);
-
-	var _rangyLibRangyTextrange2 = _interopRequireDefault(_rangyLibRangyTextrange);
-
-	var _constants = __webpack_require__(392);
-
-	function isElementEditable(elem) {
+	/**
+	 * Returns true if `elem` can be edited by user
+	 *
+	 * @param  {DOMElement}  elem
+	 * @return {Boolean}
+	 */
+	function _isElementEditable(elem) {
 	  return elem.getAttribute('contenteditable') === 'true' || elem.nodeName === 'INPUT';
 	}
 
-	function _containsNewline(range) {
-	  return !!range.text().match(/[\n\r]/);
-	}
+	/**
+	 * Gets the elem's distance from left edge of screen.
+	 *
+	 * @param  {DOMElement}  elem
+	 * @return {number}      distance from left edge of screen
+	 */
 
-	function moveToNextWord(range) {
-
-	  // set range to next word
-	  range.moveStart('word', 1, _constants.word_options);
-	  range.moveEnd('word', 1, _constants.word_options);
-
-	  var is_new_para = _containsNewline(range);
-
-	  // removes whitespace, newlines, etc.
-	  range.collapse(false); // collapse to end of word
-	  range.moveStart('word', -1, _constants.word_options);
-	  range.expand('word', Object.assign(_constants.word_options, { trim: true }));
-
-	  return is_new_para;
-	}
-
-	function isEditableFocused() {
-	  var activeElement = document.activeElement;
-	  return isElementEditable(activeElement);
-	}
-
-	function isTextHighlighted() {
-	  return _rangyLibRangyTextrange2['default'].getSelection().rangeCount === 1 && _rangyLibRangyTextrange2['default'].getSelection().getRangeAt(0).text().trim().length && (1 || console.log('isTextHighlighted', _rangyLibRangyTextrange2['default'].getSelection().getRangeAt(0).text()));
-	}
-
-	function isSingleWordHighlighted() {
-	  var sel = _rangyLibRangyTextrange2['default'].getSelection();
-
-	  if (sel.rangeCount < 1) {
-	    return false;
-	  }
-
-	  var range = sel.getRangeAt(0);
-	  var text = range.text();
-
-	  // TODO: improve accuracy... this is simple/dumb
-	  if (!text.match(/\s/)) {
-	    return true;
-	  }
-
-	  return false;
-	}
-
-	function getReadingEdgeLeft(elem) {
+	function getLeftEdge(elem) {
 	  return elem.getBoundingClientRect().left + window.scrollX;
 	}
+
+	/**
+	 * Finds the point 1/3 of the way down the viewport.
+	 * @return {number} target distance from top edge of screen
+	 */
 
 	function getReadingHeight() {
 	  return window.innerHeight * .32;
 	}
 
-	// TODO: scroll w/in scrolly-divs on the page.
+	/**
+	 * smooth-scroll's the viewport to target element.
+	 *
+	 * @param  {DOMElement} elem
+	 * @return {void}
+	 */
 
 	function scrollToElementOnce(elem) {
-	  var elem_top = elem.getBoundingClientRect().top + window.scrollY;
-	  var offset = getReadingHeight();
-	  var target = elem_top - offset;
-	  scrollToOnce(document.body, target, 500);
+	  var elem_top, offset, target;
+	  return regeneratorRuntime.async(function scrollToElementOnce$(context$1$0) {
+	    while (1) switch (context$1$0.prev = context$1$0.next) {
+	      case 0:
+	        elem_top = elem.getBoundingClientRect().top + window.scrollY;
+	        offset = getReadingHeight();
+	        target = elem_top - offset;
+	        context$1$0.next = 5;
+	        return regeneratorRuntime.awrap(_scrollToOnce(document.body, target, 500));
+
+	      case 5:
+	      case 'end':
+	        return context$1$0.stop();
+	    }
+	  }, null, this);
 	}
 
 	/**
@@ -40377,37 +40404,60 @@
 	 * @return {void}
 	 */
 	var isAnimating = false;
-	function scrollToOnce(element, to, duration) {
-	  if (isAnimating) {
-	    return;
-	  }
+	function _scrollToOnce(element, to, duration) {
+	  var start, change, increment;
+	  return regeneratorRuntime.async(function _scrollToOnce$(context$1$0) {
+	    while (1) switch (context$1$0.prev = context$1$0.next) {
+	      case 0:
+	        if (!isAnimating) {
+	          context$1$0.next = 2;
+	          break;
+	        }
 
-	  var start = element.scrollTop;
-	  var change = to - start;
-	  var increment = 20;
+	        return context$1$0.abrupt('return');
 
-	  if (change === 0) {
-	    console.log('not animating, change is 0', { start: start, to: to, change: change });
-	    return;
-	  }
-	  isAnimating = true;
+	      case 2:
+	        start = element.scrollTop;
+	        change = to - start;
+	        increment = 20;
 
-	  var animateScroll = function animateScroll(elapsedTime) {
-	    elapsedTime += increment;
-	    var position = easeInOut(elapsedTime, start, change, duration);
-	    element.scrollTop = position;
-	    if (elapsedTime < duration) {
-	      setTimeout(animateScroll.bind(null, elapsedTime), increment);
-	    } else {
-	      isAnimating = false;
+	        if (!(Math.abs(change) < 5)) {
+	          context$1$0.next = 7;
+	          break;
+	        }
+
+	        return context$1$0.abrupt('return');
+
+	      case 7:
+	        context$1$0.next = 9;
+	        return regeneratorRuntime.awrap(new Promise(function (resolve, reject) {
+	          isAnimating = true;
+	          var animateScroll = function animateScroll(elapsedTime) {
+	            elapsedTime += increment;
+	            var position = _easeInOut(elapsedTime, start, change, duration);
+	            element.scrollTop = position;
+	            if (elapsedTime < duration) {
+	              setTimeout(animateScroll.bind(null, elapsedTime), increment);
+	            } else {
+	              isAnimating = false;
+	              resolve();
+	            }
+	          };
+	          animateScroll(0);
+	        }));
+
+	      case 9:
+	        return context$1$0.abrupt('return', context$1$0.sent);
+
+	      case 10:
+	      case 'end':
+	        return context$1$0.stop();
 	    }
-	  };
-
-	  animateScroll(0);
+	  }, null, this);
 	}
 
 	/** see http://stackoverflow.com/a/16136789/1048433 */
-	function easeInOut(currentTime, start, change, duration) {
+	function _easeInOut(currentTime, start, change, duration) {
 	  currentTime /= duration / 2;
 	  if (currentTime < 1) {
 	    return change / 2 * currentTime * currentTime + start;
@@ -40415,6 +40465,10 @@
 	  currentTime -= 1;
 	  return -change / 2 * (currentTime * (currentTime - 2) - 1) + start;
 	}
+
+	// TODO: scroll w/in scrolly-divs on the page.
+
+	// don't bother if it's close
 
 /***/ },
 /* 392 */
@@ -40591,6 +40645,90 @@
 		"rsvpNotchTop": "_3duaqCs2w-QFYp3x5FZ4Y4",
 		"rsvpNotchBottom": "_2daHR8i-XNajTUW3BeSwPf"
 	};
+
+/***/ },
+/* 396 */,
+/* 397 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.isTextHighlighted = isTextHighlighted;
+	exports.moveToNextWord = moveToNextWord;
+	exports.isSingleWordHighlighted = isSingleWordHighlighted;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _rangyLibRangyTextrange = __webpack_require__(358);
+
+	var _rangyLibRangyTextrange2 = _interopRequireDefault(_rangyLibRangyTextrange);
+
+	var _constants = __webpack_require__(392);
+
+	/**
+	 * Whether the user has highlighted text.
+	 * @return {Boolean}
+	 */
+
+	function isTextHighlighted() {
+	  return _rangyLibRangyTextrange2['default'].getSelection().rangeCount === 1 && _rangyLibRangyTextrange2['default'].getSelection().getRangeAt(0).text().trim().length;
+	}
+
+	/**
+	 * Moves the range to the next word,
+	 * without including intervening block elements,
+	 * and returns whether a new paragraph has been entered.
+	 *
+	 * @param  {Rangy Range} range
+	 * @return {Boolean}
+	 *         whether the next word is in a new paragraph
+	 */
+
+	function moveToNextWord(range) {
+
+	  // set range to next word
+	  range.moveStart('word', 1, _constants.word_options);
+	  range.moveEnd('word', 1, _constants.word_options);
+
+	  var is_new_para = _containsNewline(range);
+
+	  // removes whitespace, newlines, etc.
+	  range.collapse(false); // collapse to end of word
+	  range.moveStart('word', -1, _constants.word_options);
+	  range.expand('word', Object.assign(_constants.word_options, { trim: true }));
+
+	  return is_new_para;
+	}
+
+	/**
+	 * currently unused.
+	 * @return {Boolean}
+	 */
+
+	function isSingleWordHighlighted() {
+	  var sel = _rangyLibRangyTextrange2['default'].getSelection();
+
+	  if (sel.rangeCount < 1) {
+	    return false;
+	  }
+
+	  var range = sel.getRangeAt(0);
+	  var text = range.text();
+
+	  // TODO: improve accuracy... this is simple/dumb
+	  if (!text.match(/\s/)) {
+	    return true;
+	  }
+
+	  return false;
+	}
+
+	function _containsNewline(range) {
+	  return !!range.text().match(/[\n\r]/);
+	}
 
 /***/ }
 /******/ ]);

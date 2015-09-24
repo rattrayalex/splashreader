@@ -1,7 +1,20 @@
-import rangy from 'rangy/lib/rangy-textrange'
-import { word_options } from '../constants'
 
-export function isElementEditable(elem) {
+/**
+ * Whether the document's active element is editable.
+ * @return {Boolean}
+ */
+export function isEditableFocused() {
+  let activeElement = document.activeElement
+  return _isElementEditable(activeElement)
+}
+
+/**
+ * Returns true if `elem` can be edited by user
+ *
+ * @param  {DOMElement}  elem
+ * @return {Boolean}
+ */
+function _isElementEditable(elem) {
   return (
     elem.getAttribute('contenteditable') === 'true'
     ||
@@ -9,75 +22,36 @@ export function isElementEditable(elem) {
   )
 }
 
-function _containsNewline(range) {
-  return !!range.text().match(/[\n\r]/)
-}
-
-export function moveToNextWord(range) {
-
-  // set range to next word
-  range.moveStart('word', 1, word_options)
-  range.moveEnd('word', 1, word_options)
-
-  let is_new_para = _containsNewline(range)
-
-  // removes whitespace, newlines, etc.
-  range.collapse(false)  // collapse to end of word
-  range.moveStart('word', -1, word_options)
-  range.expand('word', Object.assign(word_options, { trim: true }))
-
-  return is_new_para
-}
-
-export function isEditableFocused() {
-  let activeElement = document.activeElement
-  return isElementEditable(activeElement)
-}
-
-export function isTextHighlighted() {
-  return (
-    rangy.getSelection().rangeCount === 1
-    &&
-    rangy.getSelection().getRangeAt(0).text().trim().length
-    &&
-    ( 1 || console.log('isTextHighlighted', rangy.getSelection().getRangeAt(0).text()) )
-  )
-}
-
-export function isSingleWordHighlighted() {
-  const sel = rangy.getSelection()
-
-  if ( sel.rangeCount < 1 ) {
-    return false
-  }
-
-  let range = sel.getRangeAt(0)
-  let text = range.text()
-
-  // TODO: improve accuracy... this is simple/dumb
-  if ( !text.match(/\s/) ) {
-    return true
-  }
-
-  return false
-}
-
-
-export function getReadingEdgeLeft(elem) {
+/**
+ * Gets the elem's distance from left edge of screen.
+ *
+ * @param  {DOMElement}  elem
+ * @return {number}      distance from left edge of screen
+ */
+export function getLeftEdge(elem) {
   return elem.getBoundingClientRect().left + window.scrollX
 }
 
-
+/**
+ * Finds the point 1/3 of the way down the viewport.
+ * @return {number} target distance from top edge of screen
+ */
 export function getReadingHeight() {
   return ( window.innerHeight * .32 )
 }
 
-// TODO: scroll w/in scrolly-divs on the page.
-export function scrollToElementOnce (elem) {
+/**
+ * smooth-scroll's the viewport to target element.
+ *
+ * @param  {DOMElement} elem
+ * @return {void}
+ */
+export async function scrollToElementOnce(elem) {
+  // TODO: scroll w/in scrolly-divs on the page.
   let elem_top = elem.getBoundingClientRect().top + window.scrollY
   let offset = getReadingHeight()
   let target = elem_top - offset
-  scrollToOnce(document.body, target, 500)
+  await _scrollToOnce(document.body, target, 500)
 }
 
 
@@ -92,7 +66,7 @@ export function scrollToElementOnce (elem) {
  * @return {void}
  */
 let isAnimating = false
-function scrollToOnce(element, to, duration) {
+async function _scrollToOnce(element, to, duration) {
   if ( isAnimating ) {
     return
   }
@@ -101,31 +75,34 @@ function scrollToOnce(element, to, duration) {
   const change = to - start
   const increment = 20
 
-  if ( change === 0 ) {
-    console.log('not animating, change is 0', {start, to, change})
+  // don't bother if it's close
+  if ( Math.abs(change) < 5 ) {
     return
   }
-  isAnimating = true
 
-  const animateScroll = (elapsedTime) => {
-    elapsedTime += increment
-    const position = easeInOut(elapsedTime, start, change, duration)
-    element.scrollTop = position
-    if ( elapsedTime < duration ) {
-      setTimeout(
-        animateScroll.bind(null, elapsedTime),
-        increment
-      )
-    } else {
-      isAnimating = false
+  return await new Promise( (resolve, reject) => {
+    isAnimating = true
+    const animateScroll = (elapsedTime) => {
+      elapsedTime += increment
+      const position = _easeInOut(elapsedTime, start, change, duration)
+      element.scrollTop = position
+      if ( elapsedTime < duration ) {
+        setTimeout(
+          animateScroll.bind(null, elapsedTime),
+          increment
+        )
+      } else {
+        isAnimating = false
+        resolve()
+      }
     }
+    animateScroll(0)
   }
-
-  animateScroll(0)
+  )
 }
 
 /** see http://stackoverflow.com/a/16136789/1048433 */
-function easeInOut(currentTime, start, change, duration) {
+function _easeInOut(currentTime, start, change, duration) {
   currentTime /= ( duration / 2 )
   if ( currentTime < 1 ) {
     return change / 2 * currentTime * currentTime + start

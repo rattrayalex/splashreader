@@ -14,6 +14,7 @@ import SplashApp from './components/SplashApp'
 import * as rsvp from './utils/rsvp'
 import * as dom from './utils/dom'
 import * as chrome from './utils/chrome'
+import * as ranges from './utils/ranges'
 import { word_options } from './constants'
 
 window.rangy = rangy
@@ -74,7 +75,7 @@ class SplashReader {
   }
   listenForSpace() {
     this.unListenForSpace()
-    if ( dom.isTextHighlighted() && !dom.isEditableFocused() ) {
+    if ( ranges.isTextHighlighted() && !dom.isEditableFocused() ) {
       store.actions.textHighlighted()
       key('space', (e) => {
         e.preventDefault()
@@ -111,16 +112,16 @@ class SplashReader {
     })
   }
 
-  setReadingPointAt(range) {
+  async setReadingPointAt(range) {
     const node = range.endContainer.parentNode
-    dom.scrollToElementOnce(node)
-    const left = dom.getReadingEdgeLeft(node)
+    await dom.scrollToElementOnce(node)
+    const left = dom.getLeftEdge(node)
     store.actions.setReadingEdge({ left })
   }
 
   // TODO: move elsewhere
   // TODO: clean up
-  splash(range=null) {
+  async splash(range=null) {
     if ( !isPlayingSelector(store.getState()) ) {
       return
     }
@@ -148,12 +149,7 @@ class SplashReader {
       if ( just_pressed_play ) {
         range.move('word', -1, word_options)
       }
-      is_new_para = dom.moveToNextWord(range)
-    }
-
-    // scroll if we're not there yet.
-    if ( just_pressed_play || is_changing_para ) {
-      this.setReadingPointAt(range)
+      is_new_para = ranges.moveToNextWord(range)
     }
 
     // highlight it
@@ -162,6 +158,11 @@ class SplashReader {
     // send it to React
     const word = range.text()
     store.actions.changeWord({ word })
+
+    // scroll if we're not there yet.
+    if ( just_pressed_play || is_changing_para ) {
+      await this.setReadingPointAt(range)
+    }
 
     // move to the next word in a sec
     const wpm = wpmSelector(store.getState())
@@ -182,6 +183,5 @@ class SplashReader {
     )
   }
 }
-
 
 const Reader = new SplashReader()
