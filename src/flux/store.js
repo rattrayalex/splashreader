@@ -23,48 +23,77 @@ const initialState = Immutable.fromJS({
 
 })
 
+
+type State = Immutable.Map
+
 const actionHandlers = {
 
-  playPause: (state, { payload }) =>
+  playPause: (state, {  }) =>
     state.update('isPlaying', (isPlaying) => !isPlaying )
   ,
-  pause: (state, { payload }) =>
+  pause: (state, {  }) =>
     state.set('isPlaying', false)
   ,
-  play: (state, { payload }) =>
+  play: (state, {  }) =>
     state.set('isPlaying', true)
   ,
 
-  paraChange: (state, { payload }) =>
+  paraChange: (state, {  }) =>
     state.set('changingPara', true)
   ,
-  paraResume: (state, { payload }) =>
+  paraResume: (state, {  }) =>
     state.set('changingPara', false)
   ,
 
-  textHighlighted: (state, { payload }) =>
+  textHighlighted: (state, {  }) =>
     state.set('buttonShown', true)
   ,
-  nothingHighlighted: (state, { payload }) =>
+  nothingHighlighted: (state, {  }) =>
     state.set('buttonShown', false)
   ,
 
-  changeWord: (state, { payload }) =>
-    state.set('currentWord', payload.word)
+  changeWord: (state, { word }) =>
+    state.set('currentWord', word)
   ,
-  setReadingEdge: (state, { payload }) =>
-    state.set('readingEdge', Immutable.fromJS(payload))
+  setReadingEdge: (state, { left }) =>
+    state.setIn(['readingEdge', 'left'], left)
   ,
 
-  setWpm: (state, { payload }) =>
-    state.set('wpm', saveWpm(payload.wpm))
+  setWpm: (state, { wpm }) =>
+    state.set('wpm', saveWpm(wpm))
   ,
-  increaseWpm: (state, { payload }) =>
-    state.update('wpm', (wpm) => saveWpm(Math.min(3000, wpm + payload.amount)))
+  increaseWpm: (state, { amount }) =>
+    state.update('wpm', (wpm) => saveWpm(Math.min(3000, wpm + amount)))
   ,
-  decreaseWpm: (state, { payload }) =>
-    state.update('wpm', (wpm) => saveWpm(Math.max(50, wpm - payload.amount)))
+  decreaseWpm: (state, { amount }) =>
+    state.update('wpm', (wpm) => saveWpm(Math.max(50, wpm - amount)))
   ,
+}
+
+function createSimpleAction(type) {
+  return (payload) => Object.assign((payload || {}), { type })
+}
+
+// TODO: be less magical.
+/**
+ * automagically create simple actions
+ * based on those defined in `handleActions`
+ * (mutates the actions object)
+ *
+ * Usage:
+ * store.actions.someAction({ payloadItem: val, })
+ * results in:
+ * store.dispatch({ type: 'someAction', payload: { payloadItem: val } })
+ */
+export function createActions(ignoreKeys: Array<string> = []): Object {
+  let actions = {}
+  Object.keys(actionHandlers).forEach( (key) => {
+    if ( ignoreKeys.includes(key) ) { return }
+    const action = createSimpleAction(key)
+    actions[key] = (payload) =>
+      store.dispatch(action(payload))
+  })
+  return actions
 }
 
 const reducer = handleActions(actionHandlers, initialState)
@@ -77,20 +106,6 @@ const createStoreWithMiddleware = applyMiddleware(logger)(createStore)
 // const store = createStoreWithMiddleware(reducer)
 const store = createStore(reducer)
 
-
-// be automagic about creating actions
-// b/c they're all so simple...
-// TODO: be less magical.
-//
-// Usage:
-// store.actions.someAction({ payloadItem: val, })
-// results in:
-// store.dispatch({ type: 'someAction', payload: { payloadItem: val } })
-store.actions = {}
-Object.keys(actionHandlers).forEach( (key) => {
-  const action = createAction(key)
-  store.actions[key] = (payload) =>
-    store.dispatch(action(payload))
-})
+store.actions = createActions()
 
 export default store

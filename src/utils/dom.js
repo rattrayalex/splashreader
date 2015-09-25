@@ -1,5 +1,13 @@
 /* @flow */
 
+
+export function insertWrapper(): HTMLElement {
+  const wrapper = document.createElement('div')
+  wrapper.setAttribute('id', 'splashreader-wrapper')
+  document.body.appendChild(wrapper)
+  return wrapper
+}
+
 /**
  * Whether the document's active element is editable.
  * @return {Boolean}
