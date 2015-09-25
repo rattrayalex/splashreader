@@ -40,7 +40,7 @@ export function unListenForSpace() {
 
 export function listenForEsc() {
   unListenForEsc()
-  key('esc', (e) => {
+  key('esc', () => {
     store.dispatch(actions.pause())
   })
 }

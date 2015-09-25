@@ -157,17 +157,11 @@ export function getClosestBlockElement(elem: Element): Element {
  * @return {Boolean}
  */
 export function isSingleLine(elem: Element): boolean {
-  try {
-    const elem_height: number = elem.clientHeight
-    const line_height = parseInt(window.getComputedStyle(elem).lineHeight)
-    // direct comparison didn't work,
-    // so just check if it's at least smaller than two lines tall...
-    return ( elem_height < ( line_height * 2) )
-
-  } catch (e) {
-    console.error('could not calculate isSingleLine', e)
-    return false
-  }
+  const elem_height: number = elem.clientHeight
+  const line_height = parseInt(window.getComputedStyle(elem).lineHeight)
+  // direct comparison didn't work,
+  // so just check if it's at least smaller than two lines tall...
+  return ( elem_height < ( line_height * 2) )
 }
 
 /**

@@ -9,7 +9,6 @@ import RsvpWord from './RsvpWord'
 import styles from './Rsvp.css'
 
 
-
 export default class Rsvp extends React.Component {
   render(): ?React.Element {
     let { rsvpPlaying, currentWord, orpCenter, font } = this.props
@@ -29,7 +28,7 @@ export default class Rsvp extends React.Component {
 
         <div className={styles.rsvpWrapper}
           style={{
-            top: getReadingHeight() - 40 // TODO: remove hardcoding
+            top: (getReadingHeight() - 40),  // TODO: remove hardcoding
           }}
           >
           <div className={styles.rsvpNotchTop}

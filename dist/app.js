@@ -32550,6 +32550,8 @@
 
 	var _utilsChrome = __webpack_require__(378);
 
+	var __DEBUG__ = false;
+
 	// TODO: nesting.
 	var initialState = _immutable2['default'].fromJS({
 	  buttonShown: true,
@@ -32676,15 +32678,20 @@
 
 	var reducer = (0, _reduxActions.handleActions)(actionHandlers, initialState);
 
-	var logger = (0, _reduxLogger2['default'])({
-	  // print immutable as json
-	  transformer: function transformer(x) {
-	    return x.toJSON ? x.toJSON() : x;
+	var store = (function () {
+	  if (__DEBUG__) {
+	    var logger = (0, _reduxLogger2['default'])({
+	      // print immutable as json
+	      transformer: function transformer(x) {
+	        return x.toJSON ? x.toJSON() : x;
+	      }
+	    });
+	    var createStoreWithMiddleware = (0, _redux.applyMiddleware)(logger)(_redux.createStore);
+	    return createStoreWithMiddleware(reducer);
+	  } else {
+	    return (0, _redux.createStore)(reducer);
 	  }
-	});
-	var createStoreWithMiddleware = (0, _redux.applyMiddleware)(logger)(_redux.createStore);
-	// const store = createStoreWithMiddleware(reducer)
-	var store = (0, _redux.createStore)(reducer);
+	})();
 
 	exports['default'] = store;
 
@@ -32756,7 +32763,14 @@
 
 	exports.orpCenterSelector = orpCenterSelector;
 	var allSelector = (0, _reselect.createSelector)([buttonShownSelector, isPlayingSelector, currentWordSelector, orpCenterSelector, wpmSelector, fontSelector, rsvpPlayingSelector], function (buttonShown, isPlaying, currentWord, orpCenter, wpm, font, rsvpPlaying) {
-	  return { buttonShown: buttonShown, isPlaying: isPlaying, currentWord: currentWord, orpCenter: orpCenter, wpm: wpm, font: font, rsvpPlaying: rsvpPlaying };
+	  return { buttonShown: buttonShown,
+	    isPlaying: isPlaying,
+	    currentWord: currentWord,
+	    orpCenter: orpCenter,
+	    wpm: wpm,
+	    font: font,
+	    rsvpPlaying: rsvpPlaying
+	  };
 	});
 	exports.allSelector = allSelector;
 
@@ -37976,16 +37990,11 @@
 	 */
 
 	function isSingleLine(elem) {
-	  try {
-	    var elem_height = elem.clientHeight;
-	    var line_height = parseInt(window.getComputedStyle(elem).lineHeight);
-	    // direct comparison didn't work,
-	    // so just check if it's at least smaller than two lines tall...
-	    return elem_height < line_height * 2;
-	  } catch (e) {
-	    console.error('could not calculate isSingleLine', e);
-	    return false;
-	  }
+	  var elem_height = elem.clientHeight;
+	  var line_height = parseInt(window.getComputedStyle(elem).lineHeight);
+	  // direct comparison didn't work,
+	  // so just check if it's at least smaller than two lines tall...
+	  return elem_height < line_height * 2;
 	}
 
 	/**
@@ -38072,10 +38081,6 @@
 
 	var _fluxSelectors = __webpack_require__(360);
 
-	var _fluxActions = __webpack_require__(398);
-
-	var _fluxActions2 = _interopRequireDefault(_fluxActions);
-
 	// see https://github.com/facebook/flow/issues/606
 	/*::`*/ /*::`;*/
 
@@ -38091,9 +38096,7 @@
 	  _createClass(SplashApp, [{
 	    key: 'render',
 	    value: function render() {
-	      var _props = this.props;
-	      var rsvpPlaying = _props.rsvpPlaying;
-	      var dispatch = _props.dispatch;
+	      var rsvpPlaying = this.props.rsvpPlaying;
 
 	      if (rsvpPlaying) {
 	        return _react2['default'].createElement(_Rsvp2['default'], this.props);
@@ -38904,8 +38907,7 @@
 	          'div',
 	          { className: _RsvpCss2['default'].rsvpWrapper,
 	            style: {
-	              top: (0, _utilsDom.getReadingHeight)() - 40 // TODO: remove hardcoding
-	            }
+	              top: (0, _utilsDom.getReadingHeight)() - 40 }
 	          },
 	          _react2['default'].createElement('div', { className: _RsvpCss2['default'].rsvpNotchTop,
 	            style: { marginLeft: notch_offset }
@@ -38929,6 +38931,7 @@
 
 	exports['default'] = Rsvp;
 	module.exports = exports['default'];
+	// TODO: remove hardcoding
 
 /***/ },
 /* 374 */
@@ -39056,7 +39059,7 @@
 
 	      case 7:
 	        context$1$0.next = 9;
-	        return regeneratorRuntime.awrap(new Promise(function (resolve, reject) {
+	        return regeneratorRuntime.awrap(new Promise(function (resolve) {
 	          isAnimating = true;
 	          var animateScroll = function animateScroll(elapsedTime) {
 	            elapsedTime += increment;
@@ -39282,7 +39285,7 @@
 	      case 0:
 	        context$1$0.prev = 0;
 	        context$1$0.next = 3;
-	        return regeneratorRuntime.awrap(new Promise(function (resolve, reject) {
+	        return regeneratorRuntime.awrap(new Promise(function (resolve) {
 	          return chrome.storage.sync.get('wpm', function (_ref) {
 	            var wpm = _ref.wpm;
 	            return resolve(parseInt(wpm));
@@ -39481,7 +39484,7 @@
 
 	function listenForEsc() {
 	  unListenForEsc();
-	  (0, _keymaster2['default'])('esc', function (e) {
+	  (0, _keymaster2['default'])('esc', function () {
 	    _fluxStore2['default'].dispatch(_fluxActions2['default'].pause());
 	  });
 	}

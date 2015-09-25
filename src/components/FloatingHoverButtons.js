@@ -9,7 +9,7 @@ export default class FloatingHoverButtons extends React.Component {
   static propTypes = {
     children: PropTypes.oneOfType([
       PropTypes.array,
-      PropTypes.object
+      PropTypes.object,
     ]).isRequired,
     primary: PropTypes.element.isRequired,
     shown: PropTypes.bool,
@@ -17,7 +17,7 @@ export default class FloatingHoverButtons extends React.Component {
 
   // $FlowIssue https://github.com/facebook/flow/issues/850
   state = {
-    hovered: false
+    hovered: false,
   };
 
   _handleMouseEnter() {

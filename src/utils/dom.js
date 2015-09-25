@@ -89,7 +89,7 @@ async function _scrollToOnce(element, to, duration) {
     return
   }
 
-  return await new Promise( (resolve, reject) => {
+  return await new Promise( (resolve) => {
     isAnimating = true
     const animateScroll = (elapsedTime) => {
       elapsedTime += increment

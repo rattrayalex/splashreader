@@ -61,5 +61,12 @@ export const allSelector = createSelector(
     rsvpPlayingSelector,
   ],
   (buttonShown, isPlaying, currentWord, orpCenter, wpm, font, rsvpPlaying) =>
-    ( { buttonShown, isPlaying, currentWord, orpCenter, wpm, font, rsvpPlaying, } )
+    ( { buttonShown,
+      isPlaying,
+      currentWord,
+      orpCenter,
+      wpm,
+      font,
+      rsvpPlaying,
+    } )
 )

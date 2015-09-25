@@ -13,7 +13,7 @@ export function saveWpm(wpm: number): number {
 
 export async function loadWpm(): Promise<?number> {
   try {
-    return await new Promise( (resolve, reject) =>
+    return await new Promise( (resolve) =>
       chrome.storage.sync.get('wpm', ({ wpm }) =>
         resolve(parseInt(wpm))
       )

@@ -1,10 +1,12 @@
 /* @flow */
 import { createStore, applyMiddleware } from 'redux'
 import createLogger from 'redux-logger'
-import { createAction, handleActions } from 'redux-actions'
+import { handleActions } from 'redux-actions'
 import Immutable from 'immutable'
 
 import { saveWpm } from '../utils/chrome'
+
+const __DEBUG__ = false
 
 
 // TODO: nesting.
@@ -23,8 +25,6 @@ const initialState = Immutable.fromJS({
 
 })
 
-
-type State = Immutable.Map
 
 const actionHandlers = {
 
@@ -96,12 +96,19 @@ export function createActionsFromHandlers(ignoreKeys: Array<string> = []): Objec
 
 const reducer = handleActions(actionHandlers, initialState)
 
-const logger = createLogger({
-  // print immutable as json
-  transformer: (x) => ( x.toJSON ? x.toJSON() : x )
-})
-const createStoreWithMiddleware = applyMiddleware(logger)(createStore)
-// const store = createStoreWithMiddleware(reducer)
-const store = createStore(reducer)
+const store = (() => {
+  if ( __DEBUG__ ) {
+    const logger = createLogger({
+      // print immutable as json
+      transformer: (x) => ( x.toJSON ? x.toJSON() : x ),
+    })
+    const createStoreWithMiddleware = applyMiddleware(logger)(createStore)
+    return createStoreWithMiddleware(reducer)
+  } else {
+    return createStore(reducer)
+  }
+})()
+
+
 
 export default store

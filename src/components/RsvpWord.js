@@ -34,7 +34,7 @@ export default class RsvpWord extends React.Component {
 
     return (
       <div className={styles.rsvpWrapperInner}
-        style={{ font, marginLeft: word_offset, }}
+        style={{ font, marginLeft: word_offset }}
         >
         <span className={styles.rsvpBeforeMiddle}>
           {word_p1}
