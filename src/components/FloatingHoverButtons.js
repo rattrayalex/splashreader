@@ -1,8 +1,11 @@
+/* @flow */
 import React, { PropTypes } from 'react'
+// $FlowIgnore
 import styles from './SplashButton.css'
 
 
 export default class FloatingHoverButtons extends React.Component {
+  // $FlowIssue https://github.com/facebook/flow/issues/850
   static propTypes = {
     children: PropTypes.oneOfType([
       PropTypes.array,
@@ -10,20 +13,21 @@ export default class FloatingHoverButtons extends React.Component {
     ]).isRequired,
     primary: PropTypes.element.isRequired,
     shown: PropTypes.bool,
-  }
+  };
 
+  // $FlowIssue https://github.com/facebook/flow/issues/850
   state = {
     hovered: false
-  }
+  };
 
-  _handleMouseEnter(e) {
+  _handleMouseEnter() {
     this.setState({ hovered: true })
   }
-  _handleMouseLeave(e) {
+  _handleMouseLeave() {
     this.setState({ hovered: false })
   }
 
-  render() {
+  render(): React.Element {
     let { primary, children, shown } = this.props
     let { hovered } = this.state
 

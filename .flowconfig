@@ -1,0 +1,11 @@
+[ignore]
+
+[include]
+src/
+
+[libs]
+
+[options]
+suppress_comment=.*\\$FlowIssue.*
+suppress_comment=.*\\$FlowIgnore.*
+esproposal.decorators=ignore

@@ -151,12 +151,11 @@
 	          case 2:
 	            wpm = context$2$0.sent;
 
-	            wpm = parseInt(wpm);
-	            if (wpm) {
+	            if (wpm && wpm > 0) {
 	              _fluxStore2['default'].actions.setWpm({ wpm: wpm });
 	            }
 
-	          case 5:
+	          case 4:
 	          case 'end':
 	            return context$2$0.stop();
 	        }
@@ -39072,7 +39071,7 @@
 	        return regeneratorRuntime.awrap(new Promise(function (resolve, reject) {
 	          return chrome.storage.sync.get('wpm', function (_ref) {
 	            var wpm = _ref.wpm;
-	            return resolve(wpm);
+	            return resolve(parseInt(wpm));
 	          });
 	        }));
 
@@ -39086,6 +39085,9 @@
 	        console.error('Could not load WPM from chrome', context$1$0.t0);
 
 	      case 9:
+	        return context$1$0.abrupt('return', null);
+
+	      case 10:
 	      case 'end':
 	        return context$1$0.stop();
 	    }
@@ -39101,6 +39103,12 @@
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _immutable = __webpack_require__(376);
+
+	var _immutable2 = _interopRequireDefault(_immutable);
 
 	var _reselect = __webpack_require__(379);
 
@@ -39225,6 +39233,7 @@
 /***/ function(module, exports) {
 
 	
+
 	/**
 	 * modifies the length of time a word should be displayed
 	 * on the basis of how hard to read it is.
@@ -39356,6 +39365,9 @@
 
 	function getTextWidth(text, font) {
 
+	  if (!(_canvas instanceof HTMLCanvasElement)) {
+	    return 0;
+	  } // for flow
 	  var context = _canvas.getContext("2d");
 	  context.font = font;
 
@@ -39369,7 +39381,7 @@
 	 * to find the nearest `display: block` element
 	 * (including the passed-in element)
 	 *
-	 * @param  {DOM Element} elem
+	 * @param  {Element} elem
 	 * @return {element}
 	 */
 
@@ -39400,13 +39412,13 @@
 	 * Doesn't always work.
 	 * TODO: improve accuracy
 	 *
-	 * @param  {DOM Element}  elem
+	 * @param  {Element}  elem
 	 * @return {Boolean}
 	 */
 
 	function isSingleLine(elem) {
 	  try {
-	    var elem_height = parseInt(elem.clientHeight);
+	    var elem_height = elem.clientHeight;
 	    var line_height = parseInt(window.getComputedStyle(elem).lineHeight);
 	    // direct comparison didn't work,
 	    // so just check if it's at least smaller than two lines tall...
@@ -39421,7 +39433,7 @@
 	 * Does an okay (not perfect) job
 	 * of telling you whether an element is bold or italic
 	 *
-	 * @param  {DOM Element}  elem
+	 * @param  {Element}  elem
 	 * @return {Boolean}
 	 */
 
@@ -39435,11 +39447,14 @@
 	}
 
 	/**
-	 * @param  {DOM Element} elem
+	 * @param  {Element} elem
 	 * @return {Boolean}
 	 */
 
 	function elementContainsASingleWord(elem) {
+	  if (!elem.innerText) {
+	    return false;
+	  }
 	  return elem.innerText.split(/\s/).length === 1;
 	}
 
@@ -39448,7 +39463,7 @@
 	 * tries to guess at whether an element
 	 * is a heading...
 	 *
-	 * @param  {DOM Element} elem
+	 * @param  {Element} elem
 	 * @return {Boolean}
 	 */
 
@@ -39498,6 +39513,9 @@
 
 	var _fluxSelectors = __webpack_require__(378);
 
+	// see https://github.com/facebook/flow/issues/606
+	/*::`*/ /*::`;*/
+
 	var SplashApp = (function (_React$Component) {
 	  _inherits(SplashApp, _React$Component);
 
@@ -39519,6 +39537,8 @@
 	    }
 	  }], [{
 	    key: 'propTypes',
+
+	    // $FlowIssue https://github.com/facebook/flow/issues/850
 	    value: {
 	      currentWord: _react.PropTypes.string.isRequired,
 	      buttonShown: _react.PropTypes.bool.isRequired,
@@ -39578,6 +39598,8 @@
 
 	var _WpmButtons2 = _interopRequireDefault(_WpmButtons);
 
+	// $FlowIgnore
+
 	var _SplashButtonCss = __webpack_require__(385);
 
 	var _SplashButtonCss2 = _interopRequireDefault(_SplashButtonCss);
@@ -39593,7 +39615,7 @@
 
 	  _createClass(SplashButton, [{
 	    key: '_handleClick',
-	    value: function _handleClick(e) {
+	    value: function _handleClick() {
 	      _fluxStore2['default'].actions.playPause();
 	    }
 	  }, {
@@ -39630,6 +39652,8 @@
 	    }
 	  }], [{
 	    key: 'propTypes',
+
+	    // $FlowIssue https://github.com/facebook/flow/issues/850
 	    value: {
 	      buttonShown: _react.PropTypes.bool.isRequired,
 	      isPlaying: _react.PropTypes.bool.isRequired,
@@ -39643,6 +39667,10 @@
 
 	exports['default'] = SplashButton;
 	module.exports = exports['default'];
+
+	// $FlowIssue https://github.com/facebook/flow/issues/252
+
+	// $FlowIssue https://github.com/facebook/flow/issues/252
 
 /***/ },
 /* 383 */
@@ -39723,6 +39751,8 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	// $FlowIgnore
+
 	var _SplashButtonCss = __webpack_require__(385);
 
 	var _SplashButtonCss2 = _interopRequireDefault(_SplashButtonCss);
@@ -39742,12 +39772,12 @@
 
 	  _createClass(FloatingHoverButtons, [{
 	    key: '_handleMouseEnter',
-	    value: function _handleMouseEnter(e) {
+	    value: function _handleMouseEnter() {
 	      this.setState({ hovered: true });
 	    }
 	  }, {
 	    key: '_handleMouseLeave',
-	    value: function _handleMouseLeave(e) {
+	    value: function _handleMouseLeave() {
 	      this.setState({ hovered: false });
 	    }
 	  }, {
@@ -39771,11 +39801,15 @@
 	    }
 	  }], [{
 	    key: 'propTypes',
+
+	    // $FlowIssue https://github.com/facebook/flow/issues/850
 	    value: {
 	      children: _react.PropTypes.oneOfType([_react.PropTypes.array, _react.PropTypes.object]).isRequired,
 	      primary: _react.PropTypes.element.isRequired,
 	      shown: _react.PropTypes.bool
 	    },
+
+	    // $FlowIssue https://github.com/facebook/flow/issues/850
 	    enumerable: true
 	  }]);
 
@@ -40148,6 +40182,8 @@
 
 	var _fluxStore2 = _interopRequireDefault(_fluxStore);
 
+	// $FlowIgnore
+
 	var _SplashButtonCss = __webpack_require__(385);
 
 	var _SplashButtonCss2 = _interopRequireDefault(_SplashButtonCss);
@@ -40165,12 +40201,12 @@
 
 	  _createClass(WpmButtons, [{
 	    key: '_decreaseWpm',
-	    value: function _decreaseWpm(e) {
+	    value: function _decreaseWpm() {
 	      _fluxStore2['default'].actions.decreaseWpm({ amount: DEFAULT_WPM_STEP });
 	    }
 	  }, {
 	    key: '_increaseWpm',
-	    value: function _increaseWpm(e) {
+	    value: function _increaseWpm() {
 	      _fluxStore2['default'].actions.increaseWpm({ amount: DEFAULT_WPM_STEP });
 	    }
 	  }, {
@@ -40201,6 +40237,8 @@
 	    }
 	  }], [{
 	    key: 'propTypes',
+
+	    // $FlowIssue https://github.com/facebook/flow/issues/850
 	    value: {
 	      wpm: _react2['default'].PropTypes.number.isRequired
 	    },
@@ -40248,6 +40286,8 @@
 	var _RsvpWord = __webpack_require__(393);
 
 	var _RsvpWord2 = _interopRequireDefault(_RsvpWord);
+
+	// $FlowIgnore
 
 	var _RsvpCss = __webpack_require__(394);
 
@@ -40319,6 +40359,7 @@
 /***/ function(module, exports) {
 
 	
+
 	/**
 	 * Whether the document's active element is editable.
 	 * @return {Boolean}
@@ -40341,7 +40382,7 @@
 	/**
 	 * Returns true if `elem` can be edited by user
 	 *
-	 * @param  {DOMElement}  elem
+	 * @param  {HTMLElement}  elem
 	 * @return {Boolean}
 	 */
 	function _isElementEditable(elem) {
@@ -40351,7 +40392,7 @@
 	/**
 	 * Gets the elem's distance from left edge of screen.
 	 *
-	 * @param  {DOMElement}  elem
+	 * @param  {HTMLElement}  elem
 	 * @return {number}      distance from left edge of screen
 	 */
 
@@ -40371,7 +40412,7 @@
 	/**
 	 * smooth-scroll's the viewport to target element.
 	 *
-	 * @param  {DOMElement} elem
+	 * @param  {HTMLElement} elem
 	 * @return {void}
 	 */
 
@@ -40393,12 +40434,14 @@
 	  }, null, this);
 	}
 
+	// </void> (for syntax highlighting...)
+
 	/**
 	 * Scrolls screen to an element with animation.
 	 *
 	 * @see http://stackoverflow.com/a/16136789/1048433
 	 *
-	 * @param  {DOM Element} element
+	 * @param  {HTMLElement} element
 	 * @param  {int} to       padding from top
 	 * @param  {int} duration milliseconds
 	 * @return {void}
@@ -40517,6 +40560,8 @@
 
 	var _utilsRsvp = __webpack_require__(380);
 
+	// $FlowIgnore
+
 	var _RsvpCss = __webpack_require__(394);
 
 	var _RsvpCss2 = _interopRequireDefault(_RsvpCss);
@@ -40584,6 +40629,8 @@
 	    }
 	  }], [{
 	    key: 'propTypes',
+
+	    // $FlowIssue https://github.com/facebook/flow/issues/850
 	    value: {
 	      font: _react2['default'].PropTypes.string.isRequired,
 	      orpCenter: _react2['default'].PropTypes.number.isRequired
@@ -40698,7 +40745,7 @@
 	  // removes whitespace, newlines, etc.
 	  range.collapse(false); // collapse to end of word
 	  range.moveStart('word', -1, _constants.word_options);
-	  range.expand('word', Object.assign(_constants.word_options, { trim: true }));
+	  range.expand('word', Object.assign({}, _constants.word_options, { trim: true }));
 
 	  return is_new_para;
 	}

@@ -1,3 +1,4 @@
+/* @flow */
 
 export const word_options = {
   wordOptions: {

@@ -1,3 +1,4 @@
+/* @flow */
 
 /**
  * modifies the length of time a word should be displayed
@@ -7,7 +8,7 @@
  * @param  {string} word
  * @return {int}      how much longer than normal to display the word
  */
-export function getDisplayMultiplier(word) {
+export function getDisplayMultiplier(word: string): number {
   word = word.trim()
   let display = 1
 
@@ -37,7 +38,7 @@ export function getDisplayMultiplier(word) {
   return display
 }
 
-export function msPerWord(wpm) {
+export function msPerWord(wpm: number): number {
   return ( 60000 / wpm )
 }
 
@@ -51,7 +52,7 @@ export function msPerWord(wpm) {
  * @return {int}
  *         milliseconds to display word
  */
-export function getTimeToDisplay(word, wpm) {
+export function getTimeToDisplay(word: string, wpm: number): number {
   return ( msPerWord(wpm) * getDisplayMultiplier(word) )
 }
 
@@ -66,7 +67,7 @@ export function getTimeToDisplay(word, wpm) {
  * @return {int}
  *         the index of the "middle" of the word
  */
-export function getWordMiddle(length) {
+export function getWordMiddle(length: number): number {
   // TODO: figure out how to make JavaScript a less gross language.
   if ( length === 1 ) {
     return 1
@@ -83,8 +84,13 @@ export function getWordMiddle(length) {
   return 5
 }
 
+type SplitWord = {
+  word_p1: string,
+  word_p2: string,
+  word_p3: string,
+}
 
-export function splitWord(word) {
+export function splitWord(word: string): SplitWord {
 
   word = word.trim() || ' '
 
@@ -110,8 +116,9 @@ export function splitWord(word) {
 */
 // re-use canvas object for better performance
 const _canvas = document.createElement("canvas")
-export function getTextWidth(text, font) {
+export function getTextWidth(text: string, font: string): number {
 
+  if ( !(_canvas instanceof HTMLCanvasElement) ) { return 0 } // for flow
   const context = _canvas.getContext("2d")
   context.font = font
 
@@ -125,10 +132,10 @@ export function getTextWidth(text, font) {
  * to find the nearest `display: block` element
  * (including the passed-in element)
  *
- * @param  {DOM Element} elem
+ * @param  {Element} elem
  * @return {element}
  */
-export function getClosestBlockElement(elem) {
+export function getClosestBlockElement(elem: Element): Element {
   if ( window.getComputedStyle(elem).display === 'block' ) {
     return elem
   }
@@ -146,12 +153,12 @@ export function getClosestBlockElement(elem) {
  * Doesn't always work.
  * TODO: improve accuracy
  *
- * @param  {DOM Element}  elem
+ * @param  {Element}  elem
  * @return {Boolean}
  */
-export function isSingleLine(elem) {
+export function isSingleLine(elem: Element): boolean {
   try {
-    const elem_height = parseInt(elem.clientHeight)
+    const elem_height: number = elem.clientHeight
     const line_height = parseInt(window.getComputedStyle(elem).lineHeight)
     // direct comparison didn't work,
     // so just check if it's at least smaller than two lines tall...
@@ -167,11 +174,11 @@ export function isSingleLine(elem) {
  * Does an okay (not perfect) job
  * of telling you whether an element is bold or italic
  *
- * @param  {DOM Element}  elem
+ * @param  {Element}  elem
  * @return {Boolean}
  */
-export function isBoldOrItalic(elem) {
-  const { fontWeight, fontStyle } = window.getComputedStyle(elem)
+export function isBoldOrItalic(elem: Element): boolean {
+  let { fontWeight, fontStyle } = window.getComputedStyle(elem)
   return (
     fontWeight === 'bold'
     ||
@@ -185,10 +192,13 @@ export function isBoldOrItalic(elem) {
 
 
 /**
- * @param  {DOM Element} elem
+ * @param  {Element} elem
  * @return {Boolean}
  */
-export function elementContainsASingleWord(elem) {
+export function elementContainsASingleWord(elem: Element): boolean {
+  if ( !elem.innerText ) {
+    return false
+  }
   return ( elem.innerText.split(/\s/).length === 1 )
 }
 
@@ -201,10 +211,10 @@ const heading_elems = [
  * tries to guess at whether an element
  * is a heading...
  *
- * @param  {DOM Element} elem
+ * @param  {Element} elem
  * @return {Boolean}
  */
-export function looksLikeAHeading(elem) {
+export function looksLikeAHeading(elem: Element): boolean {
   elem = getClosestBlockElement(elem)
 
   if ( elementContainsASingleWord(elem) ) {

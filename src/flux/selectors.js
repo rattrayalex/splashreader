@@ -1,19 +1,29 @@
+/* @flow */
+import Immutable from 'immutable'
 import { createSelector } from 'reselect'
 
 import { getTextWidth } from '../utils/rsvp'
 
+type State = Immutable.Map
+
 // TODO: cleanup / nest / break up
 
-export const buttonShownSelector = state => state.get('buttonShown')
-export const isPlayingSelector = state => state.get('isPlaying')
-export const changingParaSelector = state => state.get('changingPara')
+export const buttonShownSelector = (state: State): boolean =>
+  state.get('buttonShown')
+export const isPlayingSelector = (state: State): boolean =>
+  state.get('isPlaying')
+export const changingParaSelector = (state: State): boolean =>
+  state.get('changingPara')
 
-export const currentWordSelector = state => state.get('currentWord')
-export const readingEdgeLeftSelector = state =>
+export const currentWordSelector = (state: State): ?string =>
+  state.get('currentWord')
+export const readingEdgeLeftSelector = (state: State): number =>
   state.get('readingEdge').get('left')
 
-export const wpmSelector = state => state.get('wpm')
-export const fontSelector = state => state.get('font')
+export const wpmSelector = (state: State): number =>
+  state.get('wpm')
+export const fontSelector = (state: State): string =>
+  state.get('font')
 
 export const rsvpPlayingSelector = createSelector(
   [

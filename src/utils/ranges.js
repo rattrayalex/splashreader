@@ -1,3 +1,5 @@
+/* @flow */
+
 import rangy from 'rangy/lib/rangy-textrange'
 import { word_options } from '../constants'
 
@@ -22,7 +24,7 @@ export function isTextHighlighted() {
  * @return {Boolean}
  *         whether the next word is in a new paragraph
  */
-export function moveToNextWord(range) {
+export function moveToNextWord(range: rangy.Range): boolean {
 
   // set range to next word
   range.moveStart('word', 1, word_options)
@@ -33,7 +35,7 @@ export function moveToNextWord(range) {
   // removes whitespace, newlines, etc.
   range.collapse(false)  // collapse to end of word
   range.moveStart('word', -1, word_options)
-  range.expand('word', Object.assign(word_options, { trim: true }))
+  range.expand('word', Object.assign({}, word_options, { trim: true }))
 
   return is_new_para
 }
@@ -42,7 +44,7 @@ export function moveToNextWord(range) {
  * currently unused.
  * @return {Boolean}
  */
-export function isSingleWordHighlighted() {
+export function isSingleWordHighlighted(): boolean {
   const sel = rangy.getSelection()
 
   if ( sel.rangeCount < 1 ) {

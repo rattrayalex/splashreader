@@ -1,20 +1,23 @@
+/* @flow */
 import React, { PropTypes } from 'react'
 import classNames from 'classnames'
 
 import store from '../flux/store'
 import FloatingHoverButtons from './FloatingHoverButtons'
 import WpmButtons from './WpmButtons'
+// $FlowIgnore
 import styles from './SplashButton.css'
 
 
 export default class SplashButton extends React.Component {
+  // $FlowIssue https://github.com/facebook/flow/issues/850
   static propTypes = {
     buttonShown: PropTypes.bool.isRequired,
     isPlaying: PropTypes.bool.isRequired,
     wpm: PropTypes.number.isRequired,
-  }
+  };
 
-  _handleClick(e) {
+  _handleClick() {
     store.actions.playPause()
   }
 
@@ -26,7 +29,9 @@ export default class SplashButton extends React.Component {
     }
 
     let play_pause_class = classNames({
+      // $FlowIssue https://github.com/facebook/flow/issues/252
       [styles.SplashButton]: true,
+      // $FlowIssue https://github.com/facebook/flow/issues/252
       [styles.active]: isPlaying,
     })
     let play_pause_button = (

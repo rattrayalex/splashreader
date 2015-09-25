@@ -1,15 +1,18 @@
+/* @flow */
 import React from 'react'
 
 import { getTextWidth } from '../utils/rsvp'
 import { getReadingHeight } from '../utils/dom'
 import SplashButton from './SplashButton'
 import RsvpWord from './RsvpWord'
+// $FlowIgnore
 import styles from './Rsvp.css'
 
 
+
 export default class Rsvp extends React.Component {
-  render() {
-    const { rsvpPlaying, currentWord, orpCenter, font } = this.props
+  render(): ?React.Element {
+    let { rsvpPlaying, currentWord, orpCenter, font } = this.props
 
     if ( !rsvpPlaying ) {
       return null
@@ -19,7 +22,7 @@ export default class Rsvp extends React.Component {
     }
 
     // the lil notch goes in the middle of a letter (hence half an 'm')
-    const notch_offset = ( orpCenter + getTextWidth('m', font) / 2 )
+    let notch_offset = ( orpCenter + getTextWidth('m', font) / 2 )
 
     return (
       <div className={styles.Rsvp}>

@@ -1,3 +1,4 @@
+/* @flow */
 import 'babel-core/polyfill' // for Object.assign
 import key from 'keymaster'
 import React from 'react'
@@ -21,6 +22,11 @@ window.rangy = rangy
 
 
 class SplashReader {
+  is_playing: boolean;
+  was_playing: boolean;
+  play_timeout: ?number;
+  wrapper: any;
+
   constructor() {
     // local vars for ::listenForPlay...
     // TODO: reconsider
@@ -54,8 +60,7 @@ class SplashReader {
 
   async loadWpmFromChrome() {
     let wpm = await chrome.loadWpm()
-    wpm = parseInt(wpm)
-    if ( wpm ) {
+    if ( wpm && wpm > 0 ) {
       store.actions.setWpm({ wpm })
     }
   }

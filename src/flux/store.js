@@ -1,3 +1,4 @@
+/* @flow */
 import { createStore, applyMiddleware } from 'redux'
 import createLogger from 'redux-logger'
 import { createAction, handleActions } from 'redux-actions'
