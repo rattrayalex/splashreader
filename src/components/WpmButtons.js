@@ -2,7 +2,7 @@
 import React from 'react'
 import classNames from 'classnames'
 
-import store from '../flux/store'
+import actions from '../flux/actions'
 // $FlowIgnore
 import styles from './SplashButton.css'
 
@@ -12,14 +12,17 @@ const DEFAULT_WPM_STEP = 50
 export default class WpmButtons extends React.Component {
   // $FlowIssue https://github.com/facebook/flow/issues/850
   static propTypes = {
+    dispatch: React.PropTypes.func.isRequired,
     wpm: React.PropTypes.number.isRequired,
   };
 
   _decreaseWpm() {
-    store.actions.decreaseWpm({ amount: DEFAULT_WPM_STEP })
+    let { dispatch } = this.props
+    dispatch(actions.decreaseWpm({ amount: DEFAULT_WPM_STEP }))
   }
   _increaseWpm() {
-    store.actions.increaseWpm({ amount: DEFAULT_WPM_STEP })
+    let { dispatch } = this.props
+    dispatch(actions.increaseWpm({ amount: DEFAULT_WPM_STEP }))
   }
 
   render(): React.Element {
@@ -29,7 +32,7 @@ export default class WpmButtons extends React.Component {
       <center>
         <button
           className={classNames(styles.upArrow, styles.smallerHoverButton)}
-          onClick={this._increaseWpm}
+          onClick={this._increaseWpm.bind(this)}
           title='Increase Reading Speed'
         />
 
@@ -39,7 +42,7 @@ export default class WpmButtons extends React.Component {
 
         <button
           className={classNames(styles.downArrow, styles.smallerHoverButton)}
-          onClick={this._decreaseWpm}
+          onClick={this._decreaseWpm.bind(this)}
           title='Decrease Reading Speed'
         />
       </center>

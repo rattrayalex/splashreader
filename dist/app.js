@@ -68,6 +68,10 @@
 
 	var _fluxStore2 = _interopRequireDefault(_fluxStore);
 
+	var _fluxActions = __webpack_require__(398);
+
+	var _fluxActions2 = _interopRequireDefault(_fluxActions);
+
 	var _fluxSelectors = __webpack_require__(360);
 
 	var _componentsSplashApp = __webpack_require__(364);
@@ -110,7 +114,7 @@
 	        wpm = context$1$0.sent;
 
 	        if (wpm && wpm > 0) {
-	          _fluxStore2['default'].actions.setWpm({ wpm: wpm });
+	          _fluxStore2['default'].dispatch(_fluxActions2['default'].setWpm({ wpm: wpm }));
 	        }
 
 	      case 4:
@@ -147,7 +151,7 @@
 	      case 3:
 	        left = dom.getLeftEdge(node);
 
-	        _fluxStore2['default'].actions.setReadingEdge({ left: left });
+	        _fluxStore2['default'].dispatch(_fluxActions2['default'].setReadingEdge({ left: left }));
 
 	      case 5:
 	      case 'end':
@@ -193,7 +197,7 @@
 	        is_new_para = false;
 
 	        if (is_changing_para && !is_in_heading) {
-	          _fluxStore2['default'].actions.paraResume();
+	          _fluxStore2['default'].dispatch(_fluxActions2['default'].paraResume());
 	        } else {
 	          if (just_pressed_play) {
 	            range.move('word', -1, _constants.word_options);
@@ -207,7 +211,7 @@
 	        // send it to React
 	        word = range.text();
 
-	        _fluxStore2['default'].actions.changeWord({ word: word });
+	        _fluxStore2['default'].dispatch(_fluxActions2['default'].changeWord({ word: word }));
 
 	        // scroll if we're not there yet.
 
@@ -223,17 +227,27 @@
 	        wpm = (0, _fluxSelectors.wpmSelector)(_fluxStore2['default'].getState());
 	        time_to_display = rsvp.getTimeToDisplay(word, wpm);
 
-	        // pause RSVP at paragraph change
-	        if (is_new_para) {
-	          if (!just_pressed_play) {
-	            time_to_display = 1000;
-	          }
-	          _fluxStore2['default'].actions.paraChange();
+	        if (!is_new_para) {
+	          context$1$0.next = 23;
+	          break;
 	        }
+
+	        _fluxStore2['default'].dispatch(_fluxActions2['default'].paraChange());
+
+	        if (just_pressed_play) {
+	          context$1$0.next = 23;
+	          break;
+	        }
+
+	        time_to_display = 1000;
+	        context$1$0.next = 23;
+	        return regeneratorRuntime.awrap(setReadingPointAt(range));
+
+	      case 23:
 
 	        play_timeout = setTimeout(splash.bind(null, range), time_to_display);
 
-	      case 19:
+	      case 24:
 	      case 'end':
 	        return context$1$0.stop();
 	    }
@@ -260,6 +274,8 @@
 	init();
 
 	// move to the next word in a sec
+
+	// pause RSVP at paragraph change
 
 /***/ },
 /* 1 */
@@ -32514,7 +32530,7 @@
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
-	exports.createActions = createActions;
+	exports.createActionsFromHandlers = createActionsFromHandlers;
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -32645,7 +32661,7 @@
 	 * store.dispatch({ type: 'someAction', payload: { payloadItem: val } })
 	 */
 
-	function createActions() {
+	function createActionsFromHandlers() {
 	  var ignoreKeys = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
 
 	  var actions = {};
@@ -32653,10 +32669,7 @@
 	    if (ignoreKeys.includes(key)) {
 	      return;
 	    }
-	    var action = createSimpleAction(key);
-	    actions[key] = function (payload) {
-	      return store.dispatch(action(payload));
-	    };
+	    actions[key] = createSimpleAction(key);
 	  });
 	  return actions;
 	}
@@ -32672,8 +32685,6 @@
 	var createStoreWithMiddleware = (0, _redux.applyMiddleware)(logger)(_redux.createStore);
 	// const store = createStoreWithMiddleware(reducer)
 	var store = (0, _redux.createStore)(reducer);
-
-	store.actions = createActions();
 
 	exports['default'] = store;
 
@@ -38061,6 +38072,10 @@
 
 	var _fluxSelectors = __webpack_require__(360);
 
+	var _fluxActions = __webpack_require__(398);
+
+	var _fluxActions2 = _interopRequireDefault(_fluxActions);
+
 	// see https://github.com/facebook/flow/issues/606
 	/*::`*/ /*::`;*/
 
@@ -38076,7 +38091,9 @@
 	  _createClass(SplashApp, [{
 	    key: 'render',
 	    value: function render() {
-	      var rsvpPlaying = this.props.rsvpPlaying;
+	      var _props = this.props;
+	      var rsvpPlaying = _props.rsvpPlaying;
+	      var dispatch = _props.dispatch;
 
 	      if (rsvpPlaying) {
 	        return _react2['default'].createElement(_Rsvp2['default'], this.props);
@@ -38134,9 +38151,9 @@
 
 	var _classnames2 = _interopRequireDefault(_classnames);
 
-	var _fluxStore = __webpack_require__(359);
+	var _fluxActions = __webpack_require__(398);
 
-	var _fluxStore2 = _interopRequireDefault(_fluxStore);
+	var _fluxActions2 = _interopRequireDefault(_fluxActions);
 
 	var _FloatingHoverButtons = __webpack_require__(367);
 
@@ -38164,7 +38181,9 @@
 	  _createClass(SplashButton, [{
 	    key: '_handleClick',
 	    value: function _handleClick() {
-	      _fluxStore2['default'].actions.playPause();
+	      var dispatch = this.props.dispatch;
+
+	      dispatch(_fluxActions2['default'].playPause());
 	    }
 	  }, {
 	    key: 'render',
@@ -38175,6 +38194,7 @@
 	      var buttonShown = _props.buttonShown;
 	      var isPlaying = _props.isPlaying;
 	      var wpm = _props.wpm;
+	      var dispatch = _props.dispatch;
 
 	      if (!buttonShown) {
 	        return null;
@@ -38184,7 +38204,7 @@
 	      var play_pause_button = _react2['default'].createElement(
 	        'button',
 	        { className: play_pause_class,
-	          onClick: this._handleClick,
+	          onClick: this._handleClick.bind(this),
 	          title: 'SplashRead (spacebar)'
 	        },
 	        !isPlaying ? _react2['default'].createElement('span', { className: _SplashButtonCss2['default'].playButton }) : _react2['default'].createElement('span', { className: _SplashButtonCss2['default'].pauseButton })
@@ -38195,7 +38215,9 @@
 	        { shown: isPlaying,
 	          primary: play_pause_button
 	        },
-	        _react2['default'].createElement(_WpmButtons2['default'], { wpm: wpm })
+	        _react2['default'].createElement(_WpmButtons2['default'], { wpm: wpm,
+	          dispatch: dispatch
+	        })
 	      );
 	    }
 	  }], [{
@@ -38203,6 +38225,7 @@
 
 	    // $FlowIssue https://github.com/facebook/flow/issues/850
 	    value: {
+	      dispatch: _react.PropTypes.func.isRequired,
 	      buttonShown: _react.PropTypes.bool.isRequired,
 	      isPlaying: _react.PropTypes.bool.isRequired,
 	      wpm: _react.PropTypes.number.isRequired
@@ -38726,9 +38749,9 @@
 
 	var _classnames2 = _interopRequireDefault(_classnames);
 
-	var _fluxStore = __webpack_require__(359);
+	var _fluxActions = __webpack_require__(398);
 
-	var _fluxStore2 = _interopRequireDefault(_fluxStore);
+	var _fluxActions2 = _interopRequireDefault(_fluxActions);
 
 	// $FlowIgnore
 
@@ -38750,12 +38773,16 @@
 	  _createClass(WpmButtons, [{
 	    key: '_decreaseWpm',
 	    value: function _decreaseWpm() {
-	      _fluxStore2['default'].actions.decreaseWpm({ amount: DEFAULT_WPM_STEP });
+	      var dispatch = this.props.dispatch;
+
+	      dispatch(_fluxActions2['default'].decreaseWpm({ amount: DEFAULT_WPM_STEP }));
 	    }
 	  }, {
 	    key: '_increaseWpm',
 	    value: function _increaseWpm() {
-	      _fluxStore2['default'].actions.increaseWpm({ amount: DEFAULT_WPM_STEP });
+	      var dispatch = this.props.dispatch;
+
+	      dispatch(_fluxActions2['default'].increaseWpm({ amount: DEFAULT_WPM_STEP }));
 	    }
 	  }, {
 	    key: 'render',
@@ -38767,7 +38794,7 @@
 	        null,
 	        _react2['default'].createElement('button', {
 	          className: (0, _classnames2['default'])(_SplashButtonCss2['default'].upArrow, _SplashButtonCss2['default'].smallerHoverButton),
-	          onClick: this._increaseWpm,
+	          onClick: this._increaseWpm.bind(this),
 	          title: 'Increase Reading Speed'
 	        }),
 	        _react2['default'].createElement(
@@ -38778,7 +38805,7 @@
 	        ),
 	        _react2['default'].createElement('button', {
 	          className: (0, _classnames2['default'])(_SplashButtonCss2['default'].downArrow, _SplashButtonCss2['default'].smallerHoverButton),
-	          onClick: this._decreaseWpm,
+	          onClick: this._decreaseWpm.bind(this),
 	          title: 'Decrease Reading Speed'
 	        })
 	      );
@@ -38788,6 +38815,7 @@
 
 	    // $FlowIssue https://github.com/facebook/flow/issues/850
 	    value: {
+	      dispatch: _react2['default'].PropTypes.func.isRequired,
 	      wpm: _react2['default'].PropTypes.number.isRequired
 	    },
 	    enumerable: true
@@ -39412,6 +39440,10 @@
 
 	var _fluxStore2 = _interopRequireDefault(_fluxStore);
 
+	var _fluxActions = __webpack_require__(398);
+
+	var _fluxActions2 = _interopRequireDefault(_fluxActions);
+
 	var _dom = __webpack_require__(374);
 
 	var dom = _interopRequireWildcard(_dom);
@@ -39432,14 +39464,14 @@
 	function listenForSpace() {
 	  unListenForSpace();
 	  if (ranges.isTextHighlighted() && !dom.isEditableFocused()) {
-	    _fluxStore2['default'].actions.textHighlighted();
+	    _fluxStore2['default'].dispatch(_fluxActions2['default'].textHighlighted());
 	    (0, _keymaster2['default'])('space', function (e) {
 	      e.preventDefault();
-	      _fluxStore2['default'].actions.playPause();
+	      _fluxStore2['default'].dispatch(_fluxActions2['default'].playPause());
 	      return false;
 	    });
 	  } else {
-	    _fluxStore2['default'].actions.nothingHighlighted();
+	    _fluxStore2['default'].dispatch(_fluxActions2['default'].nothingHighlighted());
 	  }
 	}
 
@@ -39450,7 +39482,7 @@
 	function listenForEsc() {
 	  unListenForEsc();
 	  (0, _keymaster2['default'])('esc', function (e) {
-	    _fluxStore2['default'].actions.pause();
+	    _fluxStore2['default'].dispatch(_fluxActions2['default'].pause());
 	  });
 	}
 
@@ -40808,6 +40840,23 @@
 	}
 
 	module.exports = exports["default"];
+
+/***/ },
+/* 398 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _store = __webpack_require__(359);
+
+	exports['default'] = Object.assign({}, (0, _store.createActionsFromHandlers)(), {
+	  // custom actions go here
+	});
+	module.exports = exports['default'];
 
 /***/ }
 /******/ ]);

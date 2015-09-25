@@ -85,13 +85,11 @@ function createSimpleAction(type) {
  * results in:
  * store.dispatch({ type: 'someAction', payload: { payloadItem: val } })
  */
-export function createActions(ignoreKeys: Array<string> = []): Object {
+export function createActionsFromHandlers(ignoreKeys: Array<string> = []): Object {
   let actions = {}
   Object.keys(actionHandlers).forEach( (key) => {
     if ( ignoreKeys.includes(key) ) { return }
-    const action = createSimpleAction(key)
-    actions[key] = (payload) =>
-      store.dispatch(action(payload))
+    actions[key] = createSimpleAction(key)
   })
   return actions
 }
@@ -105,7 +103,5 @@ const logger = createLogger({
 const createStoreWithMiddleware = applyMiddleware(logger)(createStore)
 // const store = createStoreWithMiddleware(reducer)
 const store = createStore(reducer)
-
-store.actions = createActions()
 
 export default store

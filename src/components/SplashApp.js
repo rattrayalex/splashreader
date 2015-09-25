@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import SplashButton from './SplashButton'
 import Rsvp from './Rsvp'
 import { allSelector } from '../flux/selectors'
+import actions from '../flux/actions'
 
 
 // see https://github.com/facebook/flow/issues/606
@@ -19,7 +20,7 @@ export default class SplashApp extends React.Component {
   };
 
   render() {
-    let { rsvpPlaying } = this.props
+    let { rsvpPlaying, dispatch } = this.props
     if ( rsvpPlaying ) {
       return <Rsvp {...this.props} />
     }

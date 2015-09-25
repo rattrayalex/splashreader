@@ -6,6 +6,7 @@ import { Provider } from 'react-redux'
 import rangy from 'rangy/lib/rangy-textrange'
 
 import store from './flux/store'
+import actions from './flux/actions'
 import {
   isPlayingSelector,
   wpmSelector,
@@ -24,7 +25,7 @@ window.rangy = rangy
 async function loadWpmFromChrome() {
   let wpm = await chrome.loadWpm()
   if ( wpm && wpm > 0 ) {
-    store.actions.setWpm({ wpm })
+    store.dispatch(actions.setWpm({ wpm }))
   }
 }
 
@@ -49,7 +50,7 @@ async function setReadingPointAt(range) {
   const node = range.endContainer.parentNode
   await dom.scrollToElementOnce(node)
   const left = dom.getLeftEdge(node)
-  store.actions.setReadingEdge({ left })
+  store.dispatch(actions.setReadingEdge({ left }))
 }
 
 // TODO: clean up
@@ -77,7 +78,7 @@ async function splash(range=null) {
   const is_in_heading = rsvp.looksLikeAHeading(range.endContainer.parentElement)
   let is_new_para = false
   if ( is_changing_para && !is_in_heading ) {
-    store.actions.paraResume()
+    store.dispatch(actions.paraResume())
   } else {
     if ( just_pressed_play ) {
       range.move('word', -1, word_options)
@@ -90,7 +91,7 @@ async function splash(range=null) {
 
   // send it to React
   const word = range.text()
-  store.actions.changeWord({ word })
+  store.dispatch(actions.changeWord({ word }))
 
   // scroll if we're not there yet.
   if ( just_pressed_play || is_changing_para ) {
@@ -103,10 +104,11 @@ async function splash(range=null) {
 
   // pause RSVP at paragraph change
   if ( is_new_para ) {
+    store.dispatch(actions.paraChange())
     if ( !just_pressed_play ) {
       time_to_display = 1000
+      await setReadingPointAt(range)
     }
-    store.actions.paraChange()
   }
 
   play_timeout = setTimeout(

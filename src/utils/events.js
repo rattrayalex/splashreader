@@ -1,6 +1,7 @@
 import key from 'keymaster'
 
 import store from '../flux/store'
+import actions from '../flux/actions'
 import * as dom from './dom'
 import * as ranges from './ranges'
 
@@ -22,14 +23,14 @@ export function unListenForWordHighlight() {
 export function listenForSpace() {
   unListenForSpace()
   if ( ranges.isTextHighlighted() && !dom.isEditableFocused() ) {
-    store.actions.textHighlighted()
+    store.dispatch(actions.textHighlighted())
     key('space', (e) => {
       e.preventDefault()
-      store.actions.playPause()
+      store.dispatch(actions.playPause())
       return false
     })
   } else {
-    store.actions.nothingHighlighted()
+    store.dispatch(actions.nothingHighlighted())
   }
 }
 
@@ -40,7 +41,7 @@ export function unListenForSpace() {
 export function listenForEsc() {
   unListenForEsc()
   key('esc', (e) => {
-    store.actions.pause()
+    store.dispatch(actions.pause())
   })
 }
 
