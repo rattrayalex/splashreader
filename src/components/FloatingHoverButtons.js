@@ -9,7 +9,7 @@ export default class FloatingHoverButtons extends React.Component {
   static propTypes = {
     children: PropTypes.oneOfType([
       PropTypes.array,
-      PropTypes.object,
+      PropTypes.element,
     ]).isRequired,
     primary: PropTypes.element.isRequired,
     shown: PropTypes.bool,
@@ -37,7 +37,7 @@ export default class FloatingHoverButtons extends React.Component {
         onMouseLeave={this._handleMouseLeave.bind(this)}
         >
         { ( hovered || shown )
-          ? {children}
+          ? <div>{children}</div>
           : null
         }
         {primary}

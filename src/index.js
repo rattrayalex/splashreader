@@ -41,6 +41,7 @@ function listenForPlay() {
 
     if ( is_playing && !was_playing ) {
       splash()
+      events.unListenForWordHighlight()
     }
 
   })
@@ -65,9 +66,14 @@ async function splash(range=null) {
   const just_pressed_play = ( range ? false : true )
 
   // initialize
-  if ( !range ) {
+  if ( range === null ) {
     let sel = rangy.getSelection()
     range = sel.getRangeAt(0)
+
+    // bail if nothing is selected
+    if ( range === null || !ranges.isTextHighlighted(sel) ) {
+      return store.dispatch(actions.pause())
+    }
   }
 
   // resume RSVP if in a new (non-header) paragrah.

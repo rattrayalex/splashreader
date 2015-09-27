@@ -6,7 +6,7 @@ import Immutable from 'immutable'
 
 import { saveWpm } from '../utils/chrome'
 
-const __DEBUG__ = false
+const __DEBUG__ = true
 
 
 // TODO: nesting.

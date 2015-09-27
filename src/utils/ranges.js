@@ -7,11 +7,14 @@ import { word_options } from '../constants'
  * Whether the user has highlighted text.
  * @return {Boolean}
  */
-export function isTextHighlighted() {
+export function isTextHighlighted(sel=null): boolean {
+  if ( sel === null ) {
+    sel = rangy.getSelection()
+  }
   return (
-    rangy.getSelection().rangeCount === 1
+    sel.rangeCount === 1
     &&
-    rangy.getSelection().getRangeAt(0).text().trim().length
+    sel.getRangeAt(0).text().trim().length
   )
 }
 

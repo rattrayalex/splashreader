@@ -24,21 +24,31 @@ export default class WpmButtons extends React.Component {
     let { dispatch } = this.props
     dispatch(actions.increaseWpm({ amount: DEFAULT_WPM_STEP }))
   }
+  _handleSet(e: React.SyntheticEvent) {
+    let { dispatch } = this.props
+    let wpm = parseInt(e.target.value)
+    dispatch(actions.setWpm({ wpm }))
+  }
 
   render(): React.Element {
     let { wpm } = this.props
 
     return (
-      <center>
+      <center title='Words Per Minute (WPM)'>
         <button
           className={classNames(styles.upArrow, styles.smallerHoverButton)}
           onClick={this._increaseWpm.bind(this)}
           title='Increase Reading Speed'
         />
 
-        <div className={styles.wpmLabel}>
-          {wpm} wpm
-        </div>
+        <input className={styles.wpmInput}
+          type='number'
+          value={wpm}
+          onChange={this._handleSet.bind(this)}
+          min={50}
+          step={10}
+          title='Words Per Minute (WPM)'
+        />
 
         <button
           className={classNames(styles.downArrow, styles.smallerHoverButton)}

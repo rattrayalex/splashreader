@@ -110,10 +110,21 @@
 .downArrow::after {
   content: '▼';
 }
-.wpmLabel {
-  all: initial;
+input.wpmInput {
+  all: unset;
+  display: block;
   font-family: 'Helvetica Neue', Helvetica, Arial;
   font-size: 14px;
+  width: 4em;
   margin-bottom: 10px;
   margin-top: -10px;
+  margin-right: -12px;
+}
+input.wpmInput:hover,
+input.wpmInput:active,
+input.wpmInput:focus,
+input.wpmInput.active {
+  background: white;
+  border-radius: 3px;
+  box-shadow: 0 0 3px 3px white;
 }

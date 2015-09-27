@@ -1,9 +1,9 @@
 /* @flow */
-
+import { splashreader_container_id } from '../constants'
 
 export function insertWrapper(): HTMLElement {
   const wrapper = document.createElement('div')
-  wrapper.setAttribute('id', 'splashreader-wrapper')
+  wrapper.setAttribute('id', splashreader_container_id)
   document.body.appendChild(wrapper)
   return wrapper
 }
@@ -12,8 +12,15 @@ export function insertWrapper(): HTMLElement {
  * Whether the document's active element is editable.
  * @return {Boolean}
  */
-export function isEditableFocused(): boolean {
+export function isNonSplashEditableFocused(): boolean {
   let activeElement = document.activeElement
+
+  // return false if it's a child of the splash container
+  let splash_container = document.getElementById(splashreader_container_id)
+  if ( splash_container.contains(activeElement) ) {
+    return false
+  }
+
   return _isElementEditable(activeElement)
 }
 

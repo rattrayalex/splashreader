@@ -49,7 +49,8 @@ export default class SplashButton extends React.Component {
     )
 
     return (
-      <FloatingHoverButtons shown={isPlaying}
+      <FloatingHoverButtons
+        shown={isPlaying}
         primary={play_pause_button}
         >
         <WpmButtons wpm={wpm}

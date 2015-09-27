@@ -22,7 +22,7 @@ export function unListenForWordHighlight() {
 
 export function listenForSpace() {
   unListenForSpace()
-  if ( ranges.isTextHighlighted() && !dom.isEditableFocused() ) {
+  if ( ranges.isTextHighlighted() && !dom.isNonSplashEditableFocused() ) {
     store.dispatch(actions.textHighlighted())
     key('space', (e) => {
       e.preventDefault()

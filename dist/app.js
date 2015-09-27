@@ -135,6 +135,7 @@
 
 	    if (is_playing && !was_playing) {
 	      splash();
+	      events.unListenForWordHighlight();
 	    }
 	  });
 	}
@@ -181,17 +182,25 @@
 
 	        just_pressed_play = range ? false : true;
 
-	        // initialize
-	        if (!range) {
-	          sel = _rangyLibRangyTextrange2['default'].getSelection();
-
-	          range = sel.getRangeAt(0);
+	        if (!(range === null)) {
+	          context$1$0.next = 9;
+	          break;
 	        }
 
-	        // resume RSVP if in a new (non-header) paragrah.
-	        // Otherwise, move to next word.
-	        // (results, intentionally, in first-words-of-paragraph
-	        // being dispayed twice: first without RSVP, and then with RSVP)
+	        sel = _rangyLibRangyTextrange2['default'].getSelection();
+
+	        range = sel.getRangeAt(0);
+
+	        // bail if nothing is selected
+
+	        if (!(range === null || !ranges.isTextHighlighted(sel))) {
+	          context$1$0.next = 9;
+	          break;
+	        }
+
+	        return context$1$0.abrupt('return', _fluxStore2['default'].dispatch(_fluxActions2['default'].pause()));
+
+	      case 9:
 	        is_changing_para = (0, _fluxSelectors.changingParaSelector)(_fluxStore2['default'].getState());
 	        is_in_heading = rsvp.looksLikeAHeading(range.endContainer.parentElement);
 	        is_new_para = false;
@@ -216,38 +225,38 @@
 	        // scroll if we're not there yet.
 
 	        if (!(just_pressed_play || is_changing_para)) {
-	          context$1$0.next = 15;
+	          context$1$0.next = 19;
 	          break;
 	        }
 
-	        context$1$0.next = 15;
+	        context$1$0.next = 19;
 	        return regeneratorRuntime.awrap(setReadingPointAt(range));
 
-	      case 15:
+	      case 19:
 	        wpm = (0, _fluxSelectors.wpmSelector)(_fluxStore2['default'].getState());
 	        time_to_display = rsvp.getTimeToDisplay(word, wpm);
 
 	        if (!is_new_para) {
-	          context$1$0.next = 23;
+	          context$1$0.next = 27;
 	          break;
 	        }
 
 	        _fluxStore2['default'].dispatch(_fluxActions2['default'].paraChange());
 
 	        if (just_pressed_play) {
-	          context$1$0.next = 23;
+	          context$1$0.next = 27;
 	          break;
 	        }
 
 	        time_to_display = 1000;
-	        context$1$0.next = 23;
+	        context$1$0.next = 27;
 	        return regeneratorRuntime.awrap(setReadingPointAt(range));
 
-	      case 23:
+	      case 27:
 
 	        play_timeout = setTimeout(splash.bind(null, range), time_to_display);
 
-	      case 24:
+	      case 28:
 	      case 'end':
 	        return context$1$0.stop();
 	    }
@@ -272,6 +281,13 @@
 	}
 
 	init();
+
+	// initialize
+
+	// resume RSVP if in a new (non-header) paragrah.
+	// Otherwise, move to next word.
+	// (results, intentionally, in first-words-of-paragraph
+	// being dispayed twice: first without RSVP, and then with RSVP)
 
 	// move to the next word in a sec
 
@@ -32550,7 +32566,7 @@
 
 	var _utilsChrome = __webpack_require__(376);
 
-	var __DEBUG__ = false;
+	var __DEBUG__ = true;
 
 	// TODO: nesting.
 	var initialState = _immutable2['default'].fromJS({
@@ -39334,7 +39350,8 @@
 
 	      return _react2['default'].createElement(
 	        _FloatingHoverButtons2['default'],
-	        { shown: isPlaying,
+	        {
+	          shown: isPlaying,
 	          primary: play_pause_button
 	        },
 	        _react2['default'].createElement(_WpmButtons2['default'], { wpm: wpm,
@@ -39488,7 +39505,11 @@
 	          onMouseEnter: this._handleMouseEnter.bind(this),
 	          onMouseLeave: this._handleMouseLeave.bind(this)
 	        },
-	        hovered || shown ? { children: children } : null,
+	        hovered || shown ? _react2['default'].createElement(
+	          'div',
+	          null,
+	          children
+	        ) : null,
 	        primary
 	      );
 	    }
@@ -39497,7 +39518,7 @@
 
 	    // $FlowIssue https://github.com/facebook/flow/issues/850
 	    value: {
-	      children: _react.PropTypes.oneOfType([_react.PropTypes.array, _react.PropTypes.object]).isRequired,
+	      children: _react.PropTypes.oneOfType([_react.PropTypes.array, _react.PropTypes.element]).isRequired,
 	      primary: _react.PropTypes.element.isRequired,
 	      shown: _react.PropTypes.bool
 	    },
@@ -39547,7 +39568,7 @@
 
 
 	// module
-	exports.push([module.id, ".JbSjuhjRD5FV6s5URhLS1{display:block;position:fixed;bottom:23px;right:23px;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center}.tHlBH4w8dJ3HKwy-R94fn{height:56px;width:56px;padding:10px;color:white;font-size:25px;background:#00bcd4;border:none;border-radius:50%;box-shadow:0 3px 6px rgba(0,0,0,.3);display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-webkit-flex-direction:row;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.tHlBH4w8dJ3HKwy-R94fn:hover{border-bottom-width:2px}.tHlBH4w8dJ3HKwy-R94fn:active,.tHlBH4w8dJ3HKwy-R94fn:visited,.tHlBH4w8dJ3HKwy-R94fn:focus{outline:none;underline:none;color:white}.tHlBH4w8dJ3HKwy-R94fn:active,.tHlBH4w8dJ3HKwy-R94fn.qZMPi-pFHf80dDQ2cfhHx{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}._2RsLjc1BxWV7Ncsc1b8mAR{padding-left:4px}._2RsLjc1BxWV7Ncsc1b8mAR::after{content:'\\25B6'}._2sRcIlJLjx4X6jQo3CnVcj{padding-left:7px;font-size:19px}._2sRcIlJLjx4X6jQo3CnVcj::after{content:'\\258C\\258C'}.tHlBH4w8dJ3HKwy-R94fn img{display:inline-block}._1xe1uxIWQ1BrvX5mbmVas2{border:none;border-radius:50%;background:#00bcd4;color:white;box-shadow:0 3px 6px rgba(0,0,0,.2);margin-bottom:20px;display:block;height:40px;width:40px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer}._1xe1uxIWQ1BrvX5mbmVas2:active,._1xe1uxIWQ1BrvX5mbmVas2:visited,._1xe1uxIWQ1BrvX5mbmVas2:focus{outline:none;underline:none;color:white}._1xe1uxIWQ1BrvX5mbmVas2:active,._1xe1uxIWQ1BrvX5mbmVas2.qZMPi-pFHf80dDQ2cfhHx{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}._1m8YfDtQuhQ9JX2NbMCRPH::after{content:'\\25B2'}._2nbooLsvSrOYdvILjjBGaa::after{content:'\\25BC'}._3MgydSjJIqirm0pwaXEznQ{all:initial;font-family:Helvetica Neue,Helvetica,Arial;font-size:14px;margin-bottom:10px;margin-top:-10px}", ""]);
+	exports.push([module.id, ".JbSjuhjRD5FV6s5URhLS1{display:block;position:fixed;bottom:23px;right:23px;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center}.tHlBH4w8dJ3HKwy-R94fn{height:56px;width:56px;padding:10px;color:white;font-size:25px;background:#00bcd4;border:none;border-radius:50%;box-shadow:0 3px 6px rgba(0,0,0,.3);display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-webkit-flex-direction:row;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.tHlBH4w8dJ3HKwy-R94fn:hover{border-bottom-width:2px}.tHlBH4w8dJ3HKwy-R94fn:active,.tHlBH4w8dJ3HKwy-R94fn:visited,.tHlBH4w8dJ3HKwy-R94fn:focus{outline:none;underline:none;color:white}.tHlBH4w8dJ3HKwy-R94fn:active,.tHlBH4w8dJ3HKwy-R94fn.qZMPi-pFHf80dDQ2cfhHx{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}._2RsLjc1BxWV7Ncsc1b8mAR{padding-left:4px}._2RsLjc1BxWV7Ncsc1b8mAR::after{content:'\\25B6'}._2sRcIlJLjx4X6jQo3CnVcj{padding-left:7px;font-size:19px}._2sRcIlJLjx4X6jQo3CnVcj::after{content:'\\258C\\258C'}.tHlBH4w8dJ3HKwy-R94fn img{display:inline-block}._1xe1uxIWQ1BrvX5mbmVas2{border:none;border-radius:50%;background:#00bcd4;color:white;box-shadow:0 3px 6px rgba(0,0,0,.2);margin-bottom:20px;display:block;height:40px;width:40px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer}._1xe1uxIWQ1BrvX5mbmVas2:active,._1xe1uxIWQ1BrvX5mbmVas2:visited,._1xe1uxIWQ1BrvX5mbmVas2:focus{outline:none;underline:none;color:white}._1xe1uxIWQ1BrvX5mbmVas2:active,._1xe1uxIWQ1BrvX5mbmVas2.qZMPi-pFHf80dDQ2cfhHx{border-bottom:none;border-top-color:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.3) inset}._1m8YfDtQuhQ9JX2NbMCRPH::after{content:'\\25B2'}._2nbooLsvSrOYdvILjjBGaa::after{content:'\\25BC'}input.JkQ8tBjbJPj_0MkgI9Nfs{all:unset;display:block;font-family:Helvetica Neue,Helvetica,Arial;font-size:14px;width:4em;margin-bottom:10px;margin-top:-10px;margin-right:-12px}input.JkQ8tBjbJPj_0MkgI9Nfs:hover,input.JkQ8tBjbJPj_0MkgI9Nfs:active,input.JkQ8tBjbJPj_0MkgI9Nfs:focus,input.JkQ8tBjbJPj_0MkgI9Nfs.qZMPi-pFHf80dDQ2cfhHx{background:white;border-radius:3px;box-shadow:0 0 3px 3px white}", ""]);
 
 	// exports
 	exports.locals = {
@@ -39559,7 +39580,7 @@
 		"smallerHoverButton": "_1xe1uxIWQ1BrvX5mbmVas2",
 		"upArrow": "_1m8YfDtQuhQ9JX2NbMCRPH",
 		"downArrow": "_2nbooLsvSrOYdvILjjBGaa",
-		"wpmLabel": "_3MgydSjJIqirm0pwaXEznQ"
+		"wpmInput": "JkQ8tBjbJPj_0MkgI9Nfs"
 	};
 
 /***/ },
@@ -39907,24 +39928,34 @@
 	      dispatch(_fluxActions2['default'].increaseWpm({ amount: DEFAULT_WPM_STEP }));
 	    }
 	  }, {
+	    key: '_handleSet',
+	    value: function _handleSet(e) {
+	      var dispatch = this.props.dispatch;
+
+	      var wpm = parseInt(e.target.value);
+	      dispatch(_fluxActions2['default'].setWpm({ wpm: wpm }));
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var wpm = this.props.wpm;
 
 	      return _react2['default'].createElement(
 	        'center',
-	        null,
+	        { title: 'Words Per Minute (WPM)' },
 	        _react2['default'].createElement('button', {
 	          className: (0, _classnames2['default'])(_SplashButtonCss2['default'].upArrow, _SplashButtonCss2['default'].smallerHoverButton),
 	          onClick: this._increaseWpm.bind(this),
 	          title: 'Increase Reading Speed'
 	        }),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: _SplashButtonCss2['default'].wpmLabel },
-	          wpm,
-	          ' wpm'
-	        ),
+	        _react2['default'].createElement('input', { className: _SplashButtonCss2['default'].wpmInput,
+	          type: 'number',
+	          value: wpm,
+	          onChange: this._handleSet.bind(this),
+	          min: 50,
+	          step: 10,
+	          title: 'Words Per Minute (WPM)'
+	        }),
 	        _react2['default'].createElement('button', {
 	          className: (0, _classnames2['default'])(_SplashButtonCss2['default'].downArrow, _SplashButtonCss2['default'].smallerHoverButton),
 	          onClick: this._decreaseWpm.bind(this),
@@ -40054,7 +40085,7 @@
 
 /***/ },
 /* 391 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -40062,14 +40093,16 @@
 	  value: true
 	});
 	exports.insertWrapper = insertWrapper;
-	exports.isEditableFocused = isEditableFocused;
+	exports.isNonSplashEditableFocused = isNonSplashEditableFocused;
 	exports.getLeftEdge = getLeftEdge;
 	exports.getReadingHeight = getReadingHeight;
 	exports.scrollToElementOnce = scrollToElementOnce;
 
+	var _constants = __webpack_require__(396);
+
 	function insertWrapper() {
 	  var wrapper = document.createElement('div');
-	  wrapper.setAttribute('id', 'splashreader-wrapper');
+	  wrapper.setAttribute('id', _constants.splashreader_container_id);
 	  document.body.appendChild(wrapper);
 	  return wrapper;
 	}
@@ -40079,8 +40112,15 @@
 	 * @return {Boolean}
 	 */
 
-	function isEditableFocused() {
+	function isNonSplashEditableFocused() {
 	  var activeElement = document.activeElement;
+
+	  // return false if it's a child of the splash container
+	  var splash_container = document.getElementById(_constants.splashreader_container_id);
+	  if (splash_container.contains(activeElement)) {
+	    return false;
+	  }
+
 	  return _isElementEditable(activeElement);
 	}
 
@@ -40404,7 +40444,12 @@
 	 */
 
 	function isTextHighlighted() {
-	  return _rangyLibRangyTextrange2['default'].getSelection().rangeCount === 1 && _rangyLibRangyTextrange2['default'].getSelection().getRangeAt(0).text().trim().length;
+	  var sel = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
+	  if (sel === null) {
+	    sel = _rangyLibRangyTextrange2['default'].getSelection();
+	  }
+	  return sel.rangeCount === 1 && sel.getRangeAt(0).text().trim().length;
 	}
 
 	/**
@@ -40464,11 +40509,14 @@
 /* 396 */
 /***/ function(module, exports) {
 
-	"use strict";
+	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
+	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
+	var splashreader_container_id = 'splashreader-wrapper';
+
+	exports.splashreader_container_id = splashreader_container_id;
 	var word_options = {
 	  wordOptions: {
 	    wordRegex: /[^–—\s]+/gi
@@ -40532,7 +40580,7 @@
 
 	function listenForSpace() {
 	  unListenForSpace();
-	  if (ranges.isTextHighlighted() && !dom.isEditableFocused()) {
+	  if (ranges.isTextHighlighted() && !dom.isNonSplashEditableFocused()) {
 	    _fluxStore2['default'].dispatch(_fluxActions2['default'].textHighlighted());
 	    (0, _keymaster2['default'])('space', function (e) {
 	      e.preventDefault();
