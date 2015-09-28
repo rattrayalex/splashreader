@@ -62,7 +62,7 @@ export function getReadingHeight(): number {
  * @param  {HTMLElement} elem
  * @return {void}
  */
-export async function scrollToElementOnce(elem: HTMLElement): Promise<void> {
+export async function scrollToElementOnce(elem: Range | HTMLElement): Promise<void> {
   // TODO: scroll w/in scrolly-divs on the page.
   let elem_top = elem.getBoundingClientRect().top + window.scrollY
   let offset = getReadingHeight()

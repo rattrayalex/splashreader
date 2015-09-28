@@ -42,15 +42,17 @@ function listenForPlay() {
     if ( is_playing && !was_playing ) {
       splash()
       events.unListenForWordHighlight()
+    } else if ( was_playing && !is_playing ) {
+      // scroll on pause
+      ranges.scrollToHighlightedText()
     }
 
   })
 }
 
 async function setReadingPointAt(range) {
-  const node = range.endContainer.parentNode
-  await dom.scrollToElementOnce(node)
-  const left = dom.getLeftEdge(node)
+  await dom.scrollToElementOnce(range.nativeRange)
+  const left = dom.getLeftEdge(range.endContainer.parentNode)
   store.dispatch(actions.setReadingEdge({ left }))
 }
 
@@ -123,8 +125,24 @@ async function splash(range=null) {
   )
 }
 
+/** annoyingly, rangy doesn't work for a bit sometimes... */
+async function waitForRangy() {
+  return await new Promise((resolve) => {
+    let checker = () => {
+      if (typeof rangy.getSelection === 'function') {
+        resolve()
+      } else {
+        setTimeout(checker, 100)
+      }
+    }
+    checker()
+  })
+}
 
-function init() {
+
+async function init() {
+  await waitForRangy()
+
   let wrapper = dom.insertWrapper()
 
   loadWpmFromChrome()

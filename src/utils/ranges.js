@@ -2,6 +2,16 @@
 
 import rangy from 'rangy/lib/rangy-textrange'
 import { word_options } from '../constants'
+import { scrollToElementOnce } from './dom'
+
+
+export function scrollToHighlightedText(): void {
+  let sel = rangy.getSelection()
+  if ( isTextHighlighted(sel) ) {
+    let range = sel.getRangeAt(0)
+    scrollToElementOnce(range.nativeRange)
+  }
+}
 
 /**
  * Whether the user has highlighted text.

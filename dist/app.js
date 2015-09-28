@@ -136,25 +136,27 @@
 	    if (is_playing && !was_playing) {
 	      splash();
 	      events.unListenForWordHighlight();
+	    } else if (was_playing && !is_playing) {
+	      // scroll on pause
+	      ranges.scrollToHighlightedText();
 	    }
 	  });
 	}
 
 	function setReadingPointAt(range) {
-	  var node, left;
+	  var left;
 	  return regeneratorRuntime.async(function setReadingPointAt$(context$1$0) {
 	    while (1) switch (context$1$0.prev = context$1$0.next) {
 	      case 0:
-	        node = range.endContainer.parentNode;
-	        context$1$0.next = 3;
-	        return regeneratorRuntime.awrap(dom.scrollToElementOnce(node));
+	        context$1$0.next = 2;
+	        return regeneratorRuntime.awrap(dom.scrollToElementOnce(range.nativeRange));
 
-	      case 3:
-	        left = dom.getLeftEdge(node);
+	      case 2:
+	        left = dom.getLeftEdge(range.endContainer.parentNode);
 
 	        _fluxStore2['default'].dispatch(_fluxActions2['default'].setReadingEdge({ left: left }));
 
-	      case 5:
+	      case 4:
 	      case 'end':
 	        return context$1$0.stop();
 	    }
@@ -263,21 +265,62 @@
 	  }, null, this);
 	}
 
-	function init() {
-	  var wrapper = dom.insertWrapper();
+	/** annoyingly, rangy doesn't work for a bit sometimes... */
+	function waitForRangy() {
+	  return regeneratorRuntime.async(function waitForRangy$(context$1$0) {
+	    while (1) switch (context$1$0.prev = context$1$0.next) {
+	      case 0:
+	        context$1$0.next = 2;
+	        return regeneratorRuntime.awrap(new Promise(function (resolve) {
+	          var checker = function checker() {
+	            if (typeof _rangyLibRangyTextrange2['default'].getSelection === 'function') {
+	              resolve();
+	            } else {
+	              setTimeout(checker, 100);
+	            }
+	          };
+	          checker();
+	        }));
 
-	  loadWpmFromChrome();
-	  listenForPlay();
-	  events.listenForWordHighlight();
-	  events.listenForEsc();
+	      case 2:
+	        return context$1$0.abrupt('return', context$1$0.sent);
 
-	  _react2['default'].render(_react2['default'].createElement(
-	    _reactRedux.Provider,
-	    { store: _fluxStore2['default'] },
-	    function () {
-	      return _react2['default'].createElement(_componentsSplashApp2['default'], null);
+	      case 3:
+	      case 'end':
+	        return context$1$0.stop();
 	    }
-	  ), wrapper);
+	  }, null, this);
+	}
+
+	function init() {
+	  var wrapper;
+	  return regeneratorRuntime.async(function init$(context$1$0) {
+	    while (1) switch (context$1$0.prev = context$1$0.next) {
+	      case 0:
+	        context$1$0.next = 2;
+	        return regeneratorRuntime.awrap(waitForRangy());
+
+	      case 2:
+	        wrapper = dom.insertWrapper();
+
+	        loadWpmFromChrome();
+	        listenForPlay();
+	        events.listenForWordHighlight();
+	        events.listenForEsc();
+
+	        _react2['default'].render(_react2['default'].createElement(
+	          _reactRedux.Provider,
+	          { store: _fluxStore2['default'] },
+	          function () {
+	            return _react2['default'].createElement(_componentsSplashApp2['default'], null);
+	          }
+	        ), wrapper);
+
+	      case 8:
+	      case 'end':
+	        return context$1$0.stop();
+	    }
+	  }, null, this);
 	}
 
 	init();
@@ -40426,6 +40469,7 @@
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
+	exports.scrollToHighlightedText = scrollToHighlightedText;
 	exports.isTextHighlighted = isTextHighlighted;
 	exports.moveToNextWord = moveToNextWord;
 	exports.isSingleWordHighlighted = isSingleWordHighlighted;
@@ -40437,6 +40481,16 @@
 	var _rangyLibRangyTextrange2 = _interopRequireDefault(_rangyLibRangyTextrange);
 
 	var _constants = __webpack_require__(396);
+
+	var _dom = __webpack_require__(391);
+
+	function scrollToHighlightedText() {
+	  var sel = _rangyLibRangyTextrange2['default'].getSelection();
+	  if (isTextHighlighted(sel)) {
+	    var range = sel.getRangeAt(0);
+	    (0, _dom.scrollToElementOnce)(range.nativeRange);
+	  }
+	}
 
 	/**
 	 * Whether the user has highlighted text.
