@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "SplashReader: Speed Reading with Breaks",
   "short_name": "SplashReader",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "A speed reader that lets you come up for air.",
   "icons": {
     "16": "images/icon16.png",
