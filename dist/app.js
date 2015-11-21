@@ -90,7 +90,7 @@
 
 	var chrome = _interopRequireWildcard(_utilsChrome);
 
-	var _utilsRanges = __webpack_require__(395);
+	var _utilsRanges = __webpack_require__(396);
 
 	var ranges = _interopRequireWildcard(_utilsRanges);
 
@@ -98,7 +98,7 @@
 
 	var events = _interopRequireWildcard(_utilsEvents);
 
-	var _constants = __webpack_require__(396);
+	var _constants = __webpack_require__(392);
 
 	window.rangy = _rangyLibRangyTextrange2['default'];
 
@@ -135,7 +135,6 @@
 
 	    if (is_playing && !was_playing) {
 	      splash();
-	      events.unListenForWordHighlight();
 	    } else if (was_playing && !is_playing) {
 	      // scroll on pause
 	      ranges.scrollToHighlightedText();
@@ -305,8 +304,7 @@
 
 	        loadWpmFromChrome();
 	        listenForPlay();
-	        events.listenForWordHighlight();
-	        events.listenForEsc();
+	        events.listenForSpace();
 
 	        _react2['default'].render(_react2['default'].createElement(
 	          _reactRedux.Provider,
@@ -316,7 +314,7 @@
 	          }
 	        ), wrapper);
 
-	      case 8:
+	      case 7:
 	      case 'end':
 	        return context$1$0.stop();
 	    }
@@ -38784,7 +38782,7 @@
 	  try {
 	    chrome.storage.sync.set({ 'wpm': wpm });
 	  } catch (e) {
-	    console.error('Could not save WPM to chrome', e);
+	    console.error('Could not save WPM to chrome', e); // eslint-disable-line no-console
 	  }
 	  return wpm;
 	}
@@ -38809,7 +38807,7 @@
 	        context$1$0.prev = 6;
 	        context$1$0.t0 = context$1$0['catch'](0);
 
-	        console.error('Could not load WPM from chrome', context$1$0.t0);
+	        console.error('Could not load WPM from chrome', context$1$0.t0); // eslint-disable-line no-console
 
 	      case 9:
 	        return context$1$0.abrupt('return', null);
@@ -39369,8 +39367,6 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _classNames;
-
 	      var _props = this.props;
 	      var buttonShown = _props.buttonShown;
 	      var isPlaying = _props.isPlaying;
@@ -39381,7 +39377,7 @@
 	        return null;
 	      }
 
-	      var play_pause_class = (0, _classnames2['default'])((_classNames = {}, _defineProperty(_classNames, _SplashButtonCss2['default'].SplashButton, true), _defineProperty(_classNames, _SplashButtonCss2['default'].active, isPlaying), _classNames));
+	      var play_pause_class = (0, _classnames2['default'])(_SplashButtonCss2['default'].SplashButton, _defineProperty({}, _SplashButtonCss2['default'].active, isPlaying));
 	      var play_pause_button = _react2['default'].createElement(
 	        'button',
 	        { className: play_pause_class,
@@ -39420,8 +39416,6 @@
 
 	exports['default'] = SplashButton;
 	module.exports = exports['default'];
-
-	// $FlowIssue https://github.com/facebook/flow/issues/252
 
 	// $FlowIssue https://github.com/facebook/flow/issues/252
 
@@ -40055,13 +40049,13 @@
 
 	var _SplashButton2 = _interopRequireDefault(_SplashButton);
 
-	var _RsvpWord = __webpack_require__(392);
+	var _RsvpWord = __webpack_require__(393);
 
 	var _RsvpWord2 = _interopRequireDefault(_RsvpWord);
 
 	// $FlowIgnore
 
-	var _RsvpCss = __webpack_require__(393);
+	var _RsvpCss = __webpack_require__(394);
 
 	var _RsvpCss2 = _interopRequireDefault(_RsvpCss);
 
@@ -40141,7 +40135,7 @@
 	exports.getReadingHeight = getReadingHeight;
 	exports.scrollToElementOnce = scrollToElementOnce;
 
-	var _constants = __webpack_require__(396);
+	var _constants = __webpack_require__(392);
 
 	function insertWrapper() {
 	  var wrapper = document.createElement('div');
@@ -40303,6 +40297,30 @@
 
 /***/ },
 /* 392 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	var splashreader_container_id = 'splashreader-wrapper';
+
+	exports.splashreader_container_id = splashreader_container_id;
+	var word_options = {
+	  wordOptions: {
+	    wordRegex: /[^–—\s]+/gi
+	  },
+	  characterOptions: {
+	    includeBlockContentTrailingSpace: false,
+	    includeSpaceBeforeBr: false,
+	    includePreLineTrailingSpace: false
+	  }
+	};
+	exports.word_options = word_options;
+
+/***/ },
+/* 393 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -40329,7 +40347,7 @@
 
 	// $FlowIgnore
 
-	var _RsvpCss = __webpack_require__(393);
+	var _RsvpCss = __webpack_require__(394);
 
 	var _RsvpCss2 = _interopRequireDefault(_RsvpCss);
 
@@ -40412,13 +40430,13 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 393 */
+/* 394 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(394);
+	var content = __webpack_require__(395);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(388)(content, {});
@@ -40438,7 +40456,7 @@
 	}
 
 /***/ },
-/* 394 */
+/* 395 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(387)();
@@ -40461,7 +40479,7 @@
 	};
 
 /***/ },
-/* 395 */
+/* 396 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -40480,7 +40498,7 @@
 
 	var _rangyLibRangyTextrange2 = _interopRequireDefault(_rangyLibRangyTextrange);
 
-	var _constants = __webpack_require__(396);
+	var _constants = __webpack_require__(392);
 
 	var _dom = __webpack_require__(391);
 
@@ -40560,30 +40578,6 @@
 	}
 
 /***/ },
-/* 396 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	var splashreader_container_id = 'splashreader-wrapper';
-
-	exports.splashreader_container_id = splashreader_container_id;
-	var word_options = {
-	  wordOptions: {
-	    wordRegex: /[^–—\s]+/gi
-	  },
-	  characterOptions: {
-	    includeBlockContentTrailingSpace: false,
-	    includeSpaceBeforeBr: false,
-	    includePreLineTrailingSpace: false
-	  }
-	};
-	exports.word_options = word_options;
-
-/***/ },
 /* 397 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -40592,8 +40586,7 @@
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
-	exports.listenForWordHighlight = listenForWordHighlight;
-	exports.unListenForWordHighlight = unListenForWordHighlight;
+	exports.readingHighlighted = readingHighlighted;
 	exports.listenForSpace = listenForSpace;
 	exports.unListenForSpace = unListenForSpace;
 	exports.listenForEsc = listenForEsc;
@@ -40619,31 +40612,21 @@
 
 	var dom = _interopRequireWildcard(_dom);
 
-	var _ranges = __webpack_require__(395);
+	var _ranges = __webpack_require__(396);
 
 	var ranges = _interopRequireWildcard(_ranges);
 
-	function listenForWordHighlight() {
-	  unListenForWordHighlight();
-	  document.addEventListener('selectionchange', listenForSpace);
-	}
-
-	function unListenForWordHighlight() {
-	  document.removeEventListener('selectionchange', listenForSpace);
+	function readingHighlighted() {
+	  return ranges.isTextHighlighted() && !dom.isNonSplashEditableFocused();
 	}
 
 	function listenForSpace() {
 	  unListenForSpace();
-	  if (ranges.isTextHighlighted() && !dom.isNonSplashEditableFocused()) {
-	    _fluxStore2['default'].dispatch(_fluxActions2['default'].textHighlighted());
-	    (0, _keymaster2['default'])('space', function (e) {
-	      e.preventDefault();
-	      _fluxStore2['default'].dispatch(_fluxActions2['default'].playPause());
-	      return false;
-	    });
-	  } else {
-	    _fluxStore2['default'].dispatch(_fluxActions2['default'].nothingHighlighted());
-	  }
+	  (0, _keymaster2['default'])('space', function (e) {
+	    e.preventDefault();
+	    _fluxStore2['default'].dispatch(_fluxActions2['default'].playPause());
+	    return false;
+	  });
 	}
 
 	function unListenForSpace() {

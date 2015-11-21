@@ -1,3 +1,4 @@
+/* @flow */
 import key from 'keymaster'
 
 import store from '../flux/store'
@@ -5,33 +6,18 @@ import actions from '../flux/actions'
 import * as dom from './dom'
 import * as ranges from './ranges'
 
-export function listenForWordHighlight() {
-  unListenForWordHighlight()
-  document.addEventListener(
-    'selectionchange',
-    listenForSpace
-  )
-}
 
-export function unListenForWordHighlight() {
-  document.removeEventListener(
-    'selectionchange',
-    listenForSpace
-  )
+export function readingHighlighted(): boolean {
+  return ( ranges.isTextHighlighted() && !dom.isNonSplashEditableFocused() )
 }
 
 export function listenForSpace() {
   unListenForSpace()
-  if ( ranges.isTextHighlighted() && !dom.isNonSplashEditableFocused() ) {
-    store.dispatch(actions.textHighlighted())
-    key('space', (e) => {
-      e.preventDefault()
-      store.dispatch(actions.playPause())
-      return false
-    })
-  } else {
-    store.dispatch(actions.nothingHighlighted())
-  }
+  key('space', (e) => {
+    e.preventDefault()
+    store.dispatch(actions.playPause())
+    return false
+  })
 }
 
 export function unListenForSpace() {

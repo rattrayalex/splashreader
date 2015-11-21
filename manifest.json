@@ -4,22 +4,27 @@
   "short_name": "SplashReader",
   "version": "2.3.0",
   "description": "A speed reader that lets you come up for air.",
+  "homepage_url": "http://splashreaderapp.com",
+  "author": "Alex Rattray",
   "icons": {
     "16": "images/icon16.png",
     "32": "images/icon32.png",
     "48": "images/icon48.png",
     "128": "images/icon128.png"
   },
-  "author": "Alex Rattray",
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["dist/app.js"]
-    }
-  ],
-  "homepage_url": "http://splashreaderapp.com",
+  "background": {
+    "scripts": [ "background.js" ]
+  },
+  "browser_action": {
+    "default_icon": {
+      "19": "images/icon19.png",
+      "38": "images/icon38.png"
+    },
+    "default_title": "SplashRead"
+  },
   "offline_enabled": true,
   "permissions": [
-    "storage"
+    "storage",
+    "activeTab"
   ]
 }

@@ -30,9 +30,7 @@ export default class SplashButton extends React.Component {
       return null
     }
 
-    let play_pause_class = classNames({
-      // $FlowIssue https://github.com/facebook/flow/issues/252
-      [styles.SplashButton]: true,
+    let play_pause_class = classNames(styles.SplashButton, {
       // $FlowIssue https://github.com/facebook/flow/issues/252
       [styles.active]: isPlaying,
     })

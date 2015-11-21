@@ -22,13 +22,13 @@ import { word_options } from './constants'
 
 window.rangy = rangy
 
+
 async function loadWpmFromChrome() {
   let wpm = await chrome.loadWpm()
   if ( wpm && wpm > 0 ) {
     store.dispatch(actions.setWpm({ wpm }))
   }
 }
-
 
 function listenForPlay() {
   let is_playing = false
@@ -41,7 +41,6 @@ function listenForPlay() {
 
     if ( is_playing && !was_playing ) {
       splash()
-      events.unListenForWordHighlight()
     } else if ( was_playing && !is_playing ) {
       // scroll on pause
       ranges.scrollToHighlightedText()
@@ -147,8 +146,7 @@ async function init() {
 
   loadWpmFromChrome()
   listenForPlay()
-  events.listenForWordHighlight()
-  events.listenForEsc()
+  events.listenForSpace()
 
   React.render(
     <Provider store={store}>
