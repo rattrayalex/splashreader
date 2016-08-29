@@ -9,3 +9,5 @@ src/
 suppress_comment=.*\\$FlowIssue.*
 suppress_comment=.*\\$FlowIgnore.*
 esproposal.decorators=ignore
+esproposal.class_static_fields=enable
+esproposal.class_instance_fields=enable

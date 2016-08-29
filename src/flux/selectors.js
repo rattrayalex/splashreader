@@ -1,13 +1,15 @@
 /* @flow */
-import Immutable from 'immutable'
+import * as Immutable from 'immutable'
 import { createSelector } from 'reselect'
 
 import { getTextWidth } from '../utils/rsvp'
 
-type State = Immutable.Map
+
+// TODO: real definition
+type State = Immutable.Map<string, any>
+
 
 // TODO: cleanup / nest / break up
-
 export const buttonShownSelector = (state: State): boolean =>
   state.get('buttonShown')
 export const isPlayingSelector = (state: State): boolean =>
@@ -26,20 +28,12 @@ export const fontSelector = (state: State): string =>
   state.get('font')
 
 export const rsvpPlayingSelector = createSelector(
-  [
-    isPlayingSelector,
-    changingParaSelector,
-  ],
-  (isPlaying, changingPara) => (
-    isPlaying && !changingPara
-  )
+  [isPlayingSelector, changingParaSelector],
+  (isPlaying, changingPara) => (isPlaying && !changingPara)
 )
 
 export const orpCenterSelector = createSelector(
-  [
-    readingEdgeLeftSelector,
-    fontSelector,
-  ],
+  [readingEdgeLeftSelector, fontSelector],
   (left, font) =>
     Math.max(
       // five em's wide b/c that's how big
@@ -50,6 +44,7 @@ export const orpCenterSelector = createSelector(
     )
 )
 
+// TODO cleanup
 export const allSelector = createSelector(
   [
     buttonShownSelector,
@@ -61,12 +56,12 @@ export const allSelector = createSelector(
     rsvpPlayingSelector,
   ],
   (buttonShown, isPlaying, currentWord, orpCenter, wpm, font, rsvpPlaying) =>
-    ( { buttonShown,
+    ({ buttonShown,
       isPlaying,
       currentWord,
       orpCenter,
       wpm,
       font,
       rsvpPlaying,
-    } )
+    })
 )

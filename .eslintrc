@@ -1,21 +1,41 @@
 {
+  "extends": ["airbnb", "plugin:import/errors"],
   "parser": "babel-eslint",
-  "extends": "eslint:recommended",
-  "ecmaFeatures": {
-    "jsx": true,
-  },
   "plugins": [
-    "eslint-plugin-react"
+    "flowtype",
+    "babel",
+    "import"
   ],
   "env": {
-    "node": false,
     "browser": true,
     "es6": true,
   },
   "rules": {
-    "strict": 0,
     "comma-dangle": [1, "always-multiline"],
-    "react/jsx-uses-vars": 1,
-    "semi": [2, "never"]
+    "semi": [2, "never"],
+    "react/jsx-filename-extension": 0,
+    "no-use-before-define": ["error", { "functions": false }],
+    "no-useless-constructor": 0,
+
+    // https://github.com/gajus/eslint-plugin-flowtype
+    "flowtype/define-flow-type": 1,
+    "flowtype/valid-syntax": 1,
+    "flowtype/use-flow-type": 1,
+    "flowtype/space-after-type-colon": [1, "always"],
+    "flowtype/space-before-type-colon": [1, "never"],
+
+    // https://github.com/eslint/eslint/issues/6274#issuecomment-228420692
+    "generator-star-spacing": 0,
+
+    // https://github.com/babel/eslint-plugin-babel
+    "babel/generator-star-spacing": 1,
+    // "babel/new-cap": 1,
+    // "babel/array-bracket-spacing": 1,
+    // "babel/object-curly-spacing": 1,
+    // "babel/object-shorthand": 1,
+    // "babel/arrow-parens": 1,
+    // "babel/no-await-in-loop": 1,
+    // "babel/flow-object-type": 1,
+    // "babel/func-params-comma-dangle": 1
   }
 }

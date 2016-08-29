@@ -6,10 +6,10 @@ An RSVP Speed Reader for Humans
 ## To Develop:
 
 - Install deps: `npm install`
-- To build/watch: `make`
+- To build/watch: `npm run dev`
     + Navigate to `chrome://extensions`, 
     turn on developer mode, 
     and click "load unpacked extension". Load this dir. 
-- To create a chrome extension zip: `make chrome`
+- To create a chrome extension zip: `npm run chrome`
 - To typecheck, `brew install flow`, and run `flow`.
 - To lint, `npm install -g eslint babel-eslint`, and run `eslint`

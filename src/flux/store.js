@@ -2,11 +2,11 @@
 import { createStore, applyMiddleware } from 'redux'
 import createLogger from 'redux-logger'
 import { handleActions } from 'redux-actions'
-import Immutable from 'immutable'
+import * as Immutable from 'immutable'
 
 import { saveWpm } from '../utils/chrome'
 
-const __DEBUG__ = false
+const DEBUG = false
 
 
 // TODO: nesting.
@@ -28,46 +28,46 @@ const initialState = Immutable.fromJS({
 
 const actionHandlers = {
 
-  playPause: (state, {  }) =>
-    state.update('isPlaying', (isPlaying) => !isPlaying )
-  ,
-  pause: (state, {  }) =>
-    state.set('isPlaying', false)
-  ,
-  play: (state, {  }) =>
-    state.set('isPlaying', true)
-  ,
+  playPause(state) {
+    return state.update('isPlaying', (isPlaying) => !isPlaying)
+  },
+  pause(state) {
+    return state.set('isPlaying', false)
+  },
+  play(state) {
+    return state.set('isPlaying', true)
+  },
 
-  paraChange: (state, {  }) =>
-    state.set('changingPara', true)
-  ,
-  paraResume: (state, {  }) =>
-    state.set('changingPara', false)
-  ,
+  paraChange(state) {
+    return state.set('changingPara', true)
+  },
+  paraResume(state) {
+    return state.set('changingPara', false)
+  },
 
-  textHighlighted: (state, {  }) =>
-    state.set('buttonShown', true)
-  ,
-  nothingHighlighted: (state, {  }) =>
-    state.set('buttonShown', false)
-  ,
+  textHighlighted(state) {
+    return state.set('buttonShown', true)
+  },
+  nothingHighlighted(state) {
+    return state.set('buttonShown', false)
+  },
 
-  changeWord: (state, { word }) =>
-    state.set('currentWord', word)
-  ,
-  setReadingEdge: (state, { left }) =>
-    state.setIn(['readingEdge', 'left'], left)
-  ,
+  changeWord(state, { word }) {
+    return state.set('currentWord', word)
+  },
+  setReadingEdge(state, { left }) {
+    return state.setIn(['readingEdge', 'left'], left)
+  },
 
-  setWpm: (state, { wpm }) =>
-    state.set('wpm', saveWpm(wpm))
-  ,
-  increaseWpm: (state, { amount }) =>
-    state.update('wpm', (wpm) => saveWpm(Math.min(3000, wpm + amount)))
-  ,
-  decreaseWpm: (state, { amount }) =>
-    state.update('wpm', (wpm) => saveWpm(Math.max(50, wpm - amount)))
-  ,
+  setWpm(state, { wpm }) {
+    return state.set('wpm', saveWpm(wpm))
+  },
+  increaseWpm(state, { amount }) {
+    return state.update('wpm', (wpm) => saveWpm(Math.min(3000, wpm + amount)))
+  },
+  decreaseWpm(state, { amount }) {
+    return state.update('wpm', (wpm) => saveWpm(Math.max(50, wpm - amount)))
+  },
 }
 
 function createSimpleAction(type) {
@@ -86,9 +86,9 @@ function createSimpleAction(type) {
  * store.dispatch({ type: 'someAction', payload: { payloadItem: val } })
  */
 export function createActionsFromHandlers(ignoreKeys: Array<string> = []): Object {
-  let actions = {}
-  Object.keys(actionHandlers).forEach( (key) => {
-    if ( ignoreKeys.includes(key) ) { return }
+  const actions = {}
+  Object.keys(actionHandlers).forEach((key) => {
+    if (ignoreKeys.includes(key)) return
     actions[key] = createSimpleAction(key)
   })
   return actions
@@ -97,18 +97,17 @@ export function createActionsFromHandlers(ignoreKeys: Array<string> = []): Objec
 const reducer = handleActions(actionHandlers, initialState)
 
 const store = (() => {
-  if ( __DEBUG__ ) {
+  if (DEBUG) {
     const logger = createLogger({
       // print immutable as json
-      transformer: (x) => ( x.toJSON ? x.toJSON() : x ),
+      transformer: (x) => (x.toJSON ? x.toJSON() : x),
     })
     const createStoreWithMiddleware = applyMiddleware(logger)(createStore)
     return createStoreWithMiddleware(reducer)
-  } else {
-    return createStore(reducer)
   }
-})()
 
+  return createStore(reducer)
+})()
 
 
 export default store

@@ -1,6 +1,8 @@
 /* @flow */
 import React, { PropTypes } from 'react'
-import classNames from 'classnames'
+import cx from 'classnames'
+import autobind from 'react-autobind'
+import { props as tprops } from 'tcomb-react'
 
 import actions from '../flux/actions'
 import FloatingHoverButtons from './FloatingHoverButtons'
@@ -8,52 +10,57 @@ import WpmButtons from './WpmButtons'
 // $FlowIgnore
 import styles from './SplashButton.css'
 
+type PlayPauseButtonProps = {
+  isPlaying: bool,
+  handleClick: () => void,
+}
+const PlayPauseButton = ({ isPlaying, handleClick }: PlayPauseButtonProps) => (
+  <button
+    className={cx(styles.SplashButton, {
+      [styles.active]: isPlaying,
+    })}
+    onClick={handleClick}
+    title="SplashRead (spacebar)"
+  >
+    {(!isPlaying)
+      ? <span className={styles.playButton} />
+      : <span className={styles.pauseButton} />
+    }
+  </button>
+)
 
+type SplashButtonProps = {
+  dispatch: () => void,
+  buttonShown: bool,
+  isPlaying: bool,
+  wpm: number,
+}
+@tprops(SplashButtonProps) /* eslint-disable react/prop-types */
 export default class SplashButton extends React.Component {
-  // $FlowIssue https://github.com/facebook/flow/issues/850
-  static propTypes = {
-    dispatch: PropTypes.func.isRequired,
-    buttonShown: PropTypes.bool.isRequired,
-    isPlaying: PropTypes.bool.isRequired,
-    wpm: PropTypes.number.isRequired,
-  };
+  constructor(props: SplashButtonProps) {
+    super(props)
+    autobind(this)
+  }
 
-  _handleClick() {
-    let { dispatch } = this.props
+  handleClick() {
+    const { dispatch } = this.props
     dispatch(actions.playPause())
   }
 
   render() {
-    let { buttonShown, isPlaying, wpm, dispatch } = this.props
+    const { buttonShown, isPlaying, wpm, dispatch } = this.props
+    if (!buttonShown) return null
 
-    if ( !buttonShown ) {
-      return null
-    }
-
-    let play_pause_class = classNames(styles.SplashButton, {
-      // $FlowIssue https://github.com/facebook/flow/issues/252
-      [styles.active]: isPlaying,
-    })
-    let play_pause_button = (
-      <button className={play_pause_class}
-        onClick={this._handleClick.bind(this)}
-        title='SplashRead (spacebar)'
-        >
-        { ( !isPlaying )
-          ? <span className={styles.playButton}></span>
-          : <span className={styles.pauseButton}></span>
-        }
-      </button>
+    const playPauseButton = (
+      <PlayPauseButton
+        isPlaying={isPlaying}
+        handleClick={this.handleClick}
+      />
     )
 
     return (
-      <FloatingHoverButtons
-        shown={isPlaying}
-        primary={play_pause_button}
-        >
-        <WpmButtons wpm={wpm}
-          dispatch={dispatch}
-        />
+      <FloatingHoverButtons shown={isPlaying} primary={playPauseButton}>
+        <WpmButtons wpm={wpm} dispatch={dispatch} />
       </FloatingHoverButtons>
     )
   }

@@ -1,80 +1,76 @@
 /* @flow */
 
 import rangy from 'rangy/lib/rangy-textrange'
-import { word_options } from '../constants'
+import { wordOptions } from '../constants'
 import { scrollToElementOnce } from './dom'
 
+// TODO: get types for real
+type RangyRange = any
+type RangyWrappedSelection = {
+  rangeCount: number,
+  getRangeAt: (i: number) => RangyRange,
+}
 
 export function scrollToHighlightedText(): void {
-  let sel = rangy.getSelection()
-  if ( isTextHighlighted(sel) ) {
-    let range = sel.getRangeAt(0)
+  const sel = rangy.getSelection()
+  if (isTextHighlighted(sel)) {
+    const range = sel.getRangeAt(0)
     scrollToElementOnce(range.nativeRange)
   }
 }
 
 /**
  * Whether the user has highlighted text.
- * @return {Boolean}
  */
-export function isTextHighlighted(sel=null): boolean {
-  if ( sel === null ) {
-    sel = rangy.getSelection()
-  }
-  return (
-    sel.rangeCount === 1
-    &&
-    sel.getRangeAt(0).text().trim().length
-  )
+export function isTextHighlighted(selArg: ?RangyWrappedSelection = null): boolean {
+  const sel = selArg || rangy.getSelection()
+  if (!sel) return false
+  if (sel.rangeCount !== 1) return false
+
+  return (sel.getRangeAt(0).text().trim().length > 0)
 }
 
 /**
  * Moves the range to the next word,
  * without including intervening block elements,
  * and returns whether a new paragraph has been entered.
- *
- * @param  {Rangy Range} range
- * @return {Boolean}
- *         whether the next word is in a new paragraph
  */
-export function moveToNextWord(range: rangy.Range): boolean {
-
+export function moveToNextWord(range: RangyRange): boolean {
   // set range to next word
-  range.moveStart('word', 1, word_options)
-  range.moveEnd('word', 1, word_options)
+  range.moveStart('word', 1, wordOptions)
+  range.moveEnd('word', 1, wordOptions)
 
-  let is_new_para = _containsNewline(range)
+  const isNewPara = containsNewline(range)
 
   // removes whitespace, newlines, etc.
   range.collapse(false)  // collapse to end of word
-  range.moveStart('word', -1, word_options)
-  range.expand('word', Object.assign({}, word_options, { trim: true }))
+  range.moveStart('word', -1, wordOptions)
+  range.expand('word', Object.assign({}, wordOptions, { trim: true }))
 
-  return is_new_para
+  return isNewPara
 }
 
 /**
  * currently unused.
- * @return {Boolean}
  */
 export function isSingleWordHighlighted(): boolean {
   const sel = rangy.getSelection()
 
-  if ( sel.rangeCount < 1 ) {
+  if (sel.rangeCount < 1) {
     return false
   }
 
-  let range = sel.getRangeAt(0)
-  let text = range.text()
+  const range = sel.getRangeAt(0)
+  const text = range.text()
 
   // TODO: improve accuracy... this is simple/dumb
-  if ( !text.match(/\s/) ) {
+  if (!text.match(/\s/)) {
     return true
   }
 
   return false
 }
 
-function _containsNewline(range) {
+function containsNewline(range) {
   return !!range.text().match(/[\n\r]/)
 }

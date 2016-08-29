@@ -1,5 +1,5 @@
 # ignore compiled js.
-js
+dist
 
 # ignore built chrome ext
 splashreader_chrome_ext.zip

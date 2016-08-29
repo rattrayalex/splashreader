@@ -1,49 +1,49 @@
 /* @flow */
 import React from 'react'
-
+import { props as tprops } from 'tcomb-react'
 import { splitWord, getTextWidth } from '../utils/rsvp'
 // $FlowIgnore
 import styles from './Rsvp.css'
 
+type RsvpWordProps = {
+  font: string,
+  orpCenter: number,
+  currentWord: string,
+}
 
+@tprops(RsvpWordProps) /* eslint-disable react/prop-types */
 export default class RsvpWord extends React.Component {
-  // $FlowIssue https://github.com/facebook/flow/issues/850
-  static propTypes = {
-    font: React.PropTypes.string.isRequired,
-    orpCenter: React.PropTypes.number.isRequired,
-  };
+  getWordOffset(wordPart1: string, wordPart2: string): number {
+    const { font, orpCenter } = this.props
 
-  _getWordOffset(word_p1, word_p2): number {
-    let { font, orpCenter } = this.props
+    const widthPart1 = getTextWidth(wordPart1, font)
+    const widthPart2 = getTextWidth(wordPart2, font)
+    const centerPoint = widthPart1 + (widthPart2 / 2)
 
-    let width_p1 = getTextWidth(word_p1, font)
-    let width_p2 = getTextWidth(word_p2, font)
-    let center_point = width_p1 + (width_p2 / 2)
+    const wordOffset = (orpCenter - centerPoint) || 0
 
-    let word_offset = ( orpCenter - center_point ) || 0
-
-    return word_offset
+    return wordOffset
   }
 
-  render(): React.Element {
-    let { currentWord, font } = this.props
+  render() {
+    const { currentWord, font } = this.props
 
-    let { word_p1, word_p2, word_p3 } = splitWord(currentWord)
-
-    let word_offset = this._getWordOffset(word_p1, word_p2)
+    const { wordPart1, wordPart2, wordPart3 } = splitWord(currentWord)
+    const wordOffset = this.getWordOffset(wordPart1, wordPart2)
 
     return (
-      <div className={styles.rsvpWrapperInner}
-        style={{ font, marginLeft: word_offset }}
-        >
+      <div
+        className={styles.rsvpWrapperInner}
+        style={{ font, marginLeft: wordOffset }}
+      >
         <span className={styles.rsvpBeforeMiddle}>
-          {word_p1}
+          {wordPart1}
         </span>
         <span className={styles.rsvpMiddle}>
-          {word_p2}
+          {wordPart2}
         </span>
         <span className={styles.rsvpAfterMiddle}>
-          {word_p3}
+          {wordPart3}
         </span>
       </div>
     )

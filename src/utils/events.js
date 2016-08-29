@@ -8,7 +8,7 @@ import * as ranges from './ranges'
 
 
 export function readingHighlighted(): boolean {
-  return ( ranges.isTextHighlighted() && !dom.isNonSplashEditableFocused() )
+  return (ranges.isTextHighlighted() && !dom.isNonSplashEditableFocused())
 }
 
 export function listenForSpace() {

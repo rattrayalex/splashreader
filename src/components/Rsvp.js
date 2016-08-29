@@ -1,54 +1,65 @@
 /* @flow */
-import React from 'react'
+import React, { PropTypes } from 'react'
+import cx from 'classnames'
+import { props as tprops } from 'tcomb-react'
 
 import { getTextWidth } from '../utils/rsvp'
 import { getReadingHeight } from '../utils/dom'
-import SplashButton from './SplashButton'
 import RsvpWord from './RsvpWord'
 // $FlowIgnore
 import styles from './Rsvp.css'
 
-
-export default class Rsvp extends React.Component {
-  render(): ?React.Element {
-    let { rsvpPlaying, currentWord, orpCenter, font } = this.props
-
-    if ( !rsvpPlaying ) {
-      return null
-    }
-    if ( !currentWord.trim().length ) {
-      return null
-    }
-
-    // the lil notch goes in the middle of a letter (hence half an 'm')
-    let notch_offset = ( orpCenter + getTextWidth('m', font) / 2 )
-
-    return (
-      <div className={styles.Rsvp}>
-
-        <div className={styles.rsvpWrapper}
-          style={{
-            top: (getReadingHeight() - 40),  // TODO: remove hardcoding
-          }}
-          >
-          <div className={styles.rsvpNotchTop}
-            style={{ marginLeft: notch_offset }}
-          />
-
-          <RsvpWord
-            currentWord={currentWord}
-            orpCenter={orpCenter}
-            font={font}
-          />
-
-          <div className={styles.rsvpNotchBottom}
-            style={{ marginLeft: notch_offset }}
-          />
-        </div>
-
-        <SplashButton {...this.props} />
-
-      </div>
-    )
-  }
+const RsvpWrapper = ({ children }) => {
+  // TODO: remove hardcoding
+  const top = getReadingHeight() - 40
+  return (
+    <div className={styles.rsvpWrapper} style={{ top }}>
+      {children}
+    </div>
+  )
 }
+RsvpWrapper.propTypes = {
+  children: PropTypes.array.isRequired,
+}
+
+const Notch = ({ offset, position }) => (
+  <div
+    className={cx({
+      [styles.rsvpNotchTop]: (position === 'top'),
+      [styles.rsvpNotchBottom]: (position === 'bottom'),
+    })}
+    style={{ marginLeft: offset }}
+  />
+)
+Notch.propTypes = {
+  position: PropTypes.oneOf(['top', 'bottom']).isRequired,
+  offset: PropTypes.number.isRequired,
+}
+
+type RsvpProps = {
+  rsvpPlaying: bool,
+  currentWord: string,
+  orpCenter: number,
+  font: string,
+}
+const Rsvp = (props: RsvpProps) => {
+  const { rsvpPlaying, currentWord, orpCenter, font } = props
+  if (!rsvpPlaying) return null
+  if (!currentWord.trim().length) return null
+
+  // the lil notch goes in the middle of a letter (hence half an 'm')
+  const notchOffset = (orpCenter + (getTextWidth('m', font) / 2))
+
+  return (
+    <RsvpWrapper>
+      <Notch position="top" offset={notchOffset} />
+      <RsvpWord
+        currentWord={currentWord}
+        orpCenter={orpCenter}
+        font={font}
+      />
+      <Notch position="bottom" offset={notchOffset} />
+    </RsvpWrapper>
+  )
+}
+export default Rsvp

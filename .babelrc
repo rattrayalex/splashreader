@@ -1,0 +1,13 @@
+{
+  presets: ["stage-0", "react", "es2015"],
+  passPerPreset: true,
+  plugins: [
+
+    "syntax-flow",
+    "tcomb",
+    "transform-flow-strip-types",
+
+    "transform-runtime",
+    "transform-decorators-legacy"
+  ]
+}

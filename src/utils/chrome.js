@@ -4,7 +4,7 @@ declare var chrome: any
 
 export function saveWpm(wpm: number): number {
   try {
-    chrome.storage.sync.set({'wpm': wpm})
+    chrome.storage.sync.set({ wpm })
   } catch (e) {
     console.error('Could not save WPM to chrome', e) // eslint-disable-line no-console
   }
@@ -13,9 +13,9 @@ export function saveWpm(wpm: number): number {
 
 export async function loadWpm(): Promise<?number> {
   try {
-    return await new Promise( (resolve) =>
+    return await new Promise((resolve) =>
       chrome.storage.sync.get('wpm', ({ wpm }) =>
-        resolve(parseInt(wpm))
+        resolve(parseInt(wpm, 10))
       )
     )
   } catch (e) {

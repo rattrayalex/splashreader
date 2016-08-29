@@ -1,8 +1,8 @@
 /* @flow */
 
-export const splashreader_container_id = 'splashreader-wrapper'
+export const splashreaderContainerId = 'splashreader-wrapper'
 
-export const word_options = {
+export const wordOptions = {
   wordOptions: {
     wordRegex: /[^–—\s]+/gi,
   },

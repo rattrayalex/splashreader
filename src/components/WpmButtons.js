@@ -1,6 +1,7 @@
 /* @flow */
 import React from 'react'
 import classNames from 'classnames'
+import autobind from 'react-autobind'
 
 import actions from '../flux/actions'
 // $FlowIgnore
@@ -8,52 +9,60 @@ import styles from './SplashButton.css'
 
 const DEFAULT_WPM_STEP = 50
 
-
+type WpmButtonsProps = {
+  dispatch: () => void,
+  wpm: number,
+}
 export default class WpmButtons extends React.Component {
-  // $FlowIssue https://github.com/facebook/flow/issues/850
-  static propTypes = {
-    dispatch: React.PropTypes.func.isRequired,
-    wpm: React.PropTypes.number.isRequired,
-  };
+  constructor(props: WpmButtonsProps) {
+    super(props)
+    autobind(this)
+  }
+  props: WpmButtonsProps
 
-  _decreaseWpm() {
-    let { dispatch } = this.props
+  decreaseWpm() {
+    const { dispatch } = this.props
     dispatch(actions.decreaseWpm({ amount: DEFAULT_WPM_STEP }))
   }
-  _increaseWpm() {
-    let { dispatch } = this.props
+  increaseWpm() {
+    const { dispatch } = this.props
     dispatch(actions.increaseWpm({ amount: DEFAULT_WPM_STEP }))
   }
-  _handleSet(e: React.SyntheticEvent) {
-    let { dispatch } = this.props
-    let wpm = parseInt(e.target.value)
+  handleSet({ target }: SyntheticInputEvent) {
+    // flow is being persnickety, event.target might not have a value
+    if (!(target instanceof HTMLInputElement)) return
+
+    const { dispatch } = this.props
+
+    const wpm = parseInt(target.value, 10)
     dispatch(actions.setWpm({ wpm }))
   }
 
-  render(): React.Element {
-    let { wpm } = this.props
+  render() {
+    const { wpm } = this.props
 
     return (
-      <center title='Words Per Minute (WPM)'>
+      <center title="Words Per Minute (WPM)">
         <button
           className={classNames(styles.upArrow, styles.smallerHoverButton)}
-          onClick={this._increaseWpm.bind(this)}
-          title='Increase Reading Speed'
+          onClick={this.increaseWpm}
+          title="Increase Reading Speed"
         />
 
-        <input className={styles.wpmInput}
-          type='number'
+        <input
+          className={styles.wpmInput}
+          type="number"
           value={wpm}
-          onChange={this._handleSet.bind(this)}
+          onChange={this.handleSet}
           min={50}
           step={10}
-          title='Words Per Minute (WPM)'
+          title="Words Per Minute (WPM)"
         />
 
         <button
           className={classNames(styles.downArrow, styles.smallerHoverButton)}
-          onClick={this._decreaseWpm.bind(this)}
-          title='Decrease Reading Speed'
+          onClick={this.decreaseWpm}
+          title="Decrease Reading Speed"
         />
       </center>
     )
