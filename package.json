@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "./node_modules/.bin/webpack --watch",
-    "chrome": "node ./package_chrome_ext.js"
+    "build": "NODE_ENV=production ./node_modules/.bin/webpack",
+    "chrome": "npm run build && node ./package_chrome_ext.js"
   },
   "repository": {
     "type": "git",
