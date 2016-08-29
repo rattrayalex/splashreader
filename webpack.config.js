@@ -5,7 +5,6 @@ const webpack = require('webpack')
 
 const PROD = (process.env.NODE_ENV || '').toLowerCase() === 'production'
 
-const filename = PROD ? 'app.min.js' : 'app.js'
 const devtool = PROD ? null : 'source-map-eval'
 const plugins = PROD
   ? [new webpack.optimize.UglifyJsPlugin({ compress: { warnings: false } })]
@@ -16,7 +15,7 @@ module.exports = {
   entry: './index.js',
 
   output: {
-    filename,
+    filename: 'app.js',
     path: path.join(__dirname, '/dist'),
   },
 
