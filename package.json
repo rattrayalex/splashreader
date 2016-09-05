@@ -1,6 +1,6 @@
 {
   "name": "splashreader",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "An RSVP Reader for Humans",
   "main": "index.js",
   "scripts": {

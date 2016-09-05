@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "SplashReader: Speed Reading with Breaks",
   "short_name": "SplashReader",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "A speed reader that lets you come up for air.",
   "homepage_url": "http://splashreaderapp.com",
   "author": "Alex Rattray",
