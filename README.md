@@ -1,4 +1,4 @@
-## A speed reader that lets you come up for air.
+# A Speed Reader that lets you come up for air.
 
 [Get the Chrome Extension](https://chrome.google.com/webstore/detail/splashreader-speed-readin/poilkhacfacheblaajlfkdclgbpjolmd)
 
