@@ -21,6 +21,18 @@ export const loadWpmFromChrome = async () => {
   }
 }
 
+function getRangeIfSelected() {
+  const sel = rangy.getSelection()
+  if (sel.rangeCount < 1) return null
+
+  const range = sel.getRangeAt(0)
+
+  if (!range) return null
+  if (!ranges.isTextHighlighted(sel)) return null
+
+  return range
+}
+
 export const setReadingPointAt = async (range) => {
   await dom.scrollToElementOnce(range.nativeRange)
   const left = dom.getLeftEdge(range.endContainer.parentNode)
@@ -31,23 +43,16 @@ export const setReadingPointAt = async (range) => {
 let playTimeout: ?number = null
 const splash = async (rangeArg = null) => {
   if (!isPlayingSelector(store.getState())) return
-
   // prevent double-play.
   window.clearTimeout(playTimeout)
 
-  // initialize
-  let range
-  if (rangeArg !== null) {
-    range = rangeArg
-  } else {
-    const sel = rangy.getSelection()
-    range = sel.getRangeAt(0)
+  const range = rangeArg || getRangeIfSelected()
 
-    // bail if nothing is selected
-    if (range === null || !ranges.isTextHighlighted(sel)) {
-      store.dispatch(actions.pause())
-      return
-    }
+  // bail if nothing is selected
+  if (!range) {
+    // TODO: consider trying to find and select the first word in the doc
+    store.dispatch(actions.pause())
+    return
   }
 
   // resume RSVP if in a new (non-header) paragrah.
@@ -103,13 +108,13 @@ export const listenForPlay = () => {
   let isPlaying = false
   let wasPlaying = false
 
-  store.subscribe(() => {
+  store.subscribe(async () => {
     // TODO: clean up / document better...
     wasPlaying = isPlaying
     isPlaying = isPlayingSelector(store.getState())
 
     if (isPlaying && !wasPlaying) {
-      splash()
+      await splash()
     } else if (wasPlaying && !isPlaying) {
       // scroll on pause
       ranges.scrollToHighlightedText()
