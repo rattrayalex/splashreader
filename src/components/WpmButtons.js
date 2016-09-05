@@ -1,11 +1,16 @@
 /* @flow */
 import React from 'react'
-import classNames from 'classnames'
 import autobind from 'react-autobind'
 
 import actions from '../flux/actions'
 // $FlowIgnore
 import styles from './SplashButton.css'
+
+// flow and tcomb kinda struggle here.
+// This is supposed to be a SyntheticInputEvent.
+type InputEvent = {
+  target: HTMLInputElement
+}
 
 const DEFAULT_WPM_STEP = 50
 
@@ -28,10 +33,7 @@ export default class WpmButtons extends React.Component {
     const { dispatch } = this.props
     dispatch(actions.increaseWpm({ amount: DEFAULT_WPM_STEP }))
   }
-  handleSet({ target }: SyntheticInputEvent) {
-    // flow is being persnickety, event.target might not have a value
-    if (!(target instanceof HTMLInputElement)) return
-
+  handleSet({ target }: InputEvent) {
     const { dispatch } = this.props
 
     const wpm = parseInt(target.value, 10)
@@ -57,6 +59,7 @@ export default class WpmButtons extends React.Component {
           value={wpm}
           onChange={this.handleSet}
           min={50}
+          max={2000}
           step={10}
           title="Words Per Minute (WPM)"
         />
