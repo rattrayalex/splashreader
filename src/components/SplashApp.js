@@ -1,5 +1,6 @@
 /* @flow */
 import React from 'react'
+import cx from 'classnames'
 import { connect } from 'react-redux'
 
 import SplashButton from './SplashButton'
@@ -20,7 +21,11 @@ type SplashAppProps = {
   orpCenter: number,
 }
 const SplashApp = connect(allSelector)((props: SplashAppProps) => (
-  <div className={props.rsvpPlaying ? styles.Rsvp : ''} >
+  <div
+    className={cx(styles.SplashApp, {
+      [styles.SplashAppPlaying]: props.rsvpPlaying,
+    })}
+  >
     <Rsvp {...props} />
     <SplashButton
       dispatch={props.dispatch}

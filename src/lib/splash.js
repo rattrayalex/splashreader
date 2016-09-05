@@ -29,7 +29,7 @@ export const setReadingPointAt = async (range) => {
 
 // TODO: clean up
 let playTimeout: ?number = null
-export default async function splash(rangeArg = null) {
+const splash = async (rangeArg = null) => {
   if (!isPlayingSelector(store.getState())) return
 
   // prevent double-play.
@@ -97,6 +97,7 @@ export default async function splash(rangeArg = null) {
     timeToDisplay
   )
 }
+export default splash
 
 export const listenForPlay = () => {
   let isPlaying = false

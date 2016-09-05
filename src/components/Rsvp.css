@@ -1,9 +1,12 @@
 
-.Rsvp {
+.SplashApp {
   all: initial;
 
   z-index: 9999;
   position: fixed;
+}
+
+.SplashApp.SplashAppPlaying {
   left: 0;
   right: 0;
   top: 0;
@@ -12,7 +15,7 @@
   background: rgba(255,255,255,.9);
 }
 
-.Rsvp .word {
+.SplashAppPlaying .word {
   font-size: 32pt;
   font-family: Georgia;
   color: black;
