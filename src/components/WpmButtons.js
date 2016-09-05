@@ -44,10 +44,12 @@ export default class WpmButtons extends React.Component {
     return (
       <center title="Words Per Minute (WPM)">
         <button
-          className={classNames(styles.upArrow, styles.smallerHoverButton)}
+          className={styles.smallerHoverButton}
           onClick={this.increaseWpm}
           title="Increase Reading Speed"
-        />
+        >
+          <div className={styles.upArrow} />
+        </button>
 
         <input
           className={styles.wpmInput}
@@ -60,10 +62,12 @@ export default class WpmButtons extends React.Component {
         />
 
         <button
-          className={classNames(styles.downArrow, styles.smallerHoverButton)}
+          className={styles.smallerHoverButton}
           onClick={this.decreaseWpm}
           title="Decrease Reading Speed"
-        />
+        >
+          <div className={styles.downArrow} />
+        </button>
       </center>
     )
   }
