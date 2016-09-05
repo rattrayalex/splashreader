@@ -4,7 +4,7 @@ import createLogger from 'redux-logger'
 import { handleActions } from 'redux-actions'
 import * as Immutable from 'immutable'
 
-import { saveWpm } from '../utils/chrome'
+import { saveWpm } from '../lib/chrome'
 
 const DEBUG = false
 

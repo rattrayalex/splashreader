@@ -1,5 +1,6 @@
 /* @flow */
 
+
 /**
  * modifies the length of time a word should be displayed
  * on the basis of how hard to read it is.
@@ -99,93 +100,4 @@ export function getTextWidth(text: string, font: string): number {
   const metrics = context.measureText(text)
 
   return metrics.width
-}
-
-
-/**
- * crawls up the DOM tree
- * to find the nearest `display: block` element
- * (including the passed-in element)
- *
- * @param  {Element} elem
- * @return {element}
- */
-export function getClosestBlockElement(elem: Element): Element {
-  if (window.getComputedStyle(elem).display === 'block') {
-    return elem
-  }
-  if (!elem.parentElement) {
-    // if it's spans all the way up for some reason, just return the top one.
-    return elem
-  }
-  return getClosestBlockElement(elem.parentElement)
-}
-
-/**
- * tries to detect whether the given element
- * is inside a block element
- * that is only a single line of text high.
- * Doesn't always work.
- * TODO: improve accuracy
- *
- * @param  {Element}  elem
- * @return {Boolean}
- */
-export function isSingleLine(elem: Element): boolean {
-  const elemHeight: number = elem.clientHeight
-  const lineHeight = parseInt(window.getComputedStyle(elem).lineHeight, 10)
-  // direct comparison didn't work,
-  // so just check if it's at least smaller than two lines tall...
-  return (elemHeight < (lineHeight * 2))
-}
-
-/**
- * Does an okay (not perfect) job
- * of telling you whether an element is bold or italic
- *
- * @param  {Element}  elem
- * @return {Boolean}
- */
-export function isBoldOrItalic(elem: Element): boolean {
-  const { fontWeight, fontStyle } = window.getComputedStyle(elem)
-  return (
-    fontWeight === 'bold'
-    || fontWeight === 'bolder'
-    || fontStyle === 'italic'
-    || fontStyle === 'oblique'
-  )
-}
-
-
-/**
- * @param  {Element} elem
- * @return {Boolean}
- */
-export function elementContainsASingleWord(elem: Element): boolean {
-  if (!elem.innerText) return false
-
-  return (elem.innerText.split(/\s/).length === 1)
-}
-
-
-const headingElems = [
-  'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
-  'DT',
-]
-/**
- * tries to guess at whether an element
- * is a heading...
- *
- * @param  {Element} elem
- * @return {Boolean}
- */
-export function looksLikeAHeading(elemArg: Element): boolean {
-  const elem = getClosestBlockElement(elemArg)
-
-  if (elementContainsASingleWord(elem)) return true
-
-  const isEmphasized = headingElems.includes(elem.nodeName)
-    || isBoldOrItalic(elem)
-
-  return isEmphasized && isSingleLine(elem)
 }

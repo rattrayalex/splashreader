@@ -12,7 +12,7 @@ type FloatingHoverButtonsProps = {
   shown: bool,
 }
 
-@tprops(FloatingHoverButtonsProps)  /* eslint-disable react/prop-types */
+@tprops(FloatingHoverButtonsProps)  /* eslint-disable-line react/prop-types */
 export default class FloatingHoverButtons extends React.Component {
   constructor(props: FloatingHoverButtonsProps) {
     super(props)

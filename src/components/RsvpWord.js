@@ -1,7 +1,7 @@
 /* @flow */
 import React from 'react'
 import { props as tprops } from 'tcomb-react'
-import { splitWord, getTextWidth } from '../utils/rsvp'
+import { splitWord, getTextWidth } from '../lib/rsvp'
 // $FlowIgnore
 import styles from './Rsvp.css'
 
@@ -48,4 +48,4 @@ export default class RsvpWord extends React.Component {
       </div>
     )
   }
-}
+} /* eslint-enable react/prop-types */

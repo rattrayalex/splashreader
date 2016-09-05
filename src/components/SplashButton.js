@@ -1,5 +1,5 @@
 /* @flow */
-import React, { PropTypes } from 'react'
+import React from 'react'
 import cx from 'classnames'
 import autobind from 'react-autobind'
 import { props as tprops } from 'tcomb-react'
@@ -64,4 +64,4 @@ export default class SplashButton extends React.Component {
       </FloatingHoverButtons>
     )
   }
-}
+} /* eslint-enable react/prop-types */

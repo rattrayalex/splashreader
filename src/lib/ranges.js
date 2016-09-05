@@ -11,6 +11,22 @@ type RangyWrappedSelection = {
   getRangeAt: (i: number) => RangyRange,
 }
 
+
+/* annoyingly, rangy doesn't work for a bit sometimes... */
+export async function waitForRangy() {
+  return await new Promise((resolve) => {
+    const checker = () => {
+      if (typeof rangy.getSelection === 'function') {
+        resolve()
+      } else {
+        setTimeout(checker, 100)
+      }
+    }
+    checker()
+  })
+}
+
+
 export function scrollToHighlightedText(): void {
   const sel = rangy.getSelection()
   if (isTextHighlighted(sel)) {
@@ -18,6 +34,7 @@ export function scrollToHighlightedText(): void {
     scrollToElementOnce(range.nativeRange)
   }
 }
+
 
 /**
  * Whether the user has highlighted text.
@@ -29,6 +46,7 @@ export function isTextHighlighted(selArg: ?RangyWrappedSelection = null): boolea
 
   return (sel.getRangeAt(0).text().trim().length > 0)
 }
+
 
 /**
  * Moves the range to the next word,
@@ -50,6 +68,7 @@ export function moveToNextWord(range: RangyRange): boolean {
   return isNewPara
 }
 
+
 /**
  * currently unused.
  */
@@ -70,6 +89,7 @@ export function isSingleWordHighlighted(): boolean {
 
   return false
 }
+
 
 function containsNewline(range) {
   return !!range.text().match(/[\n\r]/)

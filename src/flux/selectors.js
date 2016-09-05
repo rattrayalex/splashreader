@@ -2,7 +2,7 @@
 import * as Immutable from 'immutable'
 import { createSelector } from 'reselect'
 
-import { getTextWidth } from '../utils/rsvp'
+import { getTextWidth } from '../lib/rsvp'
 
 
 // TODO: real definition
