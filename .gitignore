@@ -3,6 +3,7 @@ dist
 
 # ignore built chrome ext
 splashreader_chrome_ext.zip
+splashreader_chrome_ext
 
 # Logs
 logs
