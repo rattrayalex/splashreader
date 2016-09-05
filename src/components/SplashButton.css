@@ -72,12 +72,13 @@
 }
 
 .pauseButton {
-  padding-left: 7px;
-  font-size: 19px;
+  height: 22px;
+  width: 6px;
+
+  border-left: 8px solid white;
+  border-right: 8px solid white;
 }
-.pauseButton::after {
-  content: '▌▌';
-}
+
 .SplashButton img {
   display: inline-block;
 }
