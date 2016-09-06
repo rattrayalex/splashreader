@@ -7,7 +7,18 @@ const PROD = (process.env.NODE_ENV || '').toLowerCase() === 'production'
 
 const devtool = PROD ? null : 'source-map-eval'
 const plugins = PROD
-  ? [new webpack.optimize.UglifyJsPlugin({ compress: { warnings: false } })]
+  ? [
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('production'),
+      },
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false,
+      },
+    }),
+  ]
   : []
 
 module.exports = {
