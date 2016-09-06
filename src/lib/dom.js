@@ -80,24 +80,6 @@ export function isSingleLine(elem: Element): boolean {
 }
 
 /**
- * Does an okay (not perfect) job
- * of telling you whether an element is bold or italic
- *
- * @param  {Element}  elem
- * @return {Boolean}
- */
-export function isBoldOrItalic(elem: Element): boolean {
-  const { fontWeight, fontStyle } = window.getComputedStyle(elem)
-  return (
-    fontWeight === 'bold'
-    || fontWeight === 'bolder'
-    || fontStyle === 'italic'
-    || fontStyle === 'oblique'
-  )
-}
-
-
-/**
  * @param  {Element} elem
  * @return {Boolean}
  */
@@ -108,10 +90,6 @@ export function elementContainsASingleWord(elem: Element): boolean {
 }
 
 
-const headingElems = [
-  'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
-  'DT',
-]
 /**
  * tries to guess at whether an element
  * is a heading...
@@ -124,10 +102,7 @@ export function looksLikeAHeading(elemArg: Element): boolean {
 
   if (elementContainsASingleWord(elem)) return true
 
-  const isEmphasized = headingElems.includes(elem.nodeName)
-    || isBoldOrItalic(elem)
-
-  return isEmphasized && isSingleLine(elem)
+  return isSingleLine(elem)
 }
 
 

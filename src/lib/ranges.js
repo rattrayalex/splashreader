@@ -69,28 +69,6 @@ export function moveToNextWord(range: RangyRange): boolean {
 }
 
 
-/**
- * currently unused.
- */
-export function isSingleWordHighlighted(): boolean {
-  const sel = rangy.getSelection()
-
-  if (sel.rangeCount < 1) {
-    return false
-  }
-
-  const range = sel.getRangeAt(0)
-  const text = range.text()
-
-  // TODO: improve accuracy... this is simple/dumb
-  if (!text.match(/\s/)) {
-    return true
-  }
-
-  return false
-}
-
-
 function containsNewline(range) {
   return !!range.text().match(/[\n\r]/)
 }
