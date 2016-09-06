@@ -35,6 +35,7 @@
 
   cursor: pointer;
   user-select: none;
+  box-sizing: border-box;
 }
 
 .SplashButton:hover {
@@ -68,7 +69,6 @@
   border-bottom: 12px solid transparent;
 
   border-left: 18px solid white;
-
 }
 
 .pauseButton {
@@ -77,6 +77,8 @@
 
   border-left: 8px solid white;
   border-right: 8px solid white;
+
+  box-sizing: content-box;
 }
 
 .SplashButton img {
@@ -85,7 +87,6 @@
 
 /* TODO: cleanup/abstract */
 .smallerHoverButton {
-
   border: none;
   border-radius: 50%;
   background: #00bcd4;
@@ -97,6 +98,7 @@
   width: 40px;
   user-select: none;
   cursor: pointer;
+  box-sizing: border-box;
 }
 .smallerHoverButton:active,
 .smallerHoverButton:visited,

@@ -6,6 +6,10 @@
   position: fixed;
 }
 
+.SplashApp * {
+  all: initial;
+}
+
 .SplashApp.SplashAppPlaying {
   left: 0;
   right: 0;
