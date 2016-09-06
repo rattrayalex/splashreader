@@ -1,6 +1,7 @@
 /* @flow */
 import React from 'react'
 import autobind from 'react-autobind'
+import cx from 'classnames'
 
 import actions from '../flux/actions'
 // $FlowIgnore
@@ -50,7 +51,7 @@ export default class WpmButtons extends React.Component {
           onClick={this.increaseWpm}
           title="Increase Reading Speed"
         >
-          <div className={styles.upArrow} />
+          <div className={cx(styles.wpmArrow, styles.upArrow)} />
         </button>
 
         <input
@@ -69,7 +70,7 @@ export default class WpmButtons extends React.Component {
           onClick={this.decreaseWpm}
           title="Decrease Reading Speed"
         >
-          <div className={styles.downArrow} />
+          <div className={cx(styles.wpmArrow, styles.downArrow)} />
         </button>
       </center>
     )
